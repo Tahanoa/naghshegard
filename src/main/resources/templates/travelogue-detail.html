@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>جزئیات سفرنامه | گشت و گذار در ایران</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Tahoma', 'Vazir', system-ui, sans-serif;
+      background: linear-gradient(135deg, #0a5c4a 0%, #1a7a5c 50%, #0a5c4a 100%);
+      min-height: 100vh;
+    }
+
+    :root {
+      --persian-green: #0a5c4a;
+      --persian-turquoise: #2a9d8f;
+      --persian-orange: #e76f51;
+      --persian-gold: #f4a261;
+      --persian-cream: #fefae0;
+      --persian-red: #bc4a2c;
+      --persian-brown: #8b5a2b;
+    }
+
+    .navbar {
+      background: rgba(10, 92, 74, 0.95);
+      padding: 1rem 2rem;
+      position: fixed;
+      top: 0;
+      right: 0;
+      left: 0;
+      z-index: 1000;
+    }
+
+    .navbar-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .navbar-brand {
+      color: var(--persian-gold);
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a, .nav-btn {
+      color: var(--persian-cream);
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 1rem;
+    }
+
+    .nav-links a:hover, .nav-btn:hover {
+      background: var(--persian-gold);
+      color: var(--persian-green);
+    }
+
+    .logout-btn:hover {
+      background: var(--persian-red);
+      color: white;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 100px 20px 50px;
+    }
+
+    /* گالری */
+    .gallery {
+      background: var(--persian-cream);
+      border-radius: 25px;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+
+    .gallery-title {
+      color: var(--persian-green);
+      margin-bottom: 15px;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+    }
+
+    .gallery-img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .gallery-img:hover {
+      transform: scale(1.02);
+    }
+
+    /* محتوای سفرنامه */
+    .travelogue-content {
+      background: var(--persian-cream);
+      border-radius: 25px;
+      padding: 35px;
+      margin-bottom: 30px;
+    }
+
+    .travelogue-title {
+      color: var(--persian-green);
+      font-size: 2rem;
+      margin-bottom: 15px;
+    }
+
+    .travelogue-meta {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      color: #888;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #eee;
+      margin-bottom: 25px;
+    }
+
+    .travelogue-text {
+      line-height: 1.9;
+      font-size: 1.05rem;
+      color: #333;
+    }
+
+    /* مکان‌های بازدید شده */
+    .visited-places {
+      background: var(--persian-cream);
+      border-radius: 25px;
+      padding: 25px;
+      margin-bottom: 30px;
+    }
+
+    .places-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    .place-chip {
+      background: var(--persian-green);
+      color: white;
+      padding: 8px 18px;
+      border-radius: 30px;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+
+    .place-chip:hover {
+      background: var(--persian-turquoise);
+      transform: translateY(-2px);
+    }
+
+    /* آمار و لایک */
+    .stats-section {
+      background: var(--persian-cream);
+      border-radius: 25px;
+      padding: 25px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-bottom: 20px;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--persian-green);
+    }
+
+    .like-btn {
+      background: var(--persian-orange);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 30px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .like-btn:hover {
+      background: var(--persian-red);
+      transform: scale(1.05);
+    }
+
+    .loading, .error-message {
+      text-align: center;
+      padding: 50px;
+      background: var(--persian-cream);
+      border-radius: 20px;
+    }
+
+    footer {
+      background: var(--persian-green);
+      color: var(--persian-cream);
+      text-align: center;
+      padding: 20px;
+      margin-top: 50px;
+    }
+
+    /* مودال عکس */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      cursor: pointer;
+    }
+
+    .modal-content {
+      margin: auto;
+      display: block;
+      max-width: 90%;
+      max-height: 90%;
+      margin-top: 50px;
+    }
+
+    @media (max-width: 768px) {
+      .travelogue-title { font-size: 1.5rem; }
+      .gallery-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-container">
+    <a href="/" class="navbar-brand">🕌 گشت و گذار در ایران</a>
+    <ul class="nav-links">
+      <li><a href="/">خانه</a></li>
+      <li><a href="/travelogues">📖 سفرنامه‌ها</a></li>
+      <li><a href="/create-travelogue" id="createLink" style="display:none;">✍️ نوشتن سفرنامه</a></li>
+      <li><a href="/my-travelogues" id="myLink" style="display:none;">📚 سفرنامه‌های من</a></li>
+      <li><a href="/login" id="loginBtn">ورود</a></li>
+      <li><a href="/register" id="registerBtn">ثبت نام</a></li>
+      <li><button id="logoutBtn" class="nav-btn logout-btn" style="display:none;">🚪 خروج</button></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container">
+  <div id="loading" class="loading">⏳ در حال بارگذاری سفرنامه...</div>
+  <div id="content" style="display: none;"></div>
+</div>
+
+<footer>
+  <p>🇮🇷 گشت و گذار در ایران - خواندن سفرنامه‌های سفر به ایران 🇮🇷</p>
+</footer>
+
+<script>
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+  }
+
+  function deleteCookie(name) {
+    document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+  }
+
+  const travelogueId = window.location.pathname.split('/').pop();
+  const token = getCookie('token');
+  let currentTravelogue = null;
+
+  const createLink = document.getElementById('createLink');
+  const myLink = document.getElementById('myLink');
+  const loginBtn = document.getElementById('loginBtn');
+  const registerBtn = document.getElementById('registerBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+
+  if (token) {
+    if (createLink) createLink.style.display = 'inline-block';
+    if (myLink) myLink.style.display = 'inline-block';
+    if (loginBtn) loginBtn.style.display = 'none';
+    if (registerBtn) registerBtn.style.display = 'none';
+    if (logoutBtn) logoutBtn.style.display = 'inline-block';
+  }
+
+  logoutBtn?.addEventListener('click', () => {
+    deleteCookie('token');
+    deleteCookie('username');
+    deleteCookie('role');
+    window.location.href = '/';
+  });
+
+  async function loadTravelogue() {
+    try {
+      const response = await fetch(`/api/travelogues/public/${travelogueId}`);
+      if (response.ok) {
+        currentTravelogue = await response.json();
+        displayTravelogue();
+      } else if (response.status === 404) {
+        document.getElementById('loading').innerHTML = '<div class="error-message">❌ سفرنامه مورد نظر یافت نشد</div>';
+      } else {
+        document.getElementById('loading').innerHTML = '<div class="error-message">❌ خطا در دریافت سفرنامه</div>';
+      }
+    } catch (error) {
+      document.getElementById('loading').innerHTML = '<div class="error-message">❌ خطا در ارتباط با سرور</div>';
+    }
+  }
+
+  function displayTravelogue() {
+    const t = currentTravelogue;
+    let galleryHtml = '';
+    if (t.photoUrls && t.photoUrls.length > 0) {
+      galleryHtml = `<div class="gallery"><h3 class="gallery-title">📸 گالری تصاویر سفر</h3><div class="gallery-grid">${t.photoUrls.map(url => `<img src="${url}" class="gallery-img" onclick="openModal('${url}')" loading="lazy">`).join('')}</div></div>`;
+    }
+    let visitedPlacesHtml = '';
+    if (t.visitedPlaceNames && t.visitedPlaceNames.length > 0) {
+      visitedPlacesHtml = `<div class="visited-places"><h3>📍 مکان‌های بازدید شده</h3><div class="places-list">${t.visitedPlaceNames.map((name, idx) => `<a href="/place/${t.visitedPlaceIds[idx]}" class="place-chip">🏛️ ${escapeHtml(name)}</a>`).join('')}</div></div>`;
+    }
+    const isOwner = token && getCookie('username') === t.authorUsername;
+    document.getElementById('content').innerHTML = `
+      ${galleryHtml}
+      <div class="travelogue-content">
+        <h1 class="travelogue-title">${escapeHtml(t.title)}</h1>
+        <div class="travelogue-meta"><span>✍️ نویسنده: ${escapeHtml(t.authorUsername)}</span><span>📅 تاریخ انتشار: ${new Date(t.createdAt).toLocaleDateString('fa-IR')}</span></div>
+        <div class="travelogue-text">${escapeHtml(t.content).replace(/\n/g, '<br>')}</div>
+      </div>
+      ${visitedPlacesHtml}
+      <div class="stats-section">
+        <div class="stats"><div class="stat-item"><div class="stat-number">${t.viewCount}</div><div>👁️ بازدید</div></div><div class="stat-item"><div class="stat-number" id="likeCount">${t.likeCount}</div><div>❤️ لایک</div></div></div>
+        ${token ? `<button class="like-btn" onclick="likeTravelogue()" id="likeBtn">❤️ لایک کردن</button>` : `<p><a href="/login" style="color: var(--persian-orange);">وارد شوید</a> تا بتوانید لایک کنید</p>`}
+        ${isOwner ? `<button class="like-btn" onclick="deleteTravelogue()" style="background: var(--persian-red); margin-top: 10px;">🗑️ حذف سفرنامه</button>` : ''}
+      </div>
+    `;
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
+  }
+
+  window.likeTravelogue = async function() {
+    if (!token) { window.location.href = '/login'; return; }
+    try {
+      const response = await fetch(`/api/travelogues/${travelogueId}/like`, { method: 'POST' });
+      if (response.ok) {
+        const likeSpan = document.getElementById('likeCount');
+        if (likeSpan) likeSpan.textContent = parseInt(likeSpan.textContent) + 1;
+        alert('لایک شد!');
+      }
+    } catch (error) { alert('خطا در لایک کردن'); }
+  };
+
+  window.deleteTravelogue = async function() {
+    if (!confirm('آیا از حذف این سفرنامه مطمئن هستید؟')) return;
+    try {
+      const response = await fetch(`/api/travelogues/${travelogueId}`, { method: 'DELETE' });
+      if (response.ok) { alert('سفرنامه حذف شد'); window.location.href = '/my-travelogues'; }
+      else { alert('خطا در حذف'); }
+    } catch (error) { alert('خطا در ارتباط با سرور'); }
+  };
+
+  window.openModal = function(src) {
+    let modal = document.getElementById('imageModal');
+    if (!modal) {
+      const modalHtml = `<div id="imageModal" class="modal" onclick="closeModal()"><img class="modal-content" id="modalImg"></div>`;
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+      modal = document.getElementById('imageModal');
+    }
+    document.getElementById('modalImg').src = src;
+    modal.style.display = 'flex';
+  };
+  window.closeModal = function() { const modal = document.getElementById('imageModal'); if (modal) modal.style.display = 'none'; };
+  function escapeHtml(text) { if (!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+
+  loadTravelogue();
+</script>
+</body>
+</html>

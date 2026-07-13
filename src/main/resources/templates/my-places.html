@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مکان‌های من | گشت و گذار در ایران</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Tahoma', 'Vazir', system-ui;
+      background: linear-gradient(135deg, #0a5c4a 0%, #1a7a5c 50%, #0a5c4a 100%);
+      min-height: 100vh;
+    }
+    :root {
+      --persian-green: #0a5c4a;
+      --persian-turquoise: #2a9d8f;
+      --persian-gold: #f4a261;
+      --persian-cream: #fefae0;
+      --persian-red: #bc4a2c;
+    }
+    .navbar {
+      background: rgba(10, 92, 74, 0.95);
+      padding: 1rem 2rem;
+      position: fixed;
+      top: 0;
+      right: 0;
+      left: 0;
+      z-index: 1000;
+    }
+    .navbar-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .navbar-brand { color: var(--persian-gold); font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+    .nav-links { display: flex; gap: 20px; list-style: none; align-items: center; flex-wrap: wrap; }
+    .nav-links a, .nav-btn { color: var(--persian-cream); text-decoration: none; padding: 8px 16px; border-radius: 8px; background: none; border: none; cursor: pointer; font-family: inherit; font-size: 1rem; }
+    .nav-links a:hover, .nav-btn:hover { background: var(--persian-gold); color: var(--persian-green); }
+    .logout-btn:hover { background: var(--persian-red); color: white; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 100px 20px 50px; }
+    .page-title { text-align: center; color: var(--persian-cream); font-size: 2rem; margin-bottom: 40px; }
+    .places-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; }
+    .place-card {
+      background: var(--persian-cream);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      transition: transform 0.3s;
+    }
+    .place-card:hover { transform: translateY(-5px); }
+    .card-img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      background: linear-gradient(135deg, #2a9d8f, #0a5c4a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+    }
+    .card-body { padding: 20px; }
+    .card-title { color: var(--persian-green); font-size: 1.2rem; margin-bottom: 8px; cursor: pointer; }
+    .card-title:hover { color: var(--persian-turquoise); }
+    .place-status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      margin-bottom: 10px;
+    }
+    .place-status-approved { background: var(--persian-turquoise); color: white; }
+    .place-status-pending { background: var(--persian-gold); color: #5a3a1a; }
+    .place-status-rejected { background: var(--persian-red); color: white; }
+    .place-stats { display: flex; gap: 15px; color: #888; font-size: 0.8rem; margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; }
+    .delete-btn { background: var(--persian-red); color: white; border: none; padding: 8px; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 10px; }
+    .delete-btn:hover { background: #a03a20; }
+    .empty-message { text-align: center; padding: 50px; background: var(--persian-cream); border-radius: 20px; }
+    .loading { text-align: center; padding: 50px; background: var(--persian-cream); border-radius: 20px; }
+    footer { background: var(--persian-green); color: var(--persian-cream); text-align: center; padding: 20px; margin-top: 50px; }
+    @media (max-width: 768px) { .places-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-container">
+    <a href="/" class="navbar-brand">🕌 گشت و گذار در ایران</a>
+    <ul class="nav-links">
+      <li><a href="/">خانه</a></li>
+      <li><a href="/places">🏛️ مکان‌ها</a></li>
+      <li><a href="/travelogues">📖 سفرنامه‌ها</a></li>
+      <li><a href="/add-place">➕ افزودن مکان</a></li>
+      <li><a href="/my-places">📍 مکان‌های من</a></li>
+      <li><a href="/create-travelogue">✍️ نوشتن سفرنامه</a></li>
+      <li><a href="/my-travelogues">📚 سفرنامه‌های من</a></li>
+      <li><button id="logoutBtn" class="nav-btn logout-btn">🚪 خروج</button></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container">
+  <h1 class="page-title">📍 مکان‌های معرفی شده توسط من</h1>
+  <div id="placesContainer"><div class="loading">⏳ در حال بارگذاری...</div></div>
+</div>
+
+<footer>🇮🇷 گشت و گذار در ایران - کشف زیبایی‌های میهن عزیزمان 🇮🇷</footer>
+
+<script>
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+  }
+
+  function deleteCookie(name) {
+    document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+  }
+
+  const token = getCookie('token');
+  if (!token) window.location.href = '/login';
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    deleteCookie('token');
+    deleteCookie('username');
+    deleteCookie('role');
+    window.location.href = '/';
+  });
+
+  async function loadMyPlaces() {
+    try {
+      const res = await fetch('/api/places/my-places');
+      if (res.status === 401) { deleteCookie('token'); window.location.href = '/login'; return; }
+      if (res.ok) {
+        const places = await res.json();
+        displayPlaces(places);
+      } else {
+        document.getElementById('placesContainer').innerHTML = '<div class="empty-message">❌ خطا در دریافت اطلاعات</div>';
+      }
+    } catch(e) {
+      document.getElementById('placesContainer').innerHTML = '<div class="empty-message">❌ خطا در ارتباط با سرور</div>';
+    }
+  }
+
+  function displayPlaces(places) {
+    const container = document.getElementById('placesContainer');
+    if (!places || places.length === 0) {
+      container.innerHTML = '<div class="empty-message">📍 شما هنوز هیچ مکانی معرفی نکرده‌اید<br><a href="/add-place">➕ اولین مکان را معرفی کنید</a></div>';
+      return;
+    }
+
+    container.innerHTML = `<div class="places-grid">${places.map(p => {
+      let statusClass = 'place-status-pending';
+      let statusText = '⏳ در انتظار تایید';
+      if (p.status === 'APPROVED') { statusClass = 'place-status-approved'; statusText = '✓ تایید شده'; }
+      else if (p.status === 'REJECTED') { statusClass = 'place-status-rejected'; statusText = '✗ رد شده'; }
+
+      let imgHtml = '<div class="card-img">🏛️</div>';
+      if (p.photoUrls && p.photoUrls.length > 0) {
+        imgHtml = `<img src="${p.photoUrls[0]}" class="card-img" onerror="this.parentElement.innerHTML='<div class=\'card-img\'>🏛️</div>'">`;
+      }
+
+      return `
+                <div class="place-card">
+                    ${imgHtml}
+                    <div class="card-body">
+                        <h3 class="card-title" onclick="location.href='/place/${p.id}'">${escapeHtml(p.name)}</h3>
+                        <p>${escapeHtml((p.description || '').substring(0, 100))}${(p.description || '').length > 100 ? '...' : ''}</p>
+                        <span class="place-status ${statusClass}">${statusText}</span>
+                        <div class="place-stats">
+                            <span>👁️ ${p.viewCount || 0}</span>
+                            <span>❤️ ${p.likeCount || 0}</span>
+                            <span>⭐ ${p.averageRating?.toFixed(1) || 0}</span>
+                        </div>
+                        <button class="delete-btn" onclick="deletePlace(${p.id})">🗑️ حذف مکان</button>
+                    </div>
+                </div>
+            `;
+    }).join('')}</div>`;
+  }
+
+  window.deletePlace = async function(id) {
+    if (!confirm('آیا از حذف این مکان مطمئن هستید؟')) return;
+    try {
+      const res = await fetch(`/api/places/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        alert('مکان با موفقیت حذف شد');
+        loadMyPlaces();
+      } else {
+        const error = await res.text();
+        alert('خطا در حذف: ' + error);
+      }
+    } catch(e) {
+      alert('خطا در ارتباط با سرور');
+    }
+  };
+
+  function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+
+  loadMyPlaces();
+</script>
+</body>
+</html>

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نوشتن سفرنامه | گشت و گذار در ایران</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Tahoma', 'Vazir', system-ui;
+            background: linear-gradient(135deg, #0a5c4a 0%, #1a7a5c 50%, #0a5c4a 100%);
+            min-height: 100vh;
+        }
+        :root {
+            --persian-green: #0a5c4a;
+            --persian-turquoise: #2a9d8f;
+            --persian-orange: #e76f51;
+            --persian-gold: #f4a261;
+            --persian-cream: #fefae0;
+            --persian-red: #bc4a2c;
+        }
+        .navbar {
+            background: rgba(10, 92, 74, 0.95);
+            padding: 1rem 2rem;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .navbar-brand { color: var(--persian-gold); font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links { display: flex; gap: 20px; list-style: none; flex-wrap: wrap; align-items: center; }
+        .nav-links a, .nav-btn { color: var(--persian-cream); text-decoration: none; padding: 8px 16px; border-radius: 8px; background: none; border: none; cursor: pointer; font-family: inherit; font-size: 1rem; }
+        .nav-links a:hover, .nav-btn:hover { background: var(--persian-gold); color: var(--persian-green); }
+        .logout-btn:hover { background: var(--persian-red); color: white; }
+        .container { max-width: 900px; margin: 0 auto; padding: 100px 20px 50px; }
+        .form-card {
+            background: var(--persian-cream);
+            border-radius: 30px;
+            padding: 35px;
+        }
+        .form-header { text-align: center; margin-bottom: 30px; }
+        .form-icon { font-size: 50px; background: linear-gradient(135deg, var(--persian-green), var(--persian-turquoise)); width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; }
+        .form-header h2 { color: var(--persian-green); }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; color: var(--persian-green); font-weight: bold; margin-bottom: 8px; }
+        input, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+        textarea { resize: vertical; min-height: 200px; }
+        .places-search-container { position: relative; }
+        .places-search { display: flex; gap: 10px; margin-bottom: 15px; }
+        .places-search input { flex: 1; }
+        .places-search button { padding: 12px 25px; background: var(--persian-turquoise); color: white; border: none; border-radius: 10px; cursor: pointer; }
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+        .search-result-item { padding: 12px 15px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .search-result-item:hover { background: var(--persian-cream); }
+        .selected-places { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; padding: 10px; background: #f5f5f5; border-radius: 12px; min-height: 60px; }
+        .place-tag { background: var(--persian-green); color: white; padding: 6px 14px; border-radius: 25px; display: inline-flex; align-items: center; gap: 8px; }
+        .remove-place { cursor: pointer; font-weight: bold; }
+        .file-input { padding: 12px; background: white; border: 2px dashed var(--persian-turquoise); border-radius: 12px; cursor: pointer; width: 100%; }
+        .image-preview { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 15px; }
+        .preview-item { position: relative; width: 100px; height: 100px; border-radius: 12px; overflow: hidden; border: 2px solid var(--persian-turquoise); }
+        .preview-item img { width: 100%; height: 100%; object-fit: cover; }
+        .remove-image { position: absolute; top: -8px; right: -8px; background: var(--persian-red); color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .btn-submit { width: 100%; padding: 14px; background: var(--persian-green); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        .btn-submit:hover { background: var(--persian-turquoise); }
+        .alert { padding: 12px; border-radius: 12px; margin-bottom: 20px; display: none; text-align: center; }
+        .alert-success { background: #d4edda; color: #155724; }
+        .alert-danger { background: #f8d7da; color: #721c24; }
+        .alert-info { background: #d1ecf1; color: #0c5460; }
+        footer { background: var(--persian-green); color: var(--persian-cream); text-align: center; padding: 20px; margin-top: 50px; }
+        @media (max-width: 768px) { .form-card { padding: 20px; } }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-container">
+        <a href="/" class="navbar-brand">🕌 گشت و گذار در ایران</a>
+        <ul class="nav-links">
+            <li><a href="/">خانه</a></li>
+            <li><a href="/places">🏛️ مکان‌ها</a></li>
+            <li><a href="/travelogues">📖 سفرنامه‌ها</a></li>
+            <li><a href="/add-place">➕ افزودن مکان</a></li>
+            <li><a href="/my-places">📍 مکان‌های من</a></li>
+            <li><a href="/my-travelogues">📚 سفرنامه‌های من</a></li>
+            <li><button id="logoutBtn" class="nav-btn logout-btn">🚪 خروج</button></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="form-card">
+        <div class="form-header">
+            <div class="form-icon">✍️</div>
+            <h2>نوشتن سفرنامه</h2>
+            <p>تجربیات سفر خود را با دیگران به اشتراک بگذارید</p>
+        </div>
+
+        <div class="alert alert-success" id="successAlert"></div>
+        <div class="alert alert-danger" id="errorAlert"></div>
+        <div class="alert alert-info" id="infoAlert">ℹ️ سفرنامه شما پس از تایید ادمین در سایت نمایش داده می‌شود</div>
+
+        <form id="travelogueForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label>عنوان سفرنامه <span style="color: var(--persian-red);">*</span></label>
+                <input type="text" id="title" required placeholder="مثال: سفری به دیار تاریخ، شیراز">
+            </div>
+
+            <div class="form-group">
+                <label>محتوا <span style="color: var(--persian-red);">*</span></label>
+                <textarea id="content" required placeholder="تجربیات، خاطرات و توصیه‌های خود را بنویسید..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>📍 مکان‌های بازدید شده</label>
+                <div class="places-search-container">
+                    <div class="places-search">
+                        <input type="text" id="placeSearch" placeholder="نام مکان را جستجو کنید...">
+                        <button type="button" id="searchPlaceBtn">جستجو</button>
+                    </div>
+                    <div id="searchResults" class="search-results"></div>
+                </div>
+                <div id="selectedPlaces" class="selected-places"><span style="color:#888;">مکان‌های انتخاب شده در اینجا نمایش داده می‌شوند</span></div>
+                <input type="hidden" id="visitedPlaceIds" value="">
+            </div>
+
+            <div class="form-group">
+                <label>📸 تصاویر سفرنامه (حداکثر ۱۰ عکس)</label>
+                <input type="file" id="images" accept="image/*" multiple class="file-input">
+                <div id="imagePreview" class="image-preview"></div>
+            </div>
+
+            <button type="submit" class="btn-submit" id="submitBtn">✨ انتشار سفرنامه ✨</button>
+        </form>
+    </div>
+</div>
+
+<footer>🇮🇷 گشت و گذار در ایران - کشف زیبایی‌های میهن عزیزمان 🇮🇷</footer>
+
+<script>
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    }
+
+    function deleteCookie(name) {
+        document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    }
+
+    const token = getCookie('token');
+    if (!token) window.location.href = '/login';
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        deleteCookie('token');
+        deleteCookie('username');
+        deleteCookie('role');
+        window.location.href = '/';
+    });
+
+    // جستجوی مکان
+    let selectedPlaces = [];
+    let searchTimeout;
+
+    const searchInput = document.getElementById('placeSearch');
+    const searchResults = document.getElementById('searchResults');
+
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        const keyword = this.value.trim();
+        if (keyword.length < 2) { searchResults.style.display = 'none'; return; }
+        searchTimeout = setTimeout(() => searchPlaces(keyword), 500);
+    });
+
+    document.getElementById('searchPlaceBtn').addEventListener('click', () => {
+        const keyword = searchInput.value.trim();
+        if (keyword.length >= 2) searchPlaces(keyword);
+        else alert('لطفاً حداقل ۲ کاراکتر وارد کنید');
+    });
+
+    async function searchPlaces(keyword) {
+        try {
+            const res = await fetch(`/api/places/public/search-list?keyword=${encodeURIComponent(keyword)}`);
+            if (res.ok) {
+                const places = await res.json();
+                displaySearchResults(places);
+            }
+        } catch(e) { console.error(e); }
+    }
+
+    function displaySearchResults(places) {
+        if (!places || places.length === 0) {
+            searchResults.innerHTML = '<div class="search-result-item">❌ نتیجه‌ای یافت نشد</div>';
+            searchResults.style.display = 'block';
+            return;
+        }
+        searchResults.innerHTML = places.map(p => `<div class="search-result-item" onclick="selectPlace(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}')"><strong>🏛️ ${escapeHtml(p.name)}</strong><br><small>${escapeHtml(p.description?.substring(0, 60))}...</small></div>`).join('');
+        searchResults.style.display = 'block';
+    }
+
+    window.selectPlace = function(id, name) {
+        if (selectedPlaces.some(p => p.id === id)) { alert('این مکان قبلاً اضافه شده است'); return; }
+        selectedPlaces.push({ id, name });
+        updateSelectedPlacesDisplay();
+        searchResults.style.display = 'none';
+        searchInput.value = '';
+    };
+
+    window.removePlace = function(index) { selectedPlaces.splice(index, 1); updateSelectedPlacesDisplay(); };
+
+    function updateSelectedPlacesDisplay() {
+        const container = document.getElementById('selectedPlaces');
+        if (selectedPlaces.length === 0) {
+            container.innerHTML = '<span style="color:#888;">مکان‌های انتخاب شده در اینجا نمایش داده می‌شوند</span>';
+        } else {
+            container.innerHTML = selectedPlaces.map((p, i) => `<div class="place-tag">🏛️ ${escapeHtml(p.name)} <span class="remove-place" onclick="removePlace(${i})">✖</span></div>`).join('');
+        }
+        document.getElementById('visitedPlaceIds').value = selectedPlaces.map(p => p.id).join(',');
+    }
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.places-search-container')) searchResults.style.display = 'none';
+    });
+
+    // پیش‌نمایش عکس
+    let selectedFiles = [];
+    const imageInput = document.getElementById('images');
+    const imagePreview = document.getElementById('imagePreview');
+
+    imageInput.addEventListener('change', function(e) {
+        const files = Array.from(e.target.files);
+        if (files.length > 10) { alert('حداکثر ۱۰ عکس می‌توانید انتخاب کنید'); imageInput.value = ''; return; }
+        selectedFiles = files;
+        imagePreview.innerHTML = '';
+        files.forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.innerHTML += `<div class="preview-item"><img src="${e.target.result}"><div class="remove-image" data-index="${index}">×</div></div>`;
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+
+    imagePreview.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-image')) {
+            const index = parseInt(e.target.getAttribute('data-index'));
+            selectedFiles.splice(index, 1);
+            const dt = new DataTransfer();
+            selectedFiles.forEach(f => dt.items.add(f));
+            imageInput.files = dt.files;
+            imageInput.dispatchEvent(new Event('change'));
+        }
+    });
+
+    // ثبت سفرنامه
+    document.getElementById('travelogueForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const title = document.getElementById('title').value.trim();
+        const content = document.getElementById('content').value.trim();
+
+        if (!title || !content) { showError('لطفاً عنوان و محتوای سفرنامه را وارد کنید'); return; }
+
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = '⏳ در حال ثبت...';
+
+        const formData = new FormData();
+        const travelogueData = { title, content, visitedPlaceIds: selectedPlaces.map(p => p.id) };
+        formData.append('travelogue', new Blob([JSON.stringify(travelogueData)], {type: 'application/json'}));
+
+        const files = document.getElementById('images').files;
+        for (let i = 0; i < files.length; i++) formData.append('images', files[i]);
+
+        try {
+            const res = await fetch('/api/travelogues/add', {
+                method: 'POST',
+                body: formData
+            });
+            if (res.status === 401) { deleteCookie('token'); window.location.href = '/login'; return; }
+            if (res.ok) {
+                showSuccess('✅ سفرنامه شما با موفقیت ثبت شد! پس از تایید ادمین نمایش داده می‌شود.');
+                setTimeout(() => window.location.href = '/', 2000);
+            } else {
+                const error = await res.text();
+                showError(error || 'خطا در ثبت سفرنامه');
+            }
+        } catch(e) { showError('خطا در ارتباط با سرور'); }
+        finally { submitBtn.disabled = false; submitBtn.textContent = '✨ انتشار سفرنامه ✨'; }
+    });
+
+    function showSuccess(msg) { const a = document.getElementById('successAlert'); a.textContent = msg; a.style.display = 'block'; setTimeout(() => a.style.display = 'none', 3000); }
+    function showError(msg) { const a = document.getElementById('errorAlert'); a.textContent = msg; a.style.display = 'block'; setTimeout(() => a.style.display = 'none', 3000); }
+    function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+</script>
+</body>
+</html>

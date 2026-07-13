@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ثبت نام | گشت و گذار در ایران</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Tahoma', 'Vazir', system-ui, sans-serif;
+      background: linear-gradient(135deg, #0a5c4a 0%, #1a7a5c 50%, #0a5c4a 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    :root {
+      --persian-green: #0a5c4a;
+      --persian-turquoise: #2a9d8f;
+      --persian-orange: #e76f51;
+      --persian-gold: #f4a261;
+      --persian-cream: #fefae0;
+      --persian-red: #bc4a2c;
+    }
+
+    .register-container {
+      background: var(--persian-cream);
+      border-radius: 30px;
+      padding: 40px;
+      width: 90%;
+      max-width: 450px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .register-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .register-icon {
+      font-size: 50px;
+      background: linear-gradient(135deg, var(--persian-green), var(--persian-turquoise));
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+
+    .register-header h2 {
+      color: var(--persian-green);
+      font-size: 1.8rem;
+    }
+
+    .step-indicator {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-bottom: 30px;
+      position: relative;
+    }
+
+    .step-indicator::before {
+      content: '';
+      position: absolute;
+      top: 15px;
+      left: 30%;
+      right: 30%;
+      height: 2px;
+      background: #ddd;
+      z-index: 0;
+    }
+
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 1;
+      cursor: pointer;
+    }
+
+    .step-number {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #ddd;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.9rem;
+      transition: all 0.3s;
+    }
+
+    .step.active .step-number {
+      background: var(--persian-green);
+    }
+
+    .step.completed .step-number {
+      background: var(--persian-turquoise);
+    }
+
+    .step-label {
+      font-size: 0.7rem;
+      color: #888;
+      margin-top: 5px;
+    }
+
+    .step.active .step-label {
+      color: var(--persian-green);
+      font-weight: bold;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      color: var(--persian-green);
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 15px;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--persian-turquoise);
+      box-shadow: 0 0 0 3px rgba(42,157,143,0.2);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--persian-green);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+
+    .btn:hover {
+      background: var(--persian-turquoise);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: var(--persian-orange);
+    }
+
+    .btn-secondary:hover {
+      background: var(--persian-red);
+    }
+
+    .btn:disabled {
+      background: #aaa;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid #ddd;
+    }
+
+    .login-link a {
+      color: var(--persian-orange);
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .alert {
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      display: none;
+      text-align: center;
+    }
+
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .alert-danger {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .alert-info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+
+    .back-home {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .back-home a {
+      color: var(--persian-turquoise);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .password-hint {
+      font-size: 0.8rem;
+      color: #888;
+      margin-top: 5px;
+    }
+
+    .resend-btn {
+      background: none;
+      border: none;
+      color: var(--persian-orange);
+      cursor: pointer;
+      text-decoration: underline;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+
+    .step-content {
+      display: none;
+    }
+
+    .step-content.active {
+      display: block;
+    }
+
+    .code-input {
+      text-align: center;
+      font-size: 1.5rem;
+      letter-spacing: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .register-container { padding: 25px; }
+    }
+  </style>
+</head>
+<body>
+<div class="register-container">
+  <div class="register-header">
+    <div class="register-icon">🇮🇷</div>
+    <h2>عضویت در سایت</h2>
+    <p>به جمع گردشگران ایران بپیوندید</p>
+  </div>
+
+  <div class="step-indicator">
+    <div class="step active" id="step1Indicator">
+      <div class="step-number">1</div>
+      <div class="step-label">اطلاعات</div>
+    </div>
+    <div class="step" id="step2Indicator">
+      <div class="step-number">2</div>
+      <div class="step-label">تایید ایمیل</div>
+    </div>
+  </div>
+
+  <div class="alert alert-success" id="successAlert">
+    ✅ <span id="successMessage"></span>
+  </div>
+  <div class="alert alert-danger" id="errorAlert">
+    ❌ <span id="errorMessage"></span>
+  </div>
+  <div class="alert alert-info" id="infoAlert">
+    ℹ️ <span id="infoMessage"></span>
+  </div>
+
+  <!-- Step 1: Register Form -->
+  <div class="step-content active" id="step1">
+    <form id="registerForm">
+      <div class="form-group">
+        <label>📝 Username</label>
+        <input type="text" id="username" name="username" required minlength="3" placeholder="Min 3 characters">
+      </div>
+      <div class="form-group">
+        <label>📧 Email</label>
+        <input type="email" id="email" name="email" required placeholder="example@domain.com">
+      </div>
+      <div class="form-group">
+        <label>🔒 Password</label>
+        <input type="password" id="password" name="password" required minlength="6" placeholder="Min 6 characters">
+        <div class="password-hint">Password must be at least 6 characters</div>
+      </div>
+      <div class="form-group">
+        <label>🔒 Confirm Password</label>
+        <input type="password" id="confirmPassword" required placeholder="Re-enter your password">
+      </div>
+      <button type="submit" class="btn" id="step1Btn">📧 Send Verification Code</button>
+    </form>
+  </div>
+
+  <!-- Step 2: Verify Code -->
+  <div class="step-content" id="step2">
+    <form id="verifyForm">
+      <div class="form-group">
+        <label>📧 Verification Code</label>
+        <p style="color: #666; font-size: 0.9rem; margin-bottom: 10px;">
+          A 6-digit code has been sent to <strong id="verifyEmailDisplay"></strong>
+        </p>
+        <input type="text" id="verifyCode" class="code-input" maxlength="6" placeholder="123456" required>
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <button type="submit" class="btn" id="step2Btn">✅ Verify & Register</button>
+      </div>
+      <div style="text-align: center; margin-top: 15px;">
+        <button type="button" class="resend-btn" id="resendBtn">🔄 Resend Code</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="login-link">
+    <p>Already registered? <a href="/login">Login</a></p>
+  </div>
+  <div class="back-home">
+    <a href="/">← Back to Home</a>
+  </div>
+</div>
+
+<script>
+  let registeredEmail = '';
+  let registeredUsername = '';
+  let registeredPassword = '';
+  let resendTimer = 60;
+
+  document.getElementById('registerForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const username = document.getElementById('username').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    if (username.length < 3) {
+      showError('Username must be at least 3 characters');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      showError('Passwords do not match');
+      return;
+    }
+
+    if (password.length < 6) {
+      showError('Password must be at least 6 characters');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/auth/register/send-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+
+      if (response.ok) {
+        registeredEmail = email;
+        registeredUsername = username;
+        registeredPassword = password;
+
+        document.getElementById('verifyEmailDisplay').textContent = email;
+        showInfo('Verification code sent to your email. Please check your inbox.');
+        goToStep(2);
+        startResendTimer();
+      } else {
+        const error = await response.text();
+        showError(error);
+      }
+    } catch (error) {
+      showError('Server connection error. Please try again.');
+    }
+  });
+
+  document.getElementById('verifyForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const code = document.getElementById('verifyCode').value;
+
+    if (code.length !== 6) {
+      showError('Please enter the full 6-digit code');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/auth/register/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: registeredUsername,
+          email: registeredEmail,
+          password: registeredPassword,
+          code: code
+        })
+      });
+
+      if (response.ok) {
+        showSuccess('Registration successful! Redirecting to login...');
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 2000);
+      } else {
+        const error = await response.text();
+        showError(error);
+      }
+    } catch (error) {
+      showError('Server connection error. Please try again.');
+    }
+  });
+
+  document.getElementById('resendBtn').addEventListener('click', async function() {
+    if (resendTimer > 0) return;
+
+    try {
+      const response = await fetch('/api/auth/register/send-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: registeredEmail })
+      });
+
+      if (response.ok) {
+        showInfo('New verification code sent to your email.');
+        startResendTimer();
+      } else {
+        const error = await response.text();
+        showError(error);
+      }
+    } catch (error) {
+      showError('Failed to resend code');
+    }
+  });
+
+  function startResendTimer() {
+    resendTimer = 60;
+    const btn = document.getElementById('resendBtn');
+    btn.textContent = `⏳ Wait ${resendTimer}s`;
+    btn.disabled = true;
+
+    const interval = setInterval(() => {
+      resendTimer--;
+      btn.textContent = `⏳ Wait ${resendTimer}s`;
+      if (resendTimer <= 0) {
+        clearInterval(interval);
+        btn.textContent = '🔄 Resend Code';
+        btn.disabled = false;
+      }
+    }, 1000);
+  }
+
+  function goToStep(step) {
+    document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.step').forEach(el => el.classList.remove('active', 'completed'));
+
+    if (step === 1) {
+      document.getElementById('step1').classList.add('active');
+      document.getElementById('step1Indicator').classList.add('active');
+    } else {
+      document.getElementById('step2').classList.add('active');
+      document.getElementById('step1Indicator').classList.add('completed');
+      document.getElementById('step2Indicator').classList.add('active');
+    }
+  }
+
+  function showSuccess(message) {
+    const alertDiv = document.getElementById('successAlert');
+    document.getElementById('successMessage').textContent = message;
+    alertDiv.style.display = 'block';
+    document.getElementById('errorAlert').style.display = 'none';
+    document.getElementById('infoAlert').style.display = 'none';
+    setTimeout(() => alertDiv.style.display = 'none', 3000);
+  }
+
+  function showError(message) {
+    const alertDiv = document.getElementById('errorAlert');
+    document.getElementById('errorMessage').textContent = message;
+    alertDiv.style.display = 'block';
+    document.getElementById('successAlert').style.display = 'none';
+    document.getElementById('infoAlert').style.display = 'none';
+    setTimeout(() => alertDiv.style.display = 'none', 3000);
+  }
+
+  function showInfo(message) {
+    const alertDiv = document.getElementById('infoAlert');
+    document.getElementById('infoMessage').textContent = message;
+    alertDiv.style.display = 'block';
+    setTimeout(() => alertDiv.style.display = 'none', 5000);
+  }
+</script>
+</body>
+</html>

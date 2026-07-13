@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>گشت و گذار در ایران - صفحه اصلی</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Tahoma', 'Vazir', system-ui;
+            background: linear-gradient(135deg, #0a5c4a 0%, #1a7a5c 50%, #0a5c4a 100%);
+            min-height: 100vh;
+        }
+        :root {
+            --persian-green: #0a5c4a;
+            --persian-turquoise: #2a9d8f;
+            --persian-orange: #e76f51;
+            --persian-gold: #f4a261;
+            --persian-cream: #fefae0;
+            --persian-red: #bc4a2c;
+        }
+        .navbar {
+            background: rgba(10, 92, 74, 0.95);
+            padding: 1rem 2rem;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .navbar-brand {
+            color: var(--persian-gold);
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+        .nav-links a, .nav-btn {
+            color: var(--persian-cream);
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+        .nav-links a:hover, .nav-btn:hover {
+            background: var(--persian-gold);
+            color: var(--persian-green);
+        }
+        .logout-btn:hover { background: var(--persian-red); color: white; }
+        .hero-section {
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4));
+            color: white;
+            padding: 120px 0 80px;
+            text-align: center;
+            margin-top: 60px;
+        }
+        .hero-section h1 { font-size: 2.5rem; margin-bottom: 20px; }
+        .hero-section p { font-size: 1.2rem; margin-bottom: 30px; }
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .btn-primary { background: var(--persian-orange); color: white; }
+        .btn-primary:hover { background: var(--persian-red); transform: translateY(-2px); }
+        .btn-outline { background: transparent; border: 2px solid var(--persian-gold); color: var(--persian-gold); }
+        .btn-outline:hover { background: var(--persian-gold); color: var(--persian-green); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .section-title {
+            text-align: center;
+            color: var(--persian-cream);
+            font-size: 2rem;
+            margin: 50px 0 30px;
+        }
+        .section-title:after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 3px;
+            background: var(--persian-gold);
+            margin: 10px auto;
+        }
+        .places-grid, .travelogues-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+        }
+        .card, .travelogue-card {
+            background: var(--persian-cream);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        .card:hover, .travelogue-card:hover { transform: translateY(-10px); }
+        .card-img, .travelogue-cover {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #2a9d8f, #0a5c4a);
+        }
+        .card-body, .travelogue-body { padding: 20px; }
+        .card-title, .travelogue-title { color: var(--persian-green); font-size: 1.3rem; margin-bottom: 8px; }
+        .card-text, .travelogue-excerpt { color: #555; line-height: 1.5; margin-bottom: 12px; font-size: 0.9rem; }
+        .card-stats, .travelogue-stats { display: flex; gap: 15px; color: #888; font-size: 0.8rem; margin-bottom: 10px; }
+        .stars { color: var(--persian-gold); font-size: 0.9rem; }
+        .user-info { color: #8b5a2b; font-size: 0.8rem; margin-top: 10px; padding-top: 10px; border-top: 1px solid #ddd; }
+        .empty-message { text-align: center; color: var(--persian-cream); padding: 50px; }
+        .view-all { text-align: center; margin-top: 30px; }
+        footer { background: var(--persian-green); color: var(--persian-cream); text-align: center; padding: 30px; margin-top: 50px; }
+        @media (max-width: 768px) {
+            .navbar-container { flex-direction: column; gap: 15px; }
+            .places-grid, .travelogues-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-container">
+        <a href="/" class="navbar-brand">🕌 گشت و گذار در ایران</a>
+        <ul class="nav-links">
+            <li><a href="/">خانه</a></li>
+            <li><a href="/places">🏛️ مکان‌ها</a></li>
+            <li><a href="/travelogues">📖 سفرنامه‌ها</a></li>
+            <li><a href="/add-place" id="addPlaceLink" style="display:none;">➕ افزودن مکان</a></li>
+            <li><a href="/my-places" id="myPlacesLink" style="display:none;">📍 مکان‌های من</a></li>
+            <li><a href="/create-travelogue" id="createTravelogueLink" style="display:none;">✍️ نوشتن سفرنامه</a></li>
+            <li><a href="/my-travelogues" id="myTraveloguesLink" style="display:none;">📚 سفرنامه‌های من</a></li>
+            <li><a href="/admin-panel" id="adminPanelLink" style="display:none;">👑 پنل مدیریت</a></li>
+            <li><a href="#" id="logoutBtn" style="display:none;">🚪 خروج</a></li>
+            <li><a href="/login" id="loginBtn">ورود</a></li>
+            <li><a href="/register" id="registerBtn">ثبت نام</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="hero-section">
+    <div class="container">
+        <h1>🇮🇷 به ایران خوش آمدید</h1>
+        <p>سرزمین چهارفصل با هزاران جاذبه دیدنی و تاریخی</p>
+        <a href="#places" class="btn btn-primary">مشاهده مکان‌های دیدنی</a>
+    </div>
+</div>
+
+<div class="container" id="places">
+    <h2 class="section-title">✨ آخرین مکان‌های دیدنی</h2>
+    <div class="places-grid" id="placesContainer"><div class="empty-message">⏳ در حال بارگذاری...</div></div>
+    <div class="view-all"><a href="/places" class="btn btn-outline">مشاهده همه مکان‌ها</a></div>
+</div>
+
+<div class="container">
+    <h2 class="section-title">📖 آخرین سفرنامه‌ها</h2>
+    <div class="travelogues-grid" id="traveloguesContainer"><div class="empty-message">⏳ در حال بارگذاری...</div></div>
+    <div class="view-all"><a href="/travelogues" class="btn btn-outline">مشاهده همه سفرنامه‌ها</a></div>
+</div>
+
+<footer>
+    <p>🇮🇷 گشت و گذار در ایران - کشف زیبایی‌های میهن عزیزمان 🇮🇷</p>
+</footer>
+
+<script>
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    }
+
+    function deleteCookie(name) {
+        document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    }
+
+    const token = getCookie('token');
+    const userRole = getCookie('role');
+
+    // بروزرسانی منو
+    const addPlaceLink = document.getElementById('addPlaceLink');
+    const myPlacesLink = document.getElementById('myPlacesLink');
+    const createTravelogueLink = document.getElementById('createTravelogueLink');
+    const myTraveloguesLink = document.getElementById('myTraveloguesLink');
+    const adminPanelLink = document.getElementById('adminPanelLink');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const loginBtn = document.getElementById('loginBtn');
+    const registerBtn = document.getElementById('registerBtn');
+
+    if (token) {
+        if (addPlaceLink) addPlaceLink.style.display = 'inline-block';
+        if (myPlacesLink) myPlacesLink.style.display = 'inline-block';
+        if (createTravelogueLink) createTravelogueLink.style.display = 'inline-block';
+        if (myTraveloguesLink) myTraveloguesLink.style.display = 'inline-block';
+        if (logoutBtn) logoutBtn.style.display = 'inline-block';
+        if (loginBtn) loginBtn.style.display = 'none';
+        if (registerBtn) registerBtn.style.display = 'none';
+        if (userRole === 'ROLE_ADMIN' && adminPanelLink) adminPanelLink.style.display = 'inline-block';
+    }
+
+    logoutBtn?.addEventListener('click', () => {
+        deleteCookie('token');
+        deleteCookie('username');
+        deleteCookie('role');
+        window.location.href = '/';
+    });
+
+    function displayStars(rating) {
+        if (!rating || rating === 0) return '☆☆☆☆☆';
+        const full = Math.floor(rating);
+        return '★'.repeat(full) + '☆'.repeat(5 - full);
+    }
+
+    async function loadLatestPlaces() {
+        try {
+            const res = await fetch('/api/places/public/latest?limit=6');
+            if (res.ok) {
+                const places = await res.json();
+                const container = document.getElementById('placesContainer');
+                if (!places || places.length === 0) {
+                    container.innerHTML = '<div class="empty-message">🏛️ هنوز مکان دیدنی‌ای ثبت نشده است</div>';
+                    return;
+                }
+                container.innerHTML = `<div class="places-grid">${places.map(p => `
+                    <div class="card" onclick="location.href='/place/${p.id}'">
+                        <img src="${p.photoUrls?.[0] || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%232a9d8f%22/%3E%3Ctext x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22%3E🏛️%3C/text%3E%3C/svg%3E'}" class="card-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%232a9d8f%22/%3E%3Ctext x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22%3E🏛️%3C/text%3E%3C/svg%3E'">
+                        <div class="card-body">
+                            <h3 class="card-title">${escapeHtml(p.name)}</h3>
+                            <p class="card-text">${escapeHtml(p.description?.substring(0, 100))}...</p>
+                            <div class="card-stats"><span>👁️ ${p.viewCount || 0}</span><span>❤️ ${p.likeCount || 0}</span><span>⭐ ${p.averageRating?.toFixed(1) || 0}</span></div>
+                            <div class="stars">${displayStars(p.averageRating)}</div>
+                            <div class="user-info">👤 معرفی شده توسط: ${escapeHtml(p.introducerUsername)}</div>
+                        </div>
+                    </div>
+                `).join('')}</div>`;
+            }
+        } catch(e) { console.error(e); }
+    }
+
+    async function loadLatestTravelogues() {
+        try {
+            const res = await fetch('/api/travelogues/public/latest?limit=3');
+            if (res.ok) {
+                const travelogues = await res.json();
+                const container = document.getElementById('traveloguesContainer');
+                if (!travelogues || travelogues.length === 0) {
+                    container.innerHTML = '<div class="empty-message">📖 هنوز سفرنامه‌ای ثبت نشده است</div>';
+                    return;
+                }
+                container.innerHTML = `<div class="travelogues-grid">${travelogues.map(t => `
+                    <div class="travelogue-card" onclick="location.href='/travelogue/${t.id}'">
+                        <img src="${t.coverImageUrl || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%232a9d8f%22/%3E%3Ctext x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22%3E📖%3C/text%3E%3C/svg%3E'}" class="travelogue-cover" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%232a9d8f%22/%3E%3Ctext x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22%3E📖%3C/text%3E%3C/svg%3E'">
+                        <div class="travelogue-body">
+                            <h3 class="travelogue-title">${escapeHtml(t.title)}</h3>
+                            <div class="travelogue-meta"><span>✍️ ${escapeHtml(t.authorUsername)}</span><span>📅 ${new Date(t.createdAt).toLocaleDateString('fa-IR')}</span></div>
+                            <div class="travelogue-excerpt">${escapeHtml(t.content?.substring(0, 100))}...</div>
+                            <div class="travelogue-stats"><span>👁️ ${t.viewCount}</span><span>❤️ ${t.likeCount}</span></div>
+                        </div>
+                    </div>
+                `).join('')}</div>`;
+            }
+        } catch(e) { console.error(e); }
+    }
+
+    function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+
+    loadLatestPlaces();
+    loadLatestTravelogues();
+</script>
+</body>
+</html>

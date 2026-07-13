@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>پنل مدیریت | گشت و گذار در ایران</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Tahoma', 'Vazir', system-ui;
+      background: linear-gradient(135deg, #0a5c4a 0%, #1a7a5c 50%, #0a5c4a 100%);
+      min-height: 100vh;
+    }
+    :root {
+      --persian-green: #0a5c4a;
+      --persian-turquoise: #2a9d8f;
+      --persian-orange: #e76f51;
+      --persian-gold: #f4a261;
+      --persian-cream: #fefae0;
+      --persian-red: #bc4a2c;
+      --persian-brown: #8b5a2b;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      right: 0;
+      top: 0;
+      width: 260px;
+      height: 100%;
+      background: rgba(10, 92, 74, 0.97);
+      box-shadow: -2px 0 10px rgba(0,0,0,0.3);
+      z-index: 1000;
+      padding: 70px 0 20px;
+      overflow-y: auto;
+      transition: all 0.3s;
+    }
+    .sidebar-header {
+      text-align: center;
+      padding: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+      color: var(--persian-gold);
+    }
+    .sidebar-header h3 { font-size: 1.3rem; }
+    .sidebar-header p { font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-top: 5px; }
+
+    .sidebar-nav { list-style: none; padding: 10px 0; }
+    .sidebar-nav li { margin-bottom: 2px; }
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      color: var(--persian-cream);
+      text-decoration: none;
+      transition: all 0.3s;
+      border-right: 3px solid transparent;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+    .sidebar-nav a:hover {
+      background: rgba(255,255,255,0.1);
+      border-right-color: var(--persian-gold);
+    }
+    .sidebar-nav a.active {
+      background: rgba(255,255,255,0.15);
+      border-right-color: var(--persian-gold);
+      color: var(--persian-gold);
+    }
+    .sidebar-nav .badge-count {
+      background: var(--persian-red);
+      color: white;
+      padding: 1px 8px;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      margin-right: auto;
+    }
+    .sidebar-footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      padding: 15px 20px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    .sidebar-footer a {
+      color: var(--persian-cream);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+    }
+    .sidebar-footer a:hover { color: var(--persian-gold); }
+
+    /* Main Content */
+    .main-content {
+      margin-right: 260px;
+      padding: 70px 25px 30px;
+      min-height: 100vh;
+    }
+
+    /* Top Bar */
+    .topbar {
+      position: fixed;
+      top: 0;
+      right: 260px;
+      left: 0;
+      height: 60px;
+      background: rgba(10, 92, 74, 0.95);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 25px;
+      z-index: 999;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    .topbar-title { color: var(--persian-cream); font-size: 1.1rem; }
+    .topbar-user {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      color: var(--persian-cream);
+    }
+    .topbar-user .role-badge {
+      background: var(--persian-gold);
+      color: var(--persian-green);
+      padding: 3px 12px;
+      border-radius: 15px;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+    .topbar-user .logout-btn {
+      background: var(--persian-red);
+      border: none;
+      color: white;
+      padding: 6px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.85rem;
+    }
+    .topbar-user .logout-btn:hover { background: #a03a20; }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+    .stat-card {
+      background: var(--persian-cream);
+      border-radius: 15px;
+      padding: 18px;
+      text-align: center;
+      transition: transform 0.3s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .stat-card:hover { transform: translateY(-3px); }
+    .stat-card .stat-icon { font-size: 1.8rem; }
+    .stat-card .stat-number { font-size: 1.8rem; font-weight: bold; color: var(--persian-green); }
+    .stat-card .stat-label { color: #666; font-size: 0.85rem; margin-top: 5px; }
+
+    /* Search & Filter */
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+      align-items: center;
+    }
+    .toolbar input {
+      padding: 8px 15px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      font-family: inherit;
+      flex: 1;
+      min-width: 200px;
+    }
+    .toolbar input:focus {
+      outline: none;
+      border-color: var(--persian-turquoise);
+    }
+    .toolbar select {
+      padding: 8px 15px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      font-family: inherit;
+      background: white;
+    }
+
+    /* Table */
+    .table-container {
+      background: var(--persian-cream);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 25px;
+      overflow-x: auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+    .table-header h3 { color: var(--persian-green); }
+    .table-header .actions {
+      display: flex;
+      gap: 8px;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { padding: 10px 12px; text-align: right; border-bottom: 1px solid #eee; }
+    th {
+      background: var(--persian-green);
+      color: white;
+      font-weight: bold;
+    }
+    th:first-child { border-radius: 0 8px 0 0; }
+    th:last-child { border-radius: 8px 0 0 0; }
+    tr:hover td { background: #f9f9f9; }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 3px 12px;
+      border-radius: 15px;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+    .badge-pending { background: var(--persian-gold); color: #5a3a1a; }
+    .badge-approved { background: var(--persian-turquoise); color: white; }
+    .badge-rejected { background: var(--persian-red); color: white; }
+    .badge-enabled { background: var(--persian-turquoise); color: white; }
+    .badge-disabled { background: #888; color: white; }
+    .badge-admin { background: #1c6b8c; color: white; }
+    .badge-moderator { background: #6c8b3a; color: white; }
+    .badge-user { background: #8b7a3a; color: white; }
+
+    /* Buttons */
+    .btn {
+      padding: 5px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.8rem;
+      transition: all 0.3s;
+    }
+    .btn-success { background: var(--persian-turquoise); color: white; }
+    .btn-success:hover { background: #1f8a7a; }
+    .btn-danger { background: var(--persian-red); color: white; }
+    .btn-danger:hover { background: #a03a20; }
+    .btn-warning { background: var(--persian-gold); color: #5a3a1a; }
+    .btn-warning:hover { background: #d4914a; }
+    .btn-primary { background: var(--persian-green); color: white; }
+    .btn-primary:hover { background: #074a3a; }
+    .btn-sm { padding: 3px 8px; font-size: 0.75rem; }
+
+    .btn-delete {
+      background: var(--persian-red);
+      color: white;
+    }
+    .btn-delete:hover { background: #a03a20; }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #888;
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #888;
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        padding: 60px 0 10px;
+      }
+      .main-content {
+        margin-right: 0;
+        padding-top: 10px;
+      }
+      .topbar {
+        right: 0;
+        position: relative;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 10px 15px;
+        height: auto;
+      }
+      .sidebar-nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 5px;
+      }
+      .sidebar-nav li { margin: 2px; }
+      .sidebar-nav a {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+        border-right: none;
+        border-bottom: 3px solid transparent;
+      }
+      .sidebar-nav a.active { border-bottom-color: var(--persian-gold); }
+      .sidebar-footer { display: none; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="sidebar-header">
+    <h3>👑 پنل مدیریت</h3>
+    <p id="adminUserDisplay">بارگذاری...</p>
+  </div>
+  <ul class="sidebar-nav">
+    <li><a href="#" onclick="showDashboard()" id="dashboardTab" class="active">📊 داشبورد</a></li>
+    <li><a href="#" onclick="showPlaces()" id="placesTab">🏛️ مکان‌ها <span class="badge-count" id="pendingPlacesBadge">0</span></a></li>
+    <li><a href="#" onclick="showTravelogues()" id="traveloguesTab">📖 سفرنامه‌ها <span class="badge-count" id="pendingTraveloguesBadge">0</span></a></li>
+    <li><a href="#" onclick="showReviews()" id="reviewsTab">💬 نظرات <span class="badge-count" id="pendingReviewsBadge">0</span></a></li>
+    <li><a href="#" onclick="showUsers()" id="usersTab">👥 کاربران</a></li>
+    <li><a href="#" onclick="showVerificationCodes()" id="codesTab">🔑 کدهای تایید</a></li>
+    <li><a href="#" onclick="showSettings()" id="settingsTab">⚙️ تنظیمات</a></li>
+  </ul>
+  <div class="sidebar-footer">
+    <a href="/">🏠 بازگشت به سایت</a>
+  </div>
+</div>
+
+<!-- Top Bar -->
+<div class="topbar">
+  <div class="topbar-title" id="pageTitle">داشبورد</div>
+  <div class="topbar-user">
+    <span id="userNameDisplay"></span>
+    <span class="role-badge" id="userRoleDisplay"></span>
+    <button class="logout-btn" id="logoutBtn">🚪 خروج</button>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+  <div id="dashboardContent"></div>
+  <div id="placesContent" style="display:none;"></div>
+  <div id="traveloguesContent" style="display:none;"></div>
+  <div id="reviewsContent" style="display:none;"></div>
+  <div id="usersContent" style="display:none;"></div>
+  <div id="codesContent" style="display:none;"></div>
+  <div id="settingsContent" style="display:none;"></div>
+</div>
+
+<script>
+  // ====== Cookie Helpers ======
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+  }
+
+  function deleteCookie(name) {
+    document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+  }
+
+  // ====== Auth Check ======
+  const token = getCookie('token');
+  const userRole = getCookie('role');
+  const username = getCookie('username');
+
+  if (!token) {
+    window.location.href = '/login';
+  }
+
+  if (userRole !== 'ROLE_ADMIN' && userRole !== 'ROLE_MODERATOR') {
+    window.location.href = '/';
+  }
+
+  // ====== State ======
+  let currentTab = 'dashboard';
+
+  // ====== DOM Elements ======
+  const userNameDisplay = document.getElementById('userNameDisplay');
+  const userRoleDisplay = document.getElementById('userRoleDisplay');
+  const adminUserDisplay = document.getElementById('adminUserDisplay');
+  const pageTitle = document.getElementById('pageTitle');
+
+  userNameDisplay.textContent = username || 'کاربر';
+  userRoleDisplay.textContent = userRole === 'ROLE_ADMIN' ? '👑 ادمین' : '🛡️ مدیر';
+  adminUserDisplay.textContent = `${username} (${userRole === 'ROLE_ADMIN' ? 'ادمین' : 'مدیر'})`;
+
+  // ====== Logout ======
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    deleteCookie('token');
+    deleteCookie('username');
+    deleteCookie('role');
+    window.location.href = '/';
+  });
+
+  // ====== Tab Management ======
+  function setActiveTab(tab) {
+    ['dashboard', 'places', 'travelogues', 'reviews', 'users', 'codes', 'settings'].forEach(t => {
+      const el = document.getElementById(`${t}Tab`);
+      if (el) el.classList.remove('active');
+    });
+    const activeTab = document.getElementById(`${tab}Tab`);
+    if (activeTab) activeTab.classList.add('active');
+
+    const titles = {
+      dashboard: '📊 داشبورد',
+      places: '🏛️ مدیریت مکان‌ها',
+      travelogues: '📖 مدیریت سفرنامه‌ها',
+      reviews: '💬 مدیریت نظرات',
+      users: '👥 مدیریت کاربران',
+      codes: '🔑 کدهای تایید',
+      settings: '⚙️ تنظیمات'
+    };
+    pageTitle.textContent = titles[tab] || 'داشبورد';
+    currentTab = tab;
+  }
+
+  function showContent(content) {
+    document.querySelectorAll('#dashboardContent, #placesContent, #traveloguesContent, #reviewsContent, #usersContent, #codesContent, #settingsContent')
+            .forEach(el => el.style.display = 'none');
+    document.getElementById(`${content}Content`).style.display = 'block';
+  }
+
+  // ====== Dashboard ======
+  async function showDashboard() {
+    setActiveTab('dashboard');
+    try {
+      const res = await fetch('/api/admin/dashboard/stats');
+      const stats = await res.json();
+      document.getElementById('dashboardContent').innerHTML = `
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-icon">🏛️</div><div class="stat-number">${stats.totalPlaces}</div><div class="stat-label">کل مکان‌ها</div></div>
+                    <div class="stat-card"><div class="stat-icon">⏳</div><div class="stat-number">${stats.pendingPlaces}</div><div class="stat-label">در انتظار تایید</div></div>
+                    <div class="stat-card"><div class="stat-icon">📖</div><div class="stat-number">${stats.totalTravelogues}</div><div class="stat-label">کل سفرنامه‌ها</div></div>
+                    <div class="stat-card"><div class="stat-icon">⏳</div><div class="stat-number">${stats.pendingTravelogues}</div><div class="stat-label">در انتظار تایید</div></div>
+                    <div class="stat-card"><div class="stat-icon">💬</div><div class="stat-number">${stats.totalReviews}</div><div class="stat-label">کل نظرات</div></div>
+                    <div class="stat-card"><div class="stat-icon">⏳</div><div class="stat-number">${stats.pendingReviews}</div><div class="stat-label">در انتظار تایید</div></div>
+                    <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-number">${stats.totalUsers}</div><div class="stat-label">کل کاربران</div></div>
+                    <div class="stat-card"><div class="stat-icon">📸</div><div class="stat-number">${stats.totalPhotos}</div><div class="stat-label">کل تصاویر</div></div>
+                </div>
+                <div class="table-container">
+                    <h3>📊 نمای کلی</h3>
+                    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; margin-top:10px;">
+                        <div style="background:#f0f0f0; padding:15px; border-radius:10px; text-align:center;">
+                            <div style="font-size:1.2rem; font-weight:bold; color:var(--persian-green);">${stats.totalPending}</div>
+                            <div style="font-size:0.8rem; color:#888;">کل در انتظار</div>
+                        </div>
+                        <div style="background:#f0f0f0; padding:15px; border-radius:10px; text-align:center;">
+                            <div style="font-size:1.2rem; font-weight:bold; color:var(--persian-turquoise);">${stats.approvedPlaces || 0}</div>
+                            <div style="font-size:0.8rem; color:#888;">مکان‌های تایید شده</div>
+                        </div>
+                        <div style="background:#f0f0f0; padding:15px; border-radius:10px; text-align:center;">
+                            <div style="font-size:1.2rem; font-weight:bold; color:var(--persian-turquoise);">${stats.approvedTravelogues || 0}</div>
+                            <div style="font-size:0.8rem; color:#888;">سفرنامه‌های تایید شده</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+      showContent('dashboard');
+
+      document.getElementById('pendingPlacesBadge').textContent = stats.pendingPlaces || 0;
+      document.getElementById('pendingTraveloguesBadge').textContent = stats.pendingTravelogues || 0;
+      document.getElementById('pendingReviewsBadge').textContent = stats.pendingReviews || 0;
+
+    } catch(e) {
+      document.getElementById('dashboardContent').innerHTML = '<div class="loading">❌ خطا در بارگذاری داشبورد</div>';
+    }
+  }
+
+  // ====== Places ======
+  async function showPlaces() {
+    setActiveTab('places');
+    showContent('places');
+    await loadPlaces();
+  }
+
+  async function loadPlaces(keyword) {
+    const container = document.getElementById('placesContent');
+    container.innerHTML = '<div class="loading">⏳ در حال بارگذاری...</div>';
+
+    try {
+      let url = '/api/admin/places/all';
+      if (keyword) url = `/api/admin/places/search?keyword=${encodeURIComponent(keyword)}`;
+
+      const res = await fetch(url);
+      const places = await res.json();
+
+      container.innerHTML = `
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>🏛️ مدیریت مکان‌ها</h3>
+                        <div class="actions">
+                            ${userRole === 'ROLE_ADMIN' ? `
+                                <button class="btn btn-success btn-sm" onclick="bulkApprovePlaces()">✅ تایید گروهی</button>
+                            ` : ''}
+                        </div>
+                    </div>
+                    <div class="toolbar">
+                        <input type="text" id="placeSearch" placeholder="جستجوی مکان..." onkeyup="if(event.key==='Enter') loadPlaces(this.value)">
+                        <button class="btn btn-primary btn-sm" onclick="loadPlaces(document.getElementById('placeSearch').value)">🔍 جستجو</button>
+                        <button class="btn btn-warning btn-sm" onclick="loadPlaces()">↺ بازنشانی</button>
+                    </div>
+                    ${places.length === 0 ? '<div class="empty-state">هیچ مکانی یافت نشد</div>' : `
+                    <table>
+                        <thead><tr>
+                            ${userRole === 'ROLE_ADMIN' ? `<th><input type="checkbox" onchange="toggleAll('place', this.checked)"></th>` : ''}
+                            <th>نام</th>
+                            <th>معرف</th>
+                            <th>بازدید</th>
+                            <th>لایک</th>
+                            <th>وضعیت</th>
+                            <th>عملیات</th>
+                        </tr></thead>
+                        <tbody>${places.map(p => `
+                            <tr>
+                                ${userRole === 'ROLE_ADMIN' ? `<td><input type="checkbox" class="place-check" value="${p.id}"></td>` : ''}
+                                <td>${escapeHtml(p.name)}</td>
+                                <td>${escapeHtml(p.introducerUsername)}</td>
+                                <td>${p.viewCount}</td>
+                                <td>${p.likeCount}</td>
+                                <td><span class="badge badge-${p.status === 'APPROVED' ? 'approved' : p.status === 'PENDING' ? 'pending' : 'rejected'}">${p.status === 'APPROVED' ? '✓ تایید شده' : p.status === 'PENDING' ? '⏳ در انتظار' : '✗ رد شده'}</span></td>
+                                <td>
+                                    ${p.status === 'PENDING' ? `<button class="btn btn-success btn-sm" onclick="approvePlace(${p.id})">✓</button>` : ''}
+                                    ${p.status === 'PENDING' ? `<button class="btn btn-danger btn-sm" onclick="rejectPlace(${p.id})">✗</button>` : ''}
+                                    <button class="btn btn-delete btn-sm" onclick="deletePlace(${p.id})">🗑️</button>
+                                </td>
+                            </tr>
+                        `).join('')}</tbody>
+                    </table>`}
+                </div>
+            `;
+    } catch(e) {
+      container.innerHTML = '<div class="loading">❌ خطا در بارگذاری مکان‌ها</div>';
+    }
+  }
+
+  // ====== Travelogues ======
+  async function showTravelogues() {
+    setActiveTab('travelogues');
+    showContent('travelogues');
+    await loadTravelogues();
+  }
+
+  async function loadTravelogues(keyword) {
+    const container = document.getElementById('traveloguesContent');
+    container.innerHTML = '<div class="loading">⏳ در حال بارگذاری...</div>';
+
+    try {
+      let url = '/api/admin/travelogues/all';
+      if (keyword) url = `/api/admin/travelogues/search?keyword=${encodeURIComponent(keyword)}`;
+
+      const res = await fetch(url);
+      const travelogues = await res.json();
+
+      container.innerHTML = `
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>📖 مدیریت سفرنامه‌ها</h3>
+                        <div class="actions">
+                            ${userRole === 'ROLE_ADMIN' ? `
+                                <button class="btn btn-success btn-sm" onclick="bulkApproveTravelogues()">✅ تایید گروهی</button>
+                            ` : ''}
+                        </div>
+                    </div>
+                    <div class="toolbar">
+                        <input type="text" id="travelogueSearch" placeholder="جستجوی سفرنامه..." onkeyup="if(event.key==='Enter') loadTravelogues(this.value)">
+                        <button class="btn btn-primary btn-sm" onclick="loadTravelogues(document.getElementById('travelogueSearch').value)">🔍 جستجو</button>
+                        <button class="btn btn-warning btn-sm" onclick="loadTravelogues()">↺ بازنشانی</button>
+                    </div>
+                    ${travelogues.length === 0 ? '<div class="empty-state">هیچ سفرنامه‌ای یافت نشد</div>' : `
+                    <table>
+                        <thead><tr>
+                            ${userRole === 'ROLE_ADMIN' ? `<th><input type="checkbox" onchange="toggleAll('travelogue', this.checked)"></th>` : ''}
+                            <th>عنوان</th>
+                            <th>نویسنده</th>
+                            <th>بازدید</th>
+                            <th>لایک</th>
+                            <th>وضعیت</th>
+                            <th>عملیات</th>
+                        </tr></thead>
+                        <tbody>${travelogues.map(t => `
+                            <tr>
+                                ${userRole === 'ROLE_ADMIN' ? `<td><input type="checkbox" class="travelogue-check" value="${t.id}"></td>` : ''}
+                                <td>${escapeHtml(t.title)}</td>
+                                <td>${escapeHtml(t.authorUsername)}</td>
+                                <td>${t.viewCount}</td>
+                                <td>${t.likeCount}</td>
+                                <td><span class="badge badge-${t.approved ? 'approved' : 'pending'}">${t.approved ? '✓ تایید شده' : '⏳ در انتظار'}</span></td>
+                                <td>
+                                    ${!t.approved ? `<button class="btn btn-success btn-sm" onclick="approveTravelogue(${t.id})">✓</button>` : ''}
+                                    <button class="btn btn-delete btn-sm" onclick="deleteTravelogue(${t.id})">🗑️</button>
+                                </td>
+                            </tr>
+                        `).join('')}</tbody>
+                    </table>`}
+                </div>
+            `;
+    } catch(e) {
+      container.innerHTML = '<div class="loading">❌ خطا در بارگذاری سفرنامه‌ها</div>';
+    }
+  }
+
+  // ====== Reviews ======
+  async function showReviews() {
+    setActiveTab('reviews');
+    showContent('reviews');
+    await loadReviews();
+  }
+
+  async function loadReviews(keyword) {
+    const container = document.getElementById('reviewsContent');
+    container.innerHTML = '<div class="loading">⏳ در حال بارگذاری...</div>';
+
+    try {
+      let url = '/api/admin/reviews/all';
+      if (keyword) url = `/api/admin/reviews/search?keyword=${encodeURIComponent(keyword)}`;
+
+      const res = await fetch(url);
+      const reviews = await res.json();
+
+      container.innerHTML = `
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>💬 مدیریت نظرات</h3>
+                        <div class="actions">
+                            ${userRole === 'ROLE_ADMIN' ? `
+                                <button class="btn btn-success btn-sm" onclick="bulkApproveReviews()">✅ تایید گروهی</button>
+                            ` : ''}
+                        </div>
+                    </div>
+                    <div class="toolbar">
+                        <input type="text" id="reviewSearch" placeholder="جستجوی نظر..." onkeyup="if(event.key==='Enter') loadReviews(this.value)">
+                        <button class="btn btn-primary btn-sm" onclick="loadReviews(document.getElementById('reviewSearch').value)">🔍 جستجو</button>
+                        <button class="btn btn-warning btn-sm" onclick="loadReviews()">↺ بازنشانی</button>
+                    </div>
+                    ${reviews.length === 0 ? '<div class="empty-state">هیچ نظری یافت نشد</div>' : `
+                    <table>
+                        <thead><tr>
+                            ${userRole === 'ROLE_ADMIN' ? `<th><input type="checkbox" onchange="toggleAll('review', this.checked)"></th>` : ''}
+                            <th>کاربر</th>
+                            <th>مکان</th>
+                            <th>نظر</th>
+                            <th>امتیاز</th>
+                            <th>وضعیت</th>
+                            <th>عملیات</th>
+                        </tr></thead>
+                        <tbody>${reviews.map(r => `
+                            <tr>
+                                ${userRole === 'ROLE_ADMIN' ? `<td><input type="checkbox" class="review-check" value="${r.id}"></td>` : ''}
+                                <td>${escapeHtml(r.username)}</td>
+                                <td>${escapeHtml(r.placeName)}</td>
+                                <td>${escapeHtml(r.comment?.substring(0, 50))}${(r.comment?.length || 0) > 50 ? '...' : ''}</td>
+                                <td>${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</td>
+                                <td><span class="badge ${r.approved ? 'badge-approved' : 'badge-pending'}">${r.approved ? '✓ تایید شده' : '⏳ در انتظار'}</span></td>
+                                <td>
+                                    ${!r.approved ? `<button class="btn btn-success btn-sm" onclick="approveReview(${r.id})">✓</button>` : ''}
+                                    <button class="btn btn-delete btn-sm" onclick="deleteReview(${r.id})">🗑️</button>
+                                </td>
+                            </tr>
+                        `).join('')}</tbody>
+                    </table>`}
+                </div>
+            `;
+    } catch(e) {
+      container.innerHTML = '<div class="loading">❌ خطا در بارگذاری نظرات</div>';
+    }
+  }
+
+  // ====== Users ======
+  async function showUsers() {
+    setActiveTab('users');
+    showContent('users');
+    await loadUsers();
+  }
+
+  async function loadUsers(keyword) {
+    const container = document.getElementById('usersContent');
+    container.innerHTML = '<div class="loading">⏳ در حال بارگذاری...</div>';
+
+    try {
+      let url = '/api/admin/users/all';
+      if (keyword) url = `/api/admin/users/search?keyword=${encodeURIComponent(keyword)}`;
+
+      const res = await fetch(url);
+      const users = await res.json();
+
+      container.innerHTML = `
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>👥 مدیریت کاربران</h3>
+                    </div>
+                    <div class="toolbar">
+                        <input type="text" id="userSearch" placeholder="جستجوی کاربر..." onkeyup="if(event.key==='Enter') loadUsers(this.value)">
+                        <button class="btn btn-primary btn-sm" onclick="loadUsers(document.getElementById('userSearch').value)">🔍 جستجو</button>
+                        <button class="btn btn-warning btn-sm" onclick="loadUsers()">↺ بازنشانی</button>
+                    </div>
+                    ${users.length === 0 ? '<div class="empty-state">هیچ کاربری یافت نشد</div>' : `
+                    <table>
+                        <thead><tr><th>نام کاربری</th><th>ایمیل</th><th>نقش</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+                        <tbody>${users.map(u => `
+                            <tr>
+                                <td>${escapeHtml(u.username)}</td>
+                                <td>${escapeHtml(u.email)}</td>
+                                <td>
+                                    ${userRole === 'ROLE_ADMIN' ? `
+                                        <select onchange="changeRole(${u.id}, this.value)">
+                                            <option value="ROLE_USER" ${u.role === 'ROLE_USER' ? 'selected' : ''}>کاربر</option>
+                                            <option value="ROLE_MODERATOR" ${u.role === 'ROLE_MODERATOR' ? 'selected' : ''}>مدیر</option>
+                                            <option value="ROLE_ADMIN" ${u.role === 'ROLE_ADMIN' ? 'selected' : ''}>ادمین</option>
+                                        </select>
+                                    ` : `
+                                        <span class="badge badge-${u.role === 'ROLE_ADMIN' ? 'admin' : u.role === 'ROLE_MODERATOR' ? 'moderator' : 'user'}">${u.role === 'ROLE_ADMIN' ? '👑 ادمین' : u.role === 'ROLE_MODERATOR' ? '🛡️ مدیر' : '👤 کاربر'}</span>
+                                    `}
+                                </td>
+                                <td><span class="badge badge-${u.enabled ? 'enabled' : 'disabled'}">${u.enabled ? '✅ فعال' : '❌ غیرفعال'}</span></td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm" onclick="toggleUserStatus(${u.id})">${u.enabled ? '🔒' : '✅'}</button>
+                                    ${userRole === 'ROLE_ADMIN' ? `<button class="btn btn-delete btn-sm" onclick="deleteUser(${u.id})">🗑️</button>` : ''}
+                                </td>
+                            </tr>
+                        `).join('')}</tbody>
+                    </table>`}
+                </div>
+            `;
+    } catch(e) {
+      container.innerHTML = '<div class="loading">❌ خطا در بارگذاری کاربران</div>';
+    }
+  }
+
+  // ====== Verification Codes ======
+  async function showVerificationCodes() {
+    setActiveTab('codes');
+    showContent('codes');
+    await loadCodes();
+  }
+
+  async function loadCodes() {
+    const container = document.getElementById('codesContent');
+    container.innerHTML = '<div class="loading">⏳ در حال بارگذاری...</div>';
+
+    try {
+      const res = await fetch('/api/admin/verification-codes');
+      const codes = await res.json();
+
+      container.innerHTML = `
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>🔑 کدهای تایید</h3>
+                        <div class="actions">
+                            <button class="btn btn-warning btn-sm" onclick="cleanupExpiredCodes()">🧹 پاکسازی کدهای منقضی</button>
+                        </div>
+                    </div>
+                    ${codes.length === 0 ? '<div class="empty-state">هیچ کد تاییدی یافت نشد</div>' : `
+                    <table>
+                        <thead><tr><th>ایمیل</th><th>کد</th><th>نوع</th><th>تاریخ انقضا</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+                        <tbody>${codes.map(c => `
+                            <tr>
+                                <td>${escapeHtml(c.email)}</td>
+                                <td><strong>${c.code}</strong></td>
+                                <td>${c.type === 'REGISTER' ? '📝 ثبت نام' : '🔑 بازیابی رمز'}</td>
+                                <td>${new Date(c.expiresAt).toLocaleString('fa-IR')}</td>
+                                <td><span class="badge ${c.used ? 'badge-approved' : (new Date(c.expiresAt) > new Date() ? 'badge-pending' : 'badge-rejected')}">
+                                    ${c.used ? '✓ استفاده شده' : (new Date(c.expiresAt) > new Date() ? '⏳ معتبر' : '✗ منقضی')}
+                                </span></td>
+                                <td>
+                                    <button class="btn btn-delete btn-sm" onclick="deleteCode(${c.id})">🗑️</button>
+                                </td>
+                            </tr>
+                        `).join('')}</tbody>
+                    </table>`}
+                </div>
+            `;
+    } catch(e) {
+      container.innerHTML = '<div class="loading">❌ خطا در بارگذاری کدها</div>';
+    }
+  }
+
+  // ====== Settings ======
+  async function showSettings() {
+    setActiveTab('settings');
+    showContent('settings');
+
+    document.getElementById('settingsContent').innerHTML = `
+            <div class="table-container">
+                <h3>⚙️ تنظیمات</h3>
+                <div style="padding: 15px 0;">
+                    <div style="background:#f9f9f9; padding:15px; border-radius:10px; margin-bottom:15px;">
+                        <h4>👤 اطلاعات کاربر</h4>
+                        <p><strong>نام کاربری:</strong> ${username}</p>
+                        <p><strong>نقش:</strong> ${userRole === 'ROLE_ADMIN' ? 'ادمین' : 'مدیر'}</p>
+                    </div>
+                    <div style="background:#f9f9f9; padding:15px; border-radius:10px;">
+                        <h4>🛡️ دسترسی‌ها</h4>
+                        <ul style="list-style:none; margin-top:10px;">
+                            <li>✅ ${userRole === 'ROLE_ADMIN' || userRole === 'ROLE_MODERATOR' ? 'مشاهده داشبورد' : '❌'}</li>
+                            <li>✅ ${userRole === 'ROLE_ADMIN' || userRole === 'ROLE_MODERATOR' ? 'مشاهده مکان‌ها' : '❌'}</li>
+                            <li>✅ ${userRole === 'ROLE_ADMIN' || userRole === 'ROLE_MODERATOR' ? 'مدیریت مکان‌ها' : '❌'}</li>
+                            <li>✅ ${userRole === 'ROLE_ADMIN' || userRole === 'ROLE_MODERATOR' ? 'مشاهده سفرنامه‌ها' : '❌'}</li>
+                            <li>✅ ${userRole === 'ROLE_ADMIN' || userRole === 'ROLE_MODERATOR' ? 'مدیریت سفرنامه‌ها' : '❌'}</li>
+                            <li>✅ ${userRole === 'ROLE_ADMIN' || userRole === 'ROLE_MODERATOR' ? 'مشاهده نظرات' : '❌'}</li>
+                            <li>✅ ${userRole === 'ROLE_ADMIN' || userRole === 'ROLE_MODERATOR' ? 'مدیریت نظرات' : '❌'}</li>
+                            <li>✅ ${userRole === 'ROLE_ADMIN' ? 'مدیریت کاربران' : '❌'}</li>
+                            <li>✅ ${userRole === 'ROLE_ADMIN' ? 'عملیات گروهی' : '❌'}</li>
+                            <li>✅ ${userRole === 'ROLE_ADMIN' ? 'مدیریت کدهای تایید' : '❌'}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        `;
+  }
+
+  // ====== Actions ======
+  async function approvePlace(id) {
+    await fetch(`/api/admin/places/${id}/approve`, { method: 'PUT' });
+    loadPlaces();
+  }
+
+  async function rejectPlace(id) {
+    await fetch(`/api/admin/places/${id}/reject`, { method: 'PUT' });
+    loadPlaces();
+  }
+
+  async function deletePlace(id) {
+    if (!confirm('آیا از حذف این مکان مطمئن هستید؟')) return;
+    await fetch(`/api/admin/places/${id}`, { method: 'DELETE' });
+    loadPlaces();
+  }
+
+  async function approveTravelogue(id) {
+    await fetch(`/api/admin/travelogues/${id}/approve`, { method: 'PUT' });
+    loadTravelogues();
+  }
+
+  async function deleteTravelogue(id) {
+    if (!confirm('آیا از حذف این سفرنامه مطمئن هستید؟')) return;
+    await fetch(`/api/admin/travelogues/${id}`, { method: 'DELETE' });
+    loadTravelogues();
+  }
+
+  async function approveReview(id) {
+    await fetch(`/api/admin/reviews/${id}/approve`, { method: 'PUT' });
+    loadReviews();
+  }
+
+  async function deleteReview(id) {
+    if (!confirm('آیا از حذف این نظر مطمئن هستید؟')) return;
+    await fetch(`/api/admin/reviews/${id}`, { method: 'DELETE' });
+    loadReviews();
+  }
+
+  async function changeRole(id, role) {
+    await fetch(`/api/admin/users/${id}/role?role=${role}`, { method: 'PUT' });
+    loadUsers();
+  }
+
+  async function toggleUserStatus(id) {
+    await fetch(`/api/admin/users/${id}/toggle-status`, { method: 'PUT' });
+    loadUsers();
+  }
+
+  async function deleteUser(id) {
+    if (!confirm('آیا از حذف این کاربر مطمئن هستید؟')) return;
+    await fetch(`/api/admin/users/${id}`, { method: 'DELETE' });
+    loadUsers();
+  }
+
+  async function deleteCode(id) {
+    if (!confirm('آیا از حذف این کد مطمئن هستید؟')) return;
+    await fetch(`/api/admin/verification-codes/${id}`, { method: 'DELETE' });
+    loadCodes();
+  }
+
+  async function cleanupExpiredCodes() {
+    if (!confirm('آیا از حذف تمام کدهای منقضی مطمئن هستید؟')) return;
+    await fetch('/api/admin/verification-codes/cleanup', { method: 'DELETE' });
+    loadCodes();
+  }
+
+  // ====== Bulk Actions ======
+  function toggleAll(type, checked) {
+    document.querySelectorAll(`.${type}-check`).forEach(el => el.checked = checked);
+  }
+
+  function getCheckedIds(type) {
+    return Array.from(document.querySelectorAll(`.${type}-check:checked`)).map(el => parseInt(el.value));
+  }
+
+  async function bulkApprovePlaces() {
+    const ids = getCheckedIds('place');
+    if (ids.length === 0) return alert('حداقل یک مکان را انتخاب کنید');
+    if (!confirm(`آیا از تایید ${ids.length} مکان مطمئن هستید؟`)) return;
+    await fetch('/api/admin/places/bulk-approve', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(ids)
+    });
+    loadPlaces();
+  }
+
+  async function bulkApproveTravelogues() {
+    const ids = getCheckedIds('travelogue');
+    if (ids.length === 0) return alert('حداقل یک سفرنامه را انتخاب کنید');
+    if (!confirm(`آیا از تایید ${ids.length} سفرنامه مطمئن هستید؟`)) return;
+    await fetch('/api/admin/travelogues/bulk-approve', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(ids)
+    });
+    loadTravelogues();
+  }
+
+  async function bulkApproveReviews() {
+    const ids = getCheckedIds('review');
+    if (ids.length === 0) return alert('حداقل یک نظر را انتخاب کنید');
+    if (!confirm(`آیا از تایید ${ids.length} نظر مطمئن هستید؟`)) return;
+    await fetch('/api/admin/reviews/bulk-approve', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(ids)
+    });
+    loadReviews();
+  }
+
+  // ====== Helpers ======
+  function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  // ====== Start ======
+  showDashboard();
+</script>
+</body>
+</html>

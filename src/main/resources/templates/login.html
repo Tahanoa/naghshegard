@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>ورود | گشت و گذار در ایران</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Tahoma', 'Vazir', system-ui;
+            background: linear-gradient(135deg, #0a5c4a 0%, #1a7a5c 50%, #0a5c4a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        :root {
+            --persian-green: #0a5c4a;
+            --persian-turquoise: #2a9d8f;
+            --persian-orange: #e76f51;
+            --persian-gold: #f4a261;
+            --persian-cream: #fefae0;
+            --persian-red: #bc4a2c;
+        }
+
+        .login-container {
+            background: var(--persian-cream);
+            border-radius: 30px;
+            padding: 40px;
+            width: 90%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-icon {
+            font-size: 50px;
+            background: linear-gradient(135deg, var(--persian-green), var(--persian-turquoise));
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+        }
+
+        .login-header h2 {
+            color: var(--persian-green);
+            font-size: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            color: var(--persian-green);
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--persian-turquoise);
+            box-shadow: 0 0 0 3px rgba(42,157,143,0.2);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--persian-green);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: var(--persian-turquoise);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--persian-orange);
+        }
+
+        .btn-secondary:hover {
+            background: var(--persian-red);
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        .forgot-link {
+            text-align: left;
+            margin-top: 5px;
+        }
+
+        .forgot-link a {
+            color: var(--persian-orange);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .forgot-link a:hover {
+            text-decoration: underline;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
+
+        .register-link a {
+            color: var(--persian-orange);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-home {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .back-home a {
+            color: var(--persian-turquoise);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .resend-btn {
+            background: none;
+            border: none;
+            color: var(--persian-orange);
+            cursor: pointer;
+            text-decoration: underline;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .code-input {
+            text-align: center;
+            font-size: 1.5rem;
+            letter-spacing: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .login-container { padding: 25px; }
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <div class="login-header">
+        <div class="login-icon">🕌</div>
+        <h2>Welcome Back</h2>
+        <p style="color: #666;">Login to your account</p>
+    </div>
+
+    <div class="alert alert-danger" id="errorAlert">
+        ❌ <span id="errorMessage"></span>
+    </div>
+    <div class="alert alert-success" id="successAlert">
+        ✅ <span id="successMessage"></span>
+    </div>
+    <div class="alert alert-info" id="infoAlert">
+        ℹ️ <span id="infoMessage"></span>
+    </div>
+
+    <!-- Step 1: Login Form -->
+    <div class="step-content active" id="step1">
+        <form id="loginForm">
+            <div class="form-group">
+                <label>👤 Username</label>
+                <input type="text" id="username" placeholder="Enter your username" required>
+            </div>
+            <div class="form-group">
+                <label>🔒 Password</label>
+                <input type="password" id="password" placeholder="Enter your password" required>
+            </div>
+            <div class="forgot-link">
+                <a href="#" id="forgotPasswordLink">Forgot password?</a>
+            </div>
+            <button type="submit" class="btn">🔐 Login</button>
+        </form>
+    </div>
+
+    <!-- Step 2: Forgot Password - Send Code -->
+    <div class="step-content" id="step2">
+        <h3 style="color: var(--persian-green); margin-bottom: 20px;">🔑 Reset Password</h3>
+        <p style="color: #666; font-size: 0.95rem; margin-bottom: 20px;">
+            Enter your email to receive a reset code.
+        </p>
+        <form id="forgotForm">
+            <div class="form-group">
+                <label>📧 Email</label>
+                <input type="email" id="resetEmail" placeholder="your@email.com" required>
+            </div>
+            <button type="submit" class="btn btn-secondary">📧 Send Reset Code</button>
+            <div style="text-align: center; margin-top: 15px;">
+                <button type="button" class="resend-btn" id="backToLoginBtn">← Back to Login</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Step 3: Forgot Password - Verify Code -->
+    <div class="step-content" id="step3">
+        <h3 style="color: var(--persian-green); margin-bottom: 20px;">✅ Verify Code</h3>
+        <p style="color: #666; font-size: 0.95rem; margin-bottom: 20px;">
+            A 6-digit code has been sent to <strong id="resetEmailDisplay"></strong>
+        </p>
+        <form id="resetForm">
+            <div class="form-group">
+                <label>🔑 Verification Code</label>
+                <input type="text" id="resetCode" class="code-input" maxlength="6" placeholder="123456" required>
+            </div>
+            <div class="form-group">
+                <label>🔒 New Password</label>
+                <input type="password" id="newPassword" minlength="6" placeholder="Min 6 characters" required>
+            </div>
+            <div class="form-group">
+                <label>🔒 Confirm New Password</label>
+                <input type="password" id="confirmNewPassword" placeholder="Re-enter new password" required>
+            </div>
+            <button type="submit" class="btn">✅ Reset Password</button>
+            <div style="text-align: center; margin-top: 15px;">
+                <button type="button" class="resend-btn" id="resendResetBtn">🔄 Resend Code</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="register-link">
+        <p>Don't have an account? <a href="/register">Register</a></p>
+    </div>
+    <div class="back-home">
+        <a href="/">← Back to Home</a>
+    </div>
+</div>
+
+<script>
+    function setCookie(name, value, days) {
+        let expires = "";
+        if (days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    }
+
+    let resetEmail = '';
+    let resendTimer = 60;
+
+    // Toggle between steps
+    function goToStep(step) {
+        document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+        document.getElementById(`step${step}`).classList.add('active');
+    }
+
+    // Login Form
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setCookie('token', data.token, 7);
+                setCookie('username', data.username, 7);
+                setCookie('role', data.role, 7);
+                window.location.href = '/';
+            } else {
+                const error = await response.text();
+                showError(error);
+            }
+        } catch (error) {
+            showError('Server connection error');
+        }
+    });
+
+    // Forgot Password - Send Code
+    document.getElementById('forgotForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const email = document.getElementById('resetEmail').value;
+
+        try {
+            const response = await fetch('/api/auth/forgot-password/send-code', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+
+            if (response.ok) {
+                resetEmail = email;
+                document.getElementById('resetEmailDisplay').textContent = email;
+                showInfo('Reset code sent to your email.');
+                goToStep(3);
+                startResetTimer();
+            } else {
+                const error = await response.text();
+                showError(error);
+            }
+        } catch (error) {
+            showError('Server connection error');
+        }
+    });
+
+    // Reset Password - Verify Code
+    document.getElementById('resetForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const code = document.getElementById('resetCode').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+
+        if (newPassword !== confirmNewPassword) {
+            showError('Passwords do not match');
+            return;
+        }
+
+        if (newPassword.length < 6) {
+            showError('Password must be at least 6 characters');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/auth/forgot-password/reset', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: resetEmail,
+                    code: code,
+                    newPassword: newPassword
+                })
+            });
+
+            if (response.ok) {
+                showSuccess('Password reset successfully! Redirecting to login...');
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 2000);
+            } else {
+                const error = await response.text();
+                showError(error);
+            }
+        } catch (error) {
+            showError('Server connection error');
+        }
+    });
+
+    // Resend Reset Code
+    document.getElementById('resendResetBtn').addEventListener('click', async function() {
+        if (resendTimer > 0) return;
+
+        try {
+            const response = await fetch('/api/auth/forgot-password/send-code', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: resetEmail })
+            });
+
+            if (response.ok) {
+                showInfo('New reset code sent to your email.');
+                startResetTimer();
+            } else {
+                const error = await response.text();
+                showError(error);
+            }
+        } catch (error) {
+            showError('Failed to resend code');
+        }
+    });
+
+    function startResetTimer() {
+        resendTimer = 60;
+        const btn = document.getElementById('resendResetBtn');
+        btn.textContent = `⏳ Wait ${resendTimer}s`;
+        btn.disabled = true;
+
+        const interval = setInterval(() => {
+            resendTimer--;
+            btn.textContent = `⏳ Wait ${resendTimer}s`;
+            if (resendTimer <= 0) {
+                clearInterval(interval);
+                btn.textContent = '🔄 Resend Code';
+                btn.disabled = false;
+            }
+        }, 1000);
+    }
+
+    // Navigate to Forgot Password
+    document.getElementById('forgotPasswordLink').addEventListener('click', function(e) {
+        e.preventDefault();
+        goToStep(2);
+    });
+
+    // Back to Login
+    document.getElementById('backToLoginBtn').addEventListener('click', function() {
+        goToStep(1);
+    });
+
+    function showError(message) {
+        const alertDiv = document.getElementById('errorAlert');
+        document.getElementById('errorMessage').textContent = message;
+        alertDiv.style.display = 'block';
+        document.getElementById('successAlert').style.display = 'none';
+        document.getElementById('infoAlert').style.display = 'none';
+        setTimeout(() => alertDiv.style.display = 'none', 3000);
+    }
+
+    function showSuccess(message) {
+        const alertDiv = document.getElementById('successAlert');
+        document.getElementById('successMessage').textContent = message;
+        alertDiv.style.display = 'block';
+        document.getElementById('errorAlert').style.display = 'none';
+        document.getElementById('infoAlert').style.display = 'none';
+        setTimeout(() => alertDiv.style.display = 'none', 3000);
+    }
+
+    function showInfo(message) {
+        const alertDiv = document.getElementById('infoAlert');
+        document.getElementById('infoMessage').textContent = message;
+        alertDiv.style.display = 'block';
+        setTimeout(() => alertDiv.style.display = 'none', 5000);
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جزئیات مکان گردشگری | گشت و گذار در ایران</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Tahoma', 'Vazir', system-ui;
+            background: linear-gradient(135deg, #0a5c4a 0%, #1a7a5c 50%, #0a5c4a 100%);
+            min-height: 100vh;
+        }
+        :root {
+            --persian-green: #0a5c4a;
+            --persian-turquoise: #2a9d8f;
+            --persian-orange: #e76f51;
+            --persian-gold: #f4a261;
+            --persian-cream: #fefae0;
+            --persian-red: #bc4a2c;
+        }
+        .navbar {
+            background: rgba(10, 92, 74, 0.95);
+            padding: 1rem 2rem;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .navbar-brand { color: var(--persian-gold); font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links { display: flex; gap: 20px; list-style: none; flex-wrap: wrap; align-items: center; }
+        .nav-links a, .nav-btn { color: var(--persian-cream); text-decoration: none; padding: 8px 16px; border-radius: 8px; background: none; border: none; cursor: pointer; font-family: inherit; font-size: 1rem; }
+        .nav-links a:hover, .nav-btn:hover { background: var(--persian-gold); color: var(--persian-green); }
+        .logout-btn:hover { background: var(--persian-red); color: white; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 100px 20px 50px; }
+        .gallery {
+            background: var(--persian-cream);
+            border-radius: 25px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .gallery-title { color: var(--persian-green); margin-bottom: 15px; }
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+        .gallery-img { width: 100%; height: 180px; object-fit: cover; border-radius: 12px; cursor: pointer; }
+        .place-info {
+            background: var(--persian-cream);
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .place-name { color: var(--persian-green); font-size: 2rem; margin-bottom: 15px; }
+        .place-description { color: #333; line-height: 1.8; margin-bottom: 20px; }
+        .stars { color: var(--persian-gold); font-size: 1.3rem; margin: 10px 0; }
+        .place-stats { display: flex; gap: 30px; margin: 20px 0; padding: 15px 0; border-top: 1px solid #eee; border-bottom: 1px solid #eee; }
+        .stat-item { text-align: center; }
+        .stat-number { font-size: 1.5rem; font-weight: bold; color: var(--persian-green); }
+        .like-btn {
+            background: var(--persian-orange);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .like-btn:hover { background: var(--persian-red); }
+        .map-container {
+            background: var(--persian-cream);
+            border-radius: 25px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        #map { height: 350px; border-radius: 15px; }
+        .google-map-link {
+            display: inline-block;
+            margin-top: 15px;
+            background: var(--persian-green);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+        }
+        .reviews-section {
+            background: var(--persian-cream);
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .review-card {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-right: 4px solid var(--persian-gold);
+        }
+        .review-user { color: var(--persian-green); font-weight: bold; margin-bottom: 8px; }
+        .review-stars { color: var(--persian-gold); font-size: 0.9rem; }
+        .add-review-form {
+            background: var(--persian-cream);
+            border-radius: 25px;
+            padding: 30px;
+        }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; color: var(--persian-green); font-weight: bold; margin-bottom: 5px; }
+        select, textarea { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 10px; font-family: inherit; }
+        .btn-submit { background: var(--persian-green); color: white; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; }
+        .loading, .error-message { text-align: center; padding: 50px; background: var(--persian-cream); border-radius: 20px; }
+        .alert { padding: 12px; border-radius: 10px; margin-bottom: 20px; display: none; }
+        .alert-success { background: #d4edda; color: #155724; }
+        .alert-danger { background: #f8d7da; color: #721c24; }
+        footer { background: var(--persian-green); color: var(--persian-cream); text-align: center; padding: 20px; margin-top: 50px; }
+        @media (max-width: 768px) { .place-name { font-size: 1.5rem; } .gallery-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-container">
+        <a href="/" class="navbar-brand">🕌 گشت و گذار در ایران</a>
+        <ul class="nav-links">
+            <li><a href="/">خانه</a></li>
+            <li><a href="/places">🏛️ مکان‌ها</a></li>
+            <li><a href="/travelogues">📖 سفرنامه‌ها</a></li>
+            <li><a href="/add-place" id="addPlaceLink" style="display:none;">➕ افزودن مکان</a></li>
+            <li><a href="/my-places" id="myPlacesLink" style="display:none;">📍 مکان‌های من</a></li>
+            <li><a href="/create-travelogue" id="createLink" style="display:none;">✍️ نوشتن سفرنامه</a></li>
+            <li><a href="/my-travelogues" id="myLink" style="display:none;">📚 سفرنامه‌های من</a></li>
+            <li><a href="/login" id="loginBtn">ورود</a></li>
+            <li><a href="/register" id="registerBtn">ثبت نام</a></li>
+            <li><button id="logoutBtn" class="nav-btn logout-btn" style="display:none;">🚪 خروج</button></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <div id="loading" class="loading">⏳ در حال بارگذاری...</div>
+    <div id="placeContent" style="display: none;"></div>
+</div>
+
+<footer>🇮🇷 گشت و گذار در ایران - کشف زیبایی‌های میهن عزیزمان 🇮🇷</footer>
+
+<script>
+    const placeId = window.location.pathname.split('/').pop();
+
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    }
+
+    function deleteCookie(name) {
+        document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    }
+
+    const token = getCookie('token');
+    let map = null;
+
+    // منو
+    const addPlaceLink = document.getElementById('addPlaceLink');
+    const myPlacesLink = document.getElementById('myPlacesLink');
+    const createLink = document.getElementById('createLink');
+    const myLink = document.getElementById('myLink');
+    const loginBtn = document.getElementById('loginBtn');
+    const registerBtn = document.getElementById('registerBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    if (token) {
+        if (addPlaceLink) addPlaceLink.style.display = 'inline-block';
+        if (myPlacesLink) myPlacesLink.style.display = 'inline-block';
+        if (createLink) createLink.style.display = 'inline-block';
+        if (myLink) myLink.style.display = 'inline-block';
+        if (loginBtn) loginBtn.style.display = 'none';
+        if (registerBtn) registerBtn.style.display = 'none';
+        if (logoutBtn) logoutBtn.style.display = 'inline-block';
+    }
+
+    logoutBtn?.addEventListener('click', () => {
+        deleteCookie('token');
+        deleteCookie('username');
+        deleteCookie('role');
+        window.location.href = '/';
+    });
+
+    function displayStars(rating) {
+        if (!rating || rating === 0) return '☆☆☆☆☆ (0/5)';
+        const full = Math.floor(rating);
+        return '★'.repeat(full) + '☆'.repeat(5 - full) + ` (${rating.toFixed(1)}/5)`;
+    }
+
+    async function loadPlace() {
+        try {
+            const res = await fetch(`/api/places/${placeId}`);
+            if (res.ok) {
+                const place = await res.json();
+                displayPlace(place);
+                loadReviews();
+            } else {
+                document.getElementById('loading').innerHTML = '<div class="error-message">❌ مکان مورد نظر یافت نشد</div>';
+            }
+        } catch(e) {
+            document.getElementById('loading').innerHTML = '<div class="error-message">❌ خطا در ارتباط با سرور</div>';
+        }
+    }
+
+    function displayPlace(place) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('placeContent').style.display = 'block';
+
+        let galleryHtml = '';
+        if (place.photoUrls && place.photoUrls.length > 0) {
+            galleryHtml = `
+                <div class="gallery">
+                    <h3 class="gallery-title">📸 گالری تصاویر</h3>
+                    <div class="gallery-grid">
+                        ${place.photoUrls.map(url => `<img src="${url}" class="gallery-img" onclick="openModal('${url}')" loading="lazy">`).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        let mapHtml = '';
+        if (place.latitude && place.longitude) {
+            mapHtml = `<div class="map-container"><h3 class="map-title">📍 موقعیت مکانی</h3><div id="map"></div></div>`;
+            setTimeout(() => initMap(place.latitude, place.longitude, place.name), 100);
+        } else if (place.googleMapsLink) {
+            mapHtml = `<div class="map-container"><a href="${place.googleMapsLink}" target="_blank" class="google-map-link">🗺️ مشاهده در گوگل مپ</a></div>`;
+        } else {
+            mapHtml = `<div class="map-container"><div style="text-align:center;">📍 موقعیت مکانی ثبت نشده است</div></div>`;
+        }
+
+        document.getElementById('placeContent').innerHTML = `
+            ${galleryHtml}
+            <div class="place-info">
+                <h1 class="place-name">${escapeHtml(place.name)}</h1>
+                <div class="stars">${displayStars(place.averageRating)}</div>
+                <p class="place-description">${escapeHtml(place.description)}</p>
+                <div class="place-stats">
+                    <div class="stat-item"><div class="stat-number">${place.viewCount || 0}</div><div>👁️ بازدید</div></div>
+                    <div class="stat-item"><div class="stat-number" id="likeCount">${place.likeCount || 0}</div><div>❤️ لایک</div></div>
+                    <div class="stat-item"><div class="stat-number">${place.averageRating?.toFixed(1) || 0}</div><div>⭐ امتیاز</div></div>
+                </div>
+                ${token ? `<button id="likeBtn" class="like-btn">❤️ لایک کردن</button>` : ''}
+                <div class="place-meta">👤 معرفی شده توسط: ${escapeHtml(place.introducerUsername)}</div>
+            </div>
+            ${mapHtml}
+            <div class="reviews-section"><h3 class="reviews-title">💬 نظرات کاربران</h3><div id="reviewsContainer"></div></div>
+            ${token ? `
+                <div class="add-review-form">
+                    <h3 class="form-title">✍️ ثبت نظر جدید</h3>
+                    <div id="reviewAlert" class="alert alert-success"></div>
+                    <form id="reviewForm">
+                        <div class="form-group"><label>امتیاز شما (1 تا 5)</label>
+                            <select id="rating" required>
+                                <option value="">انتخاب کنید</option>
+                                <option value="5">⭐⭐⭐⭐⭐ - عالی</option>
+                                <option value="4">⭐⭐⭐⭐ - خوب</option>
+                                <option value="3">⭐⭐⭐ - متوسط</option>
+                                <option value="2">⭐⭐ - ضعیف</option>
+                                <option value="1">⭐ - خیلی ضعیف</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>نظر شما</label><textarea id="comment" placeholder="نظر خود را در مورد این مکان بنویسید..."></textarea></div>
+                        <button type="submit" class="btn-submit">✨ ثبت نظر ✨</button>
+                    </form>
+                </div>
+            ` : '<p style="text-align:center;"><a href="/login">وارد شوید</a> تا بتوانید نظر دهید و لایک کنید</p>'}
+        `;
+
+        if (token) {
+            document.getElementById('likeBtn')?.addEventListener('click', async () => {
+                const res = await fetch(`/api/places/${placeId}/like`, { method: 'POST' });
+                if (res.ok) {
+                    const likeSpan = document.getElementById('likeCount');
+                    likeSpan.textContent = parseInt(likeSpan.textContent) + 1;
+                    alert('❤️ لایک شد!');
+                }
+            });
+
+            document.getElementById('reviewForm')?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const rating = document.getElementById('rating').value;
+                const comment = document.getElementById('comment').value;
+                if (!rating) { showReviewAlert('لطفاً امتیاز را انتخاب کنید', 'danger'); return; }
+                const res = await fetch('/api/reviews/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ placeId: parseInt(placeId), rating: parseInt(rating), comment })
+                });
+                if (res.ok) {
+                    showReviewAlert('نظر شما ثبت شد!', 'success');
+                    document.getElementById('reviewForm').reset();
+                    setTimeout(() => loadReviews(), 1000);
+                } else { showReviewAlert('خطا در ثبت نظر', 'danger'); }
+            });
+        }
+    }
+
+    function initMap(lat, lng, name) {
+        if (map) map.remove();
+        map = L.map('map').setView([lat, lng], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        L.marker([lat, lng]).addTo(map).bindPopup(`<b>${name}</b>`).openPopup();
+    }
+
+    async function loadReviews() {
+        try {
+            const res = await fetch(`/api/reviews/place/${placeId}`);
+            if (res.ok) {
+                const reviews = await res.json();
+                const container = document.getElementById('reviewsContainer');
+                if (!reviews || reviews.length === 0) {
+                    container.innerHTML = '<p style="text-align:center;">هنوز نظری ثبت نشده است</p>';
+                    return;
+                }
+                container.innerHTML = reviews.map(r => `
+                    <div class="review-card">
+                        <div class="review-user">${escapeHtml(r.username)}</div>
+                        <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+                        <div class="review-comment">${escapeHtml(r.comment)}</div>
+                        <div class="review-date">${new Date(r.createdAt).toLocaleDateString('fa-IR')}</div>
+                    </div>
+                `).join('');
+            }
+        } catch(e) { console.error(e); }
+    }
+
+    function showReviewAlert(msg, type) {
+        const alert = document.getElementById('reviewAlert');
+        alert.textContent = msg;
+        alert.className = `alert alert-${type === 'success' ? 'success' : 'danger'}`;
+        alert.style.display = 'block';
+        setTimeout(() => alert.style.display = 'none', 3000);
+    }
+
+    window.openModal = function(src) {
+        let modal = document.getElementById('imageModal');
+        if (!modal) {
+            const modalHtml = `<div id="imageModal" style="display:none; position:fixed; z-index:2000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.9); cursor:pointer;" onclick="closeModal()"><img id="modalImg" style="margin:auto; display:block; max-width:90%; max-height:90%; margin-top:50px;"></div>`;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            modal = document.getElementById('imageModal');
+        }
+        document.getElementById('modalImg').src = src;
+        modal.style.display = 'block';
+    };
+
+    window.closeModal = () => { const m = document.getElementById('imageModal'); if (m) m.style.display = 'none'; };
+    function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+
+    loadPlace();
+</script>
+</body>
+</html>

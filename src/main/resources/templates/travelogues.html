@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سفرنامه‌های ایران | گشت و گذار در ایران</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Tahoma', 'Vazir', system-ui;
+            background: linear-gradient(135deg, #0a5c4a 0%, #1a7a5c 50%, #0a5c4a 100%);
+            min-height: 100vh;
+        }
+        :root {
+            --persian-green: #0a5c4a;
+            --persian-turquoise: #2a9d8f;
+            --persian-gold: #f4a261;
+            --persian-cream: #fefae0;
+            --persian-red: #bc4a2c;
+        }
+        .navbar {
+            background: rgba(10, 92, 74, 0.95);
+            padding: 1rem 2rem;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .navbar-brand { color: var(--persian-gold); font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links { display: flex; gap: 20px; list-style: none; flex-wrap: wrap; align-items: center; }
+        .nav-links a, .nav-btn { color: var(--persian-cream); text-decoration: none; padding: 8px 16px; border-radius: 8px; background: none; border: none; cursor: pointer; font-family: inherit; font-size: 1rem; }
+        .nav-links a:hover, .nav-btn:hover { background: var(--persian-gold); color: var(--persian-green); }
+        .logout-btn:hover { background: var(--persian-red); color: white; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 100px 20px 50px; }
+        .search-section {
+            background: var(--persian-cream);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        .search-box { display: flex; gap: 15px; flex-wrap: wrap; }
+        .search-box input { flex: 1; padding: 12px 20px; border: 2px solid #ddd; border-radius: 12px; font-size: 1rem; }
+        .search-box button { padding: 12px 30px; background: var(--persian-green); color: white; border: none; border-radius: 12px; cursor: pointer; }
+        .filter-buttons { display: flex; gap: 15px; margin-top: 20px; flex-wrap: wrap; }
+        .filter-btn { padding: 8px 20px; background: #f0f0f0; border: none; border-radius: 25px; cursor: pointer; }
+        .filter-btn.active { background: var(--persian-gold); color: var(--persian-green); font-weight: bold; }
+        .travelogues-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; }
+        .travelogue-card {
+            background: var(--persian-cream);
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .travelogue-card:hover { transform: translateY(-5px); }
+        .travelogue-cover { width: 100%; height: 180px; object-fit: cover; background: linear-gradient(135deg, #2a9d8f, #0a5c4a); }
+        .travelogue-body { padding: 20px; }
+        .travelogue-title { color: var(--persian-green); font-size: 1.2rem; margin-bottom: 8px; }
+        .travelogue-meta { display: flex; justify-content: space-between; color: #888; font-size: 0.8rem; margin-bottom: 10px; }
+        .travelogue-excerpt { color: #555; line-height: 1.5; font-size: 0.9rem; margin-bottom: 12px; }
+        .travelogue-stats { display: flex; gap: 15px; color: #888; font-size: 0.8rem; padding-top: 10px; border-top: 1px solid #eee; }
+        .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 40px; flex-wrap: wrap; }
+        .page-btn { padding: 8px 15px; background: var(--persian-cream); border: none; border-radius: 8px; cursor: pointer; }
+        .page-btn.active { background: var(--persian-green); color: white; }
+        .loading, .empty-message { text-align: center; padding: 50px; background: var(--persian-cream); border-radius: 20px; }
+        footer { background: var(--persian-green); color: var(--persian-cream); text-align: center; padding: 20px; margin-top: 50px; }
+        @media (max-width: 768px) { .travelogues-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-container">
+        <a href="/" class="navbar-brand">🕌 گشت و گذار در ایران</a>
+        <ul class="nav-links">
+            <li><a href="/">خانه</a></li>
+            <li><a href="/places">🏛️ مکان‌ها</a></li>
+            <li><a href="/travelogues">📖 سفرنامه‌ها</a></li>
+            <li><a href="/login" id="loginBtn">ورود</a></li>
+            <li><a href="/register" id="registerBtn">ثبت نام</a></li>
+            <li><button id="logoutBtn" class="nav-btn logout-btn" style="display:none;">🚪 خروج</button></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="search-section">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="جستجو در سفرنامه‌ها...">
+            <button id="searchBtn">🔍 جستجو</button>
+        </div>
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-filter="latest">🆕 آخرین سفرنامه‌ها</button>
+            <button class="filter-btn" data-filter="most-viewed">👁️ پربازدیدترین</button>
+            <button class="filter-btn" data-filter="most-liked">❤️ پرلایک‌ترین</button>
+        </div>
+    </div>
+    <div id="traveloguesContainer"><div class="loading">⏳ در حال بارگذاری...</div></div>
+    <div id="pagination" class="pagination"></div>
+</div>
+
+<footer>
+    <p>🇮🇷 گشت و گذار در ایران - سفرنامه‌های سفر به ایران 🇮🇷</p>
+</footer>
+
+<script>
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    }
+
+    const token = getCookie('token');
+    const loginBtn = document.getElementById('loginBtn');
+    const registerBtn = document.getElementById('registerBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    if (token) {
+        if (loginBtn) loginBtn.style.display = 'none';
+        if (registerBtn) registerBtn.style.display = 'none';
+        if (logoutBtn) logoutBtn.style.display = 'inline-block';
+    }
+
+    logoutBtn?.addEventListener('click', () => {
+        document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        window.location.href = '/';
+    });
+
+    let currentPage = 0;
+    let currentFilter = 'latest';
+    let currentKeyword = '';
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentFilter = this.dataset.filter;
+            currentPage = 0;
+            loadTravelogues();
+        });
+    });
+
+    document.getElementById('searchBtn').addEventListener('click', () => {
+        currentKeyword = document.getElementById('searchInput').value.trim();
+        currentPage = 0;
+        loadTravelogues();
+    });
+
+    async function loadTravelogues() {
+        const container = document.getElementById('traveloguesContainer');
+        container.innerHTML = '<div class="loading">⏳ در حال بارگذاری...</div>';
+
+        try {
+            let url;
+            if (currentKeyword) {
+                url = `/api/travelogues/public/search?keyword=${encodeURIComponent(currentKeyword)}&page=${currentPage}&size=9`;
+                const res = await fetch(url);
+                if (res.ok) {
+                    const data = await res.json();
+                    displayTravelogues(data.content);
+                    displayPagination(data);
+                }
+            } else {
+                switch(currentFilter) {
+                    case 'most-viewed':
+                        url = `/api/travelogues/public/most-viewed?limit=9`;
+                        const res1 = await fetch(url);
+                        if (res1.ok) displayTravelogues(await res1.json());
+                        break;
+                    case 'most-liked':
+                        url = `/api/travelogues/public/most-liked?limit=9`;
+                        const res2 = await fetch(url);
+                        if (res2.ok) displayTravelogues(await res2.json());
+                        break;
+                    default:
+                        url = `/api/travelogues/public?page=${currentPage}&size=9`;
+                        const res3 = await fetch(url);
+                        if (res3.ok) {
+                            const data = await res3.json();
+                            displayTravelogues(data.content);
+                            displayPagination(data);
+                        }
+                }
+            }
+        } catch(e) { container.innerHTML = '<div class="empty-message">❌ خطا در ارتباط با سرور</div>'; }
+    }
+
+    function displayTravelogues(travelogues) {
+        const container = document.getElementById('traveloguesContainer');
+        if (!travelogues || travelogues.length === 0) {
+            container.innerHTML = '<div class="empty-message">📖 هیچ سفرنامه‌ای یافت نشد</div>';
+            return;
+        }
+        container.innerHTML = `<div class="travelogues-grid">${travelogues.map(t => `
+            <div class="travelogue-card" onclick="location.href='/travelogue/${t.id}'">
+                <img src="${t.coverImageUrl || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%232a9d8f%22/%3E%3Ctext x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22%3E📖%3C/text%3E%3C/svg%3E'}" class="travelogue-cover" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%232a9d8f%22/%3E%3Ctext x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22%3E📖%3C/text%3E%3C/svg%3E'">
+                <div class="travelogue-body">
+                    <h3 class="travelogue-title">${escapeHtml(t.title)}</h3>
+                    <div class="travelogue-meta"><span>✍️ ${escapeHtml(t.authorUsername)}</span><span>📅 ${new Date(t.createdAt).toLocaleDateString('fa-IR')}</span></div>
+                    <div class="travelogue-excerpt">${escapeHtml(t.content?.substring(0, 100))}...</div>
+                    <div class="travelogue-stats"><span>👁️ ${t.viewCount}</span><span>❤️ ${t.likeCount}</span></div>
+                </div>
+            </div>
+        `).join('')}</div>`;
+    }
+
+    function displayPagination(pageData) {
+        const pagination = document.getElementById('pagination');
+        if (!pageData || pageData.totalPages <= 1) { pagination.innerHTML = ''; return; }
+        let html = '';
+        for (let i = 0; i < pageData.totalPages; i++) {
+            html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i + 1}</button>`;
+        }
+        pagination.innerHTML = html;
+    }
+
+    window.goToPage = function(page) { currentPage = page; loadTravelogues(); window.scrollTo({ top: 0 }); };
+    function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+
+    loadTravelogues();
+</script>
+</body>
+</html>
