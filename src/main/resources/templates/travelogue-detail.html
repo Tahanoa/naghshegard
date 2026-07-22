@@ -3,290 +3,514 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>جزئیات سفرنامه | گشت و گذار در ایران</title>
+  <title>جزئیات سفرنامه | نقشه گرد</title>
+
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'persian-navy': '#0A0A1A',
+            'persian-dark': '#111128',
+            'persian-night': '#1A1A3A',
+            'persian-teal': '#1A6B6B',
+            'persian-turquoise': '#2A9D8F',
+            'persian-saffron': '#D4A373',
+            'persian-gold': '#C9A84C',
+            'persian-lapis': '#1B2A4A',
+            'persian-rose': '#BC6C8C',
+            'persian-cream': '#F5EDE0',
+          },
+          fontFamily: {
+            'persian': ['Vazirmatn', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     body {
-      font-family: 'Tahoma', 'Vazir', system-ui, sans-serif;
-      background: linear-gradient(135deg, #0a5c4a 0%, #1a7a5c 50%, #0a5c4a 100%);
+      font-family: 'Vazirmatn', system-ui, sans-serif;
+      background: linear-gradient(135deg, #0A0A1A 0%, #111128 50%, #0A0A1A 100%);
       min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
     }
 
-    :root {
-      --persian-green: #0a5c4a;
-      --persian-turquoise: #2a9d8f;
-      --persian-orange: #e76f51;
-      --persian-gold: #f4a261;
-      --persian-cream: #fefae0;
-      --persian-red: #bc4a2c;
-      --persian-brown: #8b5a2b;
+    /* پس‌زمینه با ستاره */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+              radial-gradient(1.5px 1.5px at 10% 20%, rgba(255,255,255,0.4), transparent),
+              radial-gradient(1px 1px at 25% 45%, rgba(255,255,255,0.3), transparent),
+              radial-gradient(2px 2px at 40% 10%, rgba(255,255,255,0.5), transparent),
+              radial-gradient(1px 1px at 55% 60%, rgba(255,255,255,0.2), transparent),
+              radial-gradient(1.5px 1.5px at 70% 30%, rgba(255,255,255,0.4), transparent),
+              radial-gradient(1px 1px at 85% 70%, rgba(255,255,255,0.3), transparent);
+      background-size: 100% 100%;
+      opacity: 0.3;
+      z-index: 0;
     }
 
+    /* Navbar */
     .navbar {
-      background: rgba(10, 92, 74, 0.95);
-      padding: 1rem 2rem;
+      background: rgba(10, 10, 26, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(201, 168, 76, 0.08);
       position: fixed;
       top: 0;
       right: 0;
       left: 0;
       z-index: 1000;
-    }
-
-    .navbar-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .navbar-brand {
-      color: var(--persian-gold);
-      font-size: 1.5rem;
-      font-weight: bold;
-      text-decoration: none;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 20px;
-      list-style: none;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .nav-links a, .nav-btn {
-      color: var(--persian-cream);
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 8px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-family: inherit;
-      font-size: 1rem;
-    }
-
-    .nav-links a:hover, .nav-btn:hover {
-      background: var(--persian-gold);
-      color: var(--persian-green);
-    }
-
-    .logout-btn:hover {
-      background: var(--persian-red);
-      color: white;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 100px 20px 50px;
-    }
-
-    /* گالری */
-    .gallery {
-      background: var(--persian-cream);
-      border-radius: 25px;
-      padding: 20px;
-      margin-bottom: 30px;
-    }
-
-    .gallery-title {
-      color: var(--persian-green);
-      margin-bottom: 15px;
-    }
-
-    .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 15px;
-    }
-
-    .gallery-img {
-      width: 100%;
-      height: 150px;
-      object-fit: cover;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: transform 0.3s;
-    }
-
-    .gallery-img:hover {
-      transform: scale(1.02);
-    }
-
-    /* محتوای سفرنامه */
-    .travelogue-content {
-      background: var(--persian-cream);
-      border-radius: 25px;
-      padding: 35px;
-      margin-bottom: 30px;
-    }
-
-    .travelogue-title {
-      color: var(--persian-green);
-      font-size: 2rem;
-      margin-bottom: 15px;
-    }
-
-    .travelogue-meta {
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      color: #888;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #eee;
-      margin-bottom: 25px;
-    }
-
-    .travelogue-text {
-      line-height: 1.9;
-      font-size: 1.05rem;
-      color: #333;
-    }
-
-    /* مکان‌های بازدید شده */
-    .visited-places {
-      background: var(--persian-cream);
-      border-radius: 25px;
-      padding: 25px;
-      margin-bottom: 30px;
-    }
-
-    .places-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 15px;
-    }
-
-    .place-chip {
-      background: var(--persian-green);
-      color: white;
-      padding: 8px 18px;
-      border-radius: 30px;
-      text-decoration: none;
-      transition: all 0.3s;
-    }
-
-    .place-chip:hover {
-      background: var(--persian-turquoise);
-      transform: translateY(-2px);
-    }
-
-    /* آمار و لایک */
-    .stats-section {
-      background: var(--persian-cream);
-      border-radius: 25px;
-      padding: 25px;
-      margin-bottom: 30px;
-      text-align: center;
-    }
-
-    .stats {
-      display: flex;
-      justify-content: center;
-      gap: 40px;
-      margin-bottom: 20px;
-    }
-
-    .stat-item {
-      text-align: center;
-    }
-
-    .stat-number {
-      font-size: 2rem;
-      font-weight: bold;
-      color: var(--persian-green);
-    }
-
-    .like-btn {
-      background: var(--persian-orange);
-      color: white;
-      border: none;
-      padding: 12px 30px;
-      border-radius: 30px;
-      font-size: 1.1rem;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .like-btn:hover {
-      background: var(--persian-red);
-      transform: scale(1.05);
-    }
-
-    .loading, .error-message {
-      text-align: center;
-      padding: 50px;
-      background: var(--persian-cream);
-      border-radius: 20px;
-    }
-
-    footer {
-      background: var(--persian-green);
-      color: var(--persian-cream);
-      text-align: center;
-      padding: 20px;
-      margin-top: 50px;
-    }
-
-    /* مودال عکس */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 2000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.9);
-      cursor: pointer;
-    }
-
-    .modal-content {
-      margin: auto;
-      display: block;
-      max-width: 90%;
-      max-height: 90%;
-      margin-top: 50px;
+      padding: 0.75rem 2rem;
     }
 
     @media (max-width: 768px) {
-      .travelogue-title { font-size: 1.5rem; }
-      .gallery-grid { grid-template-columns: 1fr 1fr; }
+      .navbar {
+        padding: 0.75rem 1rem;
+      }
+    }
+
+    /* Glass Card */
+    .glass-card {
+      background: rgba(26, 26, 58, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(201, 168, 76, 0.08);
+      border-radius: 24px;
+    }
+
+    .glass-card-light {
+      background: rgba(26, 26, 58, 0.4);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(201, 168, 76, 0.06);
+      border-radius: 20px;
+    }
+
+    /* ===== گالری اسلایدر ===== */
+    .gallery-container {
+      position: relative;
+      border-radius: 24px;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    .gallery-slider {
+      display: flex;
+      transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      touch-action: pan-y;
+    }
+
+    .gallery-slide {
+      min-width: 100%;
+      aspect-ratio: 16/9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1A2A4A, #2A4A6A);
+      position: relative;
+    }
+
+    .gallery-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .gallery-slide .placeholder-icon {
+      font-size: 5rem;
+      color: rgba(201, 168, 76, 0.15);
+    }
+
+    /* دکمه‌های ناوبری گالری */
+    .gallery-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .gallery-btn:hover {
+      background: rgba(201, 168, 76, 0.3);
+      border-color: rgba(201, 168, 76, 0.3);
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    .gallery-btn.prev {
+      right: 16px;
+    }
+
+    .gallery-btn.next {
+      left: 16px;
+    }
+
+    /* دات‌های پایین گالری */
+    .gallery-dots {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      z-index: 10;
+    }
+
+    .gallery-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      padding: 0;
+    }
+
+    .gallery-dot.active {
+      background: #C9A84C;
+      transform: scale(1.2);
+      box-shadow: 0 0 20px rgba(201, 168, 76, 0.3);
+    }
+
+    .gallery-dot:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    /* شمارنده عکس */
+    .gallery-counter {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      padding: 4px 14px;
+      border-radius: 50px;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.75rem;
+      z-index: 10;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* مودال بزرگنمایی */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      background: rgba(0, 0, 0, 0.92);
+      backdrop-filter: blur(20px);
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal-overlay img {
+      max-width: 95%;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-close:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.3);
+      transform: scale(1.1);
+    }
+
+    /* چپ‌چین */
+    .place-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(201, 168, 76, 0.1);
+      border: 1px solid rgba(201, 168, 76, 0.12);
+      color: #D4A373;
+      padding: 6px 16px;
+      border-radius: 50px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      font-size: 0.85rem;
+    }
+
+    .place-chip:hover {
+      background: rgba(201, 168, 76, 0.2);
+      border-color: rgba(201, 168, 76, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .place-chip i {
+      font-size: 0.7rem;
+    }
+
+    /* دکمه لایک */
+    .btn-like {
+      background: rgba(201, 168, 76, 0.08);
+      border: 1px solid rgba(201, 168, 76, 0.12);
+      color: #D4A373;
+      padding: 10px 24px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: inherit;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-like:hover {
+      background: rgba(201, 168, 76, 0.15);
+      transform: scale(1.02);
+    }
+
+    .btn-like:active {
+      transform: scale(0.95);
+    }
+
+    .btn-like.liked {
+      background: rgba(239, 68, 68, 0.08);
+      border-color: rgba(239, 68, 68, 0.15);
+      color: #F87171;
+    }
+
+    .btn-delete {
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.1);
+      color: #F87171;
+      padding: 10px 24px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: inherit;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-delete:hover {
+      background: rgba(239, 68, 68, 0.15);
+      transform: scale(1.02);
+    }
+
+    /* اسکرول بار */
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0A0A1A;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #C9A84C, #D4A373);
+      border-radius: 10px;
+    }
+
+    /* ریسپانسیو */
+    @media (max-width: 640px) {
+      .gallery-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 0.9rem;
+      }
+      .gallery-btn.prev {
+        right: 8px;
+      }
+      .gallery-btn.next {
+        left: 8px;
+      }
+      .gallery-dots {
+        bottom: 10px;
+        gap: 6px;
+      }
+      .gallery-dot {
+        width: 8px;
+        height: 8px;
+      }
+      .gallery-slide {
+        aspect-ratio: 4/3;
+      }
     }
   </style>
 </head>
 <body>
 
+<!-- ==================== NAVBAR ==================== -->
 <nav class="navbar">
-  <div class="navbar-container">
-    <a href="/" class="navbar-brand">🕌 گشت و گذار در ایران</a>
-    <ul class="nav-links">
-      <li><a href="/">خانه</a></li>
-      <li><a href="/travelogues">📖 سفرنامه‌ها</a></li>
-      <li><a href="/create-travelogue" id="createLink" style="display:none;">✍️ نوشتن سفرنامه</a></li>
-      <li><a href="/my-travelogues" id="myLink" style="display:none;">📚 سفرنامه‌های من</a></li>
-      <li><a href="/login" id="loginBtn">ورود</a></li>
-      <li><a href="/register" id="registerBtn">ثبت نام</a></li>
-      <li><button id="logoutBtn" class="nav-btn logout-btn" style="display:none;">🚪 خروج</button></li>
-    </ul>
+  <div class="max-w-7xl mx-auto flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <div class="relative">
+        <i class="fas fa-map-location-dot text-2xl text-persian-gold"></i>
+        <i class="fas fa-star text-[8px] text-persian-saffron absolute -top-1 -right-1"></i>
+      </div>
+      <a href="/" class="text-xl font-extrabold">
+        <span class="text-persian-gold">نقشه</span>
+        <span class="text-persian-cream">گرد</span>
+      </a>
+    </div>
+
+    <div class="hidden md:flex items-center gap-1">
+      <a href="/" class="text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-1.5">
+        <i class="fas fa-home"></i> خانه
+      </a>
+      <a href="/travelogues" class="text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-1.5">
+        <i class="fas fa-book-open"></i> سفرنامه‌ها
+      </a>
+
+      <div id="userLinks" style="display:none;" class="flex items-center gap-1 mr-2 pr-2 border-r border-persian-gold/20">
+        <a href="/create-travelogue" class="text-persian-cream/70 hover:text-persian-gold px-2.5 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-xs flex items-center gap-1.5">
+          <i class="fas fa-pen-fancy"></i> نوشتن
+        </a>
+        <a href="/my-travelogues" class="text-persian-cream/70 hover:text-persian-gold px-2.5 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-xs flex items-center gap-1.5">
+          <i class="fas fa-book"></i> سفرنامه‌ها
+        </a>
+      </div>
+
+      <div id="authButtons" class="flex items-center gap-1 mr-2 pr-2 border-r border-persian-gold/20">
+        <a href="/login" class="text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-1.5">
+          <i class="fas fa-sign-in-alt"></i> ورود
+        </a>
+        <a href="/register" class="bg-persian-gold/20 hover:bg-persian-gold/30 text-persian-gold px-4 py-2 rounded-xl transition-all duration-300 text-sm flex items-center gap-1.5 border border-persian-gold/20">
+          <i class="fas fa-user-plus"></i> ثبت‌نام
+        </a>
+      </div>
+
+      <button id="logoutBtn" style="display:none;" class="text-persian-cream/60 hover:text-red-400 px-3 py-2 rounded-xl hover:bg-red-500/10 transition-all duration-300 text-sm flex items-center gap-1.5">
+        <i class="fas fa-sign-out-alt"></i> خروج
+      </button>
+    </div>
+
+    <button id="hamburgerBtn" class="md:hidden text-persian-cream/60 hover:text-persian-cream transition-colors text-xl">
+      <i class="fas fa-bars"></i>
+    </button>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="mobileMenu" class="md:hidden hidden mt-3 pt-3 border-t border-persian-gold/10 space-y-1">
+    <a href="/" class="block text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-2">
+      <i class="fas fa-home w-5"></i> خانه
+    </a>
+    <a href="/travelogues" class="block text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-2">
+      <i class="fas fa-book-open w-5"></i> سفرنامه‌ها
+    </a>
+
+    <div id="mobileAuthButtons" class="border-t border-persian-gold/10 pt-2 space-y-1">
+      <a href="/login" class="block text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-2">
+        <i class="fas fa-sign-in-alt w-5"></i> ورود
+      </a>
+      <a href="/register" class="block bg-persian-gold/20 hover:bg-persian-gold/30 text-persian-gold px-3 py-2 rounded-xl transition-all duration-300 text-sm flex items-center gap-2 border border-persian-gold/20">
+        <i class="fas fa-user-plus w-5"></i> ثبت‌نام
+      </a>
+    </div>
+
+    <div id="mobileUserLinks" style="display:none;" class="border-t border-persian-gold/10 pt-2 space-y-1">
+      <a href="/create-travelogue" class="block text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-2">
+        <i class="fas fa-pen-fancy w-5"></i> نوشتن سفرنامه
+      </a>
+      <a href="/my-travelogues" class="block text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-2">
+        <i class="fas fa-book w-5"></i> سفرنامه‌های من
+      </a>
+    </div>
+
+    <button id="mobileLogoutBtn" style="display:none;" class="w-full text-red-400 hover:text-red-300 px-3 py-2 rounded-xl hover:bg-red-500/10 transition-all duration-300 text-sm flex items-center gap-2 text-right border-t border-persian-gold/10 pt-2">
+      <i class="fas fa-sign-out-alt w-5"></i> خروج
+    </button>
   </div>
 </nav>
 
-<div class="container">
-  <div id="loading" class="loading">⏳ در حال بارگذاری سفرنامه...</div>
+<!-- ==================== MAIN CONTENT ==================== -->
+<div class="relative z-10 max-w-4xl mx-auto px-4 pt-28 pb-12">
+
+  <div id="loading" class="flex items-center justify-center py-20">
+    <div class="text-center">
+      <i class="fas fa-spinner fa-spin text-4xl text-persian-gold/30 mb-4 block"></i>
+      <p class="text-persian-cream/30">در حال بارگذاری سفرنامه...</p>
+    </div>
+  </div>
+
   <div id="content" style="display: none;"></div>
+
 </div>
 
-<footer>
-  <p>🇮🇷 گشت و گذار در ایران - خواندن سفرنامه‌های سفر به ایران 🇮🇷</p>
+<!-- ==================== FOOTER ==================== -->
+<footer class="relative z-10 text-center text-persian-cream/20 text-xs py-6 border-t border-persian-gold/5 mt-8">
+  <p>
+    <i class="fas fa-heart text-persian-rose/30 ml-1"></i>
+    با افتخار برای ایران
+    <i class="fas fa-heart text-persian-rose/30 mr-1"></i>
+  </p>
+  <p class="mt-1">© ۱۴۰۴ نقشه گرد - تمامی حقوق محفوظ است</p>
 </footer>
 
+<!-- ==================== مودال بزرگنمایی ==================== -->
+<div id="imageModal" class="modal-overlay" onclick="closeModal()">
+  <button class="modal-close" onclick="closeModal()">
+    <i class="fas fa-times"></i>
+  </button>
+  <img id="modalImage" src="" alt="تصویر بزرگ">
+</div>
+
+<!-- ==================== JAVASCRIPT ==================== -->
 <script>
+  // ========== کوکی‌ها ==========
   function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
@@ -298,111 +522,454 @@
     document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
   }
 
-  const travelogueId = window.location.pathname.split('/').pop();
+  // ========== مدیریت احراز هویت ==========
   const token = getCookie('token');
-  let currentTravelogue = null;
+  const username = getCookie('username');
 
-  const createLink = document.getElementById('createLink');
-  const myLink = document.getElementById('myLink');
-  const loginBtn = document.getElementById('loginBtn');
-  const registerBtn = document.getElementById('registerBtn');
+  const authButtons = document.getElementById('authButtons');
+  const mobileAuthButtons = document.getElementById('mobileAuthButtons');
+  const userLinks = document.getElementById('userLinks');
+  const mobileUserLinks = document.getElementById('mobileUserLinks');
   const logoutBtn = document.getElementById('logoutBtn');
+  const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
 
   if (token) {
-    if (createLink) createLink.style.display = 'inline-block';
-    if (myLink) myLink.style.display = 'inline-block';
-    if (loginBtn) loginBtn.style.display = 'none';
-    if (registerBtn) registerBtn.style.display = 'none';
-    if (logoutBtn) logoutBtn.style.display = 'inline-block';
+    if (authButtons) authButtons.style.display = 'none';
+    if (mobileAuthButtons) mobileAuthButtons.style.display = 'none';
+    if (userLinks) userLinks.style.display = 'flex';
+    if (mobileUserLinks) mobileUserLinks.style.display = 'block';
+    if (logoutBtn) logoutBtn.style.display = 'inline-flex';
+    if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'block';
   }
 
-  logoutBtn?.addEventListener('click', () => {
+  function handleLogout() {
     deleteCookie('token');
     deleteCookie('username');
     deleteCookie('role');
     window.location.href = '/';
+  }
+
+  logoutBtn?.addEventListener('click', handleLogout);
+  mobileLogoutBtn?.addEventListener('click', handleLogout);
+
+  // ========== منوی موبایل ==========
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  let menuOpen = false;
+
+  hamburgerBtn?.addEventListener('click', () => {
+    menuOpen = !menuOpen;
+    mobileMenu.classList.toggle('hidden');
+    hamburgerBtn.innerHTML = menuOpen ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
   });
 
+  // ========== متغیرها ==========
+  const travelogueId = window.location.pathname.split('/').pop();
+  let currentTravelogue = null;
+  let currentSlideIndex = 0;
+  let isLiked = false;
+
+  // ========== توابع کمکی ==========
+  function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  function formatDate(dateString) {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('fa-IR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch {
+      return dateString;
+    }
+  }
+
+  // ========== گالری ==========
+  function initGallery(images) {
+    if (!images || images.length === 0) {
+      return `
+                <div class="gallery-container">
+                    <div class="gallery-slide" style="aspect-ratio: 16/9;">
+                        <div class="flex flex-col items-center justify-center gap-4">
+                            <i class="fas fa-book-open text-6xl text-persian-gold/10"></i>
+                            <p class="text-persian-cream/20 text-sm">تصویری برای این سفرنامه ثبت نشده است</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+    }
+
+    let html = `
+            <div class="gallery-container">
+                <div class="gallery-slider" id="gallerySlider">
+                    ${images.map((url, index) => `
+                        <div class="gallery-slide" data-index="${index}">
+                            <img src="${url}" alt="تصویر سفر ${index + 1}" loading="lazy" onclick="event.stopPropagation(); openModal('${url}')">
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="gallery-counter">
+                    <span id="currentCounter">${images.length > 0 ? 1 : 0}</span> / ${images.length}
+                </div>
+
+                ${images.length > 1 ? `
+                    <button class="gallery-btn prev" onclick="changeSlide(-1)">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <button class="gallery-btn next" onclick="changeSlide(1)">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+
+                    <div class="gallery-dots">
+                        ${images.map((_, index) => `
+                            <button class="gallery-dot ${index === 0 ? 'active' : ''}" onclick="goToSlide(${index})"></button>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            </div>
+        `;
+
+    return html;
+  }
+
+  function changeSlide(direction) {
+    const images = currentTravelogue?.photoUrls || [];
+    if (images.length === 0) return;
+
+    const totalSlides = images.length;
+    currentSlideIndex = (currentSlideIndex + direction + totalSlides) % totalSlides;
+    updateSlide();
+  }
+
+  function goToSlide(index) {
+    const images = currentTravelogue?.photoUrls || [];
+    if (images.length === 0 || index < 0 || index >= images.length) return;
+    currentSlideIndex = index;
+    updateSlide();
+  }
+
+  function updateSlide() {
+    const slider = document.getElementById('gallerySlider');
+    if (!slider) return;
+
+    const images = currentTravelogue?.photoUrls || [];
+    const totalSlides = images.length;
+
+    slider.style.transform = `translateX(${currentSlideIndex * 100}%)`;
+
+    // به‌روزرسانی دات‌ها
+    document.querySelectorAll('.gallery-dot').forEach((dot, index) => {
+      dot.classList.toggle('active', index === currentSlideIndex);
+    });
+
+    // به‌روزرسانی شمارنده
+    const counter = document.getElementById('currentCounter');
+    if (counter) {
+      counter.textContent = currentSlideIndex + 1;
+    }
+  }
+
+  // کشیدن لمسی برای گالری
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const galleryContainer = document.querySelector('.gallery-container');
+    if (galleryContainer) {
+      galleryContainer.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+
+      galleryContainer.addEventListener('touchend', function(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        const diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) {
+          if (diff > 0) {
+            changeSlide(1);
+          } else {
+            changeSlide(-1);
+          }
+        }
+      }, { passive: true });
+    }
+  });
+
+  // ========== مودال بزرگنمایی ==========
+  function openModal(src) {
+    const modal = document.getElementById('imageModal');
+    const img = document.getElementById('modalImage');
+    img.src = src;
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    const modal = document.getElementById('imageModal');
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+
+  // ========== بارگذاری سفرنامه ==========
   async function loadTravelogue() {
+    const loading = document.getElementById('loading');
+    const content = document.getElementById('content');
+
     try {
       const response = await fetch(`/api/travelogues/public/${travelogueId}`);
+
       if (response.ok) {
         currentTravelogue = await response.json();
         displayTravelogue();
       } else if (response.status === 404) {
-        document.getElementById('loading').innerHTML = '<div class="error-message">❌ سفرنامه مورد نظر یافت نشد</div>';
+        loading.innerHTML = `
+                    <div class="text-center py-12">
+                        <i class="fas fa-book-open text-6xl text-persian-gold/20 mb-4 block"></i>
+                        <h3 class="text-persian-cream/40 text-xl">سفرنامه مورد نظر یافت نشد</h3>
+                        <p class="text-persian-cream/20 text-sm mt-2">ممکن است سفرنامه حذف شده باشد</p>
+                        <a href="/travelogues" class="inline-flex items-center gap-2 mt-4 text-persian-gold hover:text-persian-saffron transition-colors">
+                            <i class="fas fa-arrow-right"></i> بازگشت به سفرنامه‌ها
+                        </a>
+                    </div>
+                `;
       } else {
-        document.getElementById('loading').innerHTML = '<div class="error-message">❌ خطا در دریافت سفرنامه</div>';
+        loading.innerHTML = `
+                    <div class="text-center py-12">
+                        <i class="fas fa-exclamation-triangle text-6xl text-persian-saffron/20 mb-4 block"></i>
+                        <h3 class="text-persian-cream/40 text-xl">خطا در دریافت سفرنامه</h3>
+                        <p class="text-persian-cream/20 text-sm mt-2">لطفاً مجدداً تلاش کنید</p>
+                    </div>
+                `;
       }
     } catch (error) {
-      document.getElementById('loading').innerHTML = '<div class="error-message">❌ خطا در ارتباط با سرور</div>';
+      console.error('Error loading travelogue:', error);
+      loading.innerHTML = `
+                <div class="text-center py-12">
+                    <i class="fas fa-wifi-slash text-6xl text-persian-saffron/20 mb-4 block"></i>
+                    <h3 class="text-persian-cream/40 text-xl">خطا در ارتباط با سرور</h3>
+                    <p class="text-persian-cream/20 text-sm mt-2">لطفاً اتصال اینترنت خود را بررسی کنید</p>
+                </div>
+            `;
     }
   }
 
+  // ========== نمایش سفرنامه ==========
   function displayTravelogue() {
     const t = currentTravelogue;
-    let galleryHtml = '';
-    if (t.photoUrls && t.photoUrls.length > 0) {
-      galleryHtml = `<div class="gallery"><h3 class="gallery-title">📸 گالری تصاویر سفر</h3><div class="gallery-grid">${t.photoUrls.map(url => `<img src="${url}" class="gallery-img" onclick="openModal('${url}')" loading="lazy">`).join('')}</div></div>`;
-    }
+    const loading = document.getElementById('loading');
+    const content = document.getElementById('content');
+
+    const isOwner = token && username === t.authorUsername;
+    const images = t.photoUrls || [];
+
+    // گالری
+    const galleryHtml = initGallery(images);
+
+    // مکان‌های بازدید شده
     let visitedPlacesHtml = '';
     if (t.visitedPlaceNames && t.visitedPlaceNames.length > 0) {
-      visitedPlacesHtml = `<div class="visited-places"><h3>📍 مکان‌های بازدید شده</h3><div class="places-list">${t.visitedPlaceNames.map((name, idx) => `<a href="/place/${t.visitedPlaceIds[idx]}" class="place-chip">🏛️ ${escapeHtml(name)}</a>`).join('')}</div></div>`;
+      visitedPlacesHtml = `
+                <div class="glass-card-light p-5">
+                    <h3 class="text-persian-cream/60 text-sm font-medium mb-3 flex items-center gap-2">
+                        <i class="fas fa-map-pin text-persian-gold"></i>
+                        مکان‌های بازدید شده
+                    </h3>
+                    <div class="flex flex-wrap gap-2">
+                        ${t.visitedPlaceNames.map((name, idx) => `
+                            <a href="/place/${t.visitedPlaceIds[idx]}" class="place-chip">
+                                <i class="fas fa-landmark"></i>
+                                ${escapeHtml(name)}
+                            </a>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
     }
-    const isOwner = token && getCookie('username') === t.authorUsername;
-    document.getElementById('content').innerHTML = `
-      ${galleryHtml}
-      <div class="travelogue-content">
-        <h1 class="travelogue-title">${escapeHtml(t.title)}</h1>
-        <div class="travelogue-meta"><span>✍️ نویسنده: ${escapeHtml(t.authorUsername)}</span><span>📅 تاریخ انتشار: ${new Date(t.createdAt).toLocaleDateString('fa-IR')}</span></div>
-        <div class="travelogue-text">${escapeHtml(t.content).replace(/\n/g, '<br>')}</div>
-      </div>
-      ${visitedPlacesHtml}
-      <div class="stats-section">
-        <div class="stats"><div class="stat-item"><div class="stat-number">${t.viewCount}</div><div>👁️ بازدید</div></div><div class="stat-item"><div class="stat-number" id="likeCount">${t.likeCount}</div><div>❤️ لایک</div></div></div>
-        ${token ? `<button class="like-btn" onclick="likeTravelogue()" id="likeBtn">❤️ لایک کردن</button>` : `<p><a href="/login" style="color: var(--persian-orange);">وارد شوید</a> تا بتوانید لایک کنید</p>`}
-        ${isOwner ? `<button class="like-btn" onclick="deleteTravelogue()" style="background: var(--persian-red); margin-top: 10px;">🗑️ حذف سفرنامه</button>` : ''}
-      </div>
-    `;
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('content').style.display = 'block';
+
+    content.innerHTML = `
+            <!-- گالری -->
+            <div class="mb-6">
+                ${galleryHtml}
+            </div>
+
+            <!-- محتوای سفرنامه -->
+            <div class="glass-card p-6 md:p-8 mb-6">
+                <h1 class="text-2xl md:text-3xl font-bold text-persian-cream mb-4">
+                    ${escapeHtml(t.title)}
+                </h1>
+
+                <div class="flex flex-wrap items-center justify-between gap-3 text-sm text-persian-cream/30 pb-4 mb-5 border-b border-persian-gold/5">
+                    <span>
+                        <i class="fas fa-user ml-1"></i>
+                        ${escapeHtml(t.authorUsername)}
+                    </span>
+                    <span>
+                        <i class="fas fa-calendar ml-1"></i>
+                        ${formatDate(t.createdAt)}
+                    </span>
+                    <span>
+                        <i class="fas fa-eye ml-1"></i>
+                        ${t.viewCount || 0} بازدید
+                    </span>
+                </div>
+
+                <div class="text-persian-cream/70 leading-relaxed text-sm md:text-base space-y-3">
+                    ${escapeHtml(t.content).replace(/\n/g, '<br>')}
+                </div>
+            </div>
+
+            <!-- مکان‌های بازدید شده -->
+            ${visitedPlacesHtml}
+
+            <!-- دکمه‌های تعامل -->
+            <div class="glass-card-light p-5 mt-6 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <span class="text-persian-cream/30 text-sm flex items-center gap-1">
+                        <i class="fas fa-heart text-rose-400/40"></i>
+                        <span id="likeCount" class="font-bold text-persian-cream/60">${t.likeCount || 0}</span>
+                    </span>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-3">
+                    ${token ? `
+                        <button class="btn-like" onclick="likeTravelogue()" id="likeBtn">
+                            <i class="fas fa-heart"></i>
+                            لایک کردن
+                        </button>
+                    ` : `
+                        <a href="/login" class="text-persian-cream/30 hover:text-persian-cream/50 transition-colors text-sm flex items-center gap-1">
+                            <i class="fas fa-sign-in-alt"></i>
+                            برای لایک کردن وارد شوید
+                        </a>
+                    `}
+
+                    ${isOwner ? `
+                        <button class="btn-delete" onclick="deleteTravelogue()">
+                            <i class="fas fa-trash-alt"></i>
+                            حذف سفرنامه
+                        </button>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+
+    loading.style.display = 'none';
+    content.style.display = 'block';
+
+    // ریست اسلایدر
+    currentSlideIndex = 0;
+
+    // اگر عکس وجود دارد، اسلایدر را به‌روزرسانی کن
+    if (images.length > 0) {
+      setTimeout(() => {
+        updateSlide();
+      }, 100);
+    }
   }
 
+  // ========== لایک ==========
   window.likeTravelogue = async function() {
-    if (!token) { window.location.href = '/login'; return; }
+    if (!token) {
+      window.location.href = '/login';
+      return;
+    }
+
+    const likeBtn = document.getElementById('likeBtn');
+    if (likeBtn) {
+      likeBtn.disabled = true;
+      likeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    }
+
     try {
-      const response = await fetch(`/api/travelogues/${travelogueId}/like`, { method: 'POST' });
+      const response = await fetch(`/api/travelogues/${travelogueId}/like`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
       if (response.ok) {
         const likeSpan = document.getElementById('likeCount');
-        if (likeSpan) likeSpan.textContent = parseInt(likeSpan.textContent) + 1;
-        alert('لایک شد!');
+        if (likeSpan) {
+          const currentCount = parseInt(likeSpan.textContent) || 0;
+          likeSpan.textContent = currentCount + 1;
+        }
+
+        if (likeBtn) {
+          likeBtn.innerHTML = '<i class="fas fa-heart"></i> لایک شد!';
+          likeBtn.classList.add('liked');
+          setTimeout(() => {
+            likeBtn.innerHTML = '<i class="fas fa-heart"></i> لایک کردن';
+            likeBtn.classList.remove('liked');
+            likeBtn.disabled = false;
+          }, 2000);
+        }
+      } else if (response.status === 409) {
+        // قبلاً لایک شده
+        if (likeBtn) {
+          likeBtn.innerHTML = '<i class="fas fa-heart"></i> قبلاً لایک کردید';
+          likeBtn.classList.add('liked');
+          setTimeout(() => {
+            likeBtn.innerHTML = '<i class="fas fa-heart"></i> لایک کردن';
+            likeBtn.classList.remove('liked');
+            likeBtn.disabled = false;
+          }, 2000);
+        }
+      } else {
+        const error = await response.text();
+        alert('خطا در لایک کردن: ' + error);
+        if (likeBtn) {
+          likeBtn.innerHTML = '<i class="fas fa-heart"></i> لایک کردن';
+          likeBtn.disabled = false;
+        }
       }
-    } catch (error) { alert('خطا در لایک کردن'); }
-  };
-
-  window.deleteTravelogue = async function() {
-    if (!confirm('آیا از حذف این سفرنامه مطمئن هستید؟')) return;
-    try {
-      const response = await fetch(`/api/travelogues/${travelogueId}`, { method: 'DELETE' });
-      if (response.ok) { alert('سفرنامه حذف شد'); window.location.href = '/my-travelogues'; }
-      else { alert('خطا در حذف'); }
-    } catch (error) { alert('خطا در ارتباط با سرور'); }
-  };
-
-  window.openModal = function(src) {
-    let modal = document.getElementById('imageModal');
-    if (!modal) {
-      const modalHtml = `<div id="imageModal" class="modal" onclick="closeModal()"><img class="modal-content" id="modalImg"></div>`;
-      document.body.insertAdjacentHTML('beforeend', modalHtml);
-      modal = document.getElementById('imageModal');
+    } catch (error) {
+      console.error('Error liking:', error);
+      alert('خطا در ارتباط با سرور');
+      if (likeBtn) {
+        likeBtn.innerHTML = '<i class="fas fa-heart"></i> لایک کردن';
+        likeBtn.disabled = false;
+      }
     }
-    document.getElementById('modalImg').src = src;
-    modal.style.display = 'flex';
   };
-  window.closeModal = function() { const modal = document.getElementById('imageModal'); if (modal) modal.style.display = 'none'; };
-  function escapeHtml(text) { if (!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
 
-  loadTravelogue();
+  // ========== حذف سفرنامه ==========
+  window.deleteTravelogue = async function() {
+    if (!confirm('آیا از حذف این سفرنامه مطمئن هستید؟ این عمل غیرقابل بازگشت است.')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/travelogues/${travelogueId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        alert('✅ سفرنامه با موفقیت حذف شد');
+        window.location.href = '/my-travelogues';
+      } else {
+        const error = await response.text();
+        alert('❌ خطا در حذف: ' + error);
+      }
+    } catch (error) {
+      console.error('Error deleting:', error);
+      alert('❌ خطا در ارتباط با سرور');
+    }
+  };
+
+  // ========== اجرا ==========
+  document.addEventListener('DOMContentLoaded', loadTravelogue);
 </script>
+
 </body>
 </html>

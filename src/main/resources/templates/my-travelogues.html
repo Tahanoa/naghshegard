@@ -1,98 +1,397 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html xmlns:th="http://www.thymeleaf.org" lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>سفرنامه‌های من | گشت و گذار در ایران</title>
+  <title>سفرنامه‌های من | نقشه گرد</title>
+
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'persian-navy': '#0A0A1A',
+            'persian-dark': '#111128',
+            'persian-night': '#1A1A3A',
+            'persian-teal': '#1A6B6B',
+            'persian-turquoise': '#2A9D8F',
+            'persian-saffron': '#D4A373',
+            'persian-gold': '#C9A84C',
+            'persian-lapis': '#1B2A4A',
+            'persian-rose': '#BC6C8C',
+            'persian-cream': '#F5EDE0',
+          },
+          fontFamily: {
+            'persian': ['Vazirmatn', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: 'Tahoma', 'Vazir', system-ui;
-      background: linear-gradient(135deg, #0a5c4a 0%, #1a7a5c 50%, #0a5c4a 100%);
+      font-family: 'Vazirmatn', system-ui, sans-serif;
+      background: linear-gradient(135deg, #0A0A1A 0%, #111128 50%, #0A0A1A 100%);
       min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
     }
-    :root {
-      --persian-green: #0a5c4a;
-      --persian-turquoise: #2a9d8f;
-      --persian-gold: #f4a261;
-      --persian-cream: #fefae0;
-      --persian-red: #bc4a2c;
+
+    /* پس‌زمینه با ستاره */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+              radial-gradient(1.5px 1.5px at 10% 20%, rgba(255,255,255,0.4), transparent),
+              radial-gradient(1px 1px at 25% 45%, rgba(255,255,255,0.3), transparent),
+              radial-gradient(2px 2px at 40% 10%, rgba(255,255,255,0.5), transparent),
+              radial-gradient(1px 1px at 55% 60%, rgba(255,255,255,0.2), transparent),
+              radial-gradient(1.5px 1.5px at 70% 30%, rgba(255,255,255,0.4), transparent),
+              radial-gradient(1px 1px at 85% 70%, rgba(255,255,255,0.3), transparent);
+      background-size: 100% 100%;
+      opacity: 0.3;
+      z-index: 0;
     }
+
+    /* Navbar */
     .navbar {
-      background: rgba(10, 92, 74, 0.95);
-      padding: 1rem 2rem;
+      background: rgba(10, 10, 26, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(201, 168, 76, 0.08);
       position: fixed;
       top: 0;
       right: 0;
       left: 0;
       z-index: 1000;
+      padding: 0.75rem 2rem;
     }
-    .navbar-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
+
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 0.75rem 1rem;
+      }
+    }
+
+    /* Glass Card for items */
+    .glass-card {
+      background: rgba(26, 26, 58, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(201, 168, 76, 0.08);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transform-style: preserve-3d;
+      perspective: 1000px;
+    }
+
+    .glass-card:hover {
+      transform: translateY(-8px) rotateX(2deg) rotateY(-2deg);
+      border-color: rgba(201, 168, 76, 0.2);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 30px rgba(201, 168, 76, 0.03);
+    }
+
+    /* Status Badge */
+    .status-badge {
+      display: inline-flex;
       align-items: center;
-      flex-wrap: wrap;
+      gap: 6px;
+      padding: 4px 14px;
+      border-radius: 50px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
     }
-    .navbar-brand { color: var(--persian-gold); font-size: 1.5rem; font-weight: bold; text-decoration: none; }
-    .nav-links { display: flex; gap: 20px; list-style: none; align-items: center; flex-wrap: wrap; }
-    .nav-links a, .nav-btn { color: var(--persian-cream); text-decoration: none; padding: 8px 16px; border-radius: 8px; background: none; border: none; cursor: pointer; font-family: inherit; font-size: 1rem; }
-    .nav-links a:hover, .nav-btn:hover { background: var(--persian-gold); color: var(--persian-green); }
-    .logout-btn:hover { background: var(--persian-red); color: white; }
-    .container { max-width: 1200px; margin: 0 auto; padding: 100px 20px 50px; }
-    .page-title { text-align: center; color: var(--persian-cream); font-size: 2rem; margin-bottom: 40px; }
-    .travelogues-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; }
-    .travelogue-card {
-      background: var(--persian-cream);
-      border-radius: 20px;
+
+    .status-approved {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      color: #34D399;
+    }
+
+    .status-pending {
+      background: rgba(251, 191, 36, 0.12);
+      border: 1px solid rgba(251, 191, 36, 0.2);
+      color: #FBBF24;
+    }
+
+    /* Image container */
+    .card-image-wrapper {
+      position: relative;
+      height: 200px;
       overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      transition: transform 0.3s;
+      background: linear-gradient(135deg, #1A2A4A, #2A4A6A);
     }
-    .travelogue-card:hover { transform: translateY(-5px); }
-    .card-cover { width: 100%; height: 180px; object-fit: cover; background: linear-gradient(135deg, #2a9d8f, #0a5c4a); }
-    .card-body { padding: 20px; }
-    .card-title { color: var(--persian-green); font-size: 1.2rem; margin-bottom: 8px; cursor: pointer; }
-    .card-title:hover { color: var(--persian-turquoise); }
-    .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; margin-bottom: 10px; }
-    .status-approved { background: var(--persian-turquoise); color: white; }
-    .status-pending { background: var(--persian-gold); color: #5a3a1a; }
-    .card-stats { display: flex; gap: 15px; color: #888; font-size: 0.8rem; margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; }
-    .delete-btn { background: var(--persian-red); color: white; border: none; padding: 8px; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 10px; }
-    .delete-btn:hover { background: #a03a20; }
-    .empty-message { text-align: center; padding: 50px; background: var(--persian-cream); border-radius: 20px; }
-    .loading { text-align: center; padding: 50px; background: var(--persian-cream); border-radius: 20px; }
-    footer { background: var(--persian-green); color: var(--persian-cream); text-align: center; padding: 20px; margin-top: 50px; }
-    @media (max-width: 768px) { .travelogues-grid { grid-template-columns: 1fr; } }
+
+    .card-image-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .glass-card:hover .card-image-wrapper img {
+      transform: scale(1.05);
+    }
+
+    .card-image-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      font-size: 4rem;
+      color: rgba(201, 168, 76, 0.2);
+    }
+
+    /* Stats */
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: rgba(245, 237, 224, 0.3);
+      font-size: 0.75rem;
+    }
+
+    .stat-item i {
+      font-size: 0.7rem;
+    }
+
+    /* Delete Button */
+    .btn-delete {
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.1);
+      color: #F87171;
+      transition: all 0.3s ease;
+      padding: 8px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.85rem;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-delete:hover {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.2);
+      transform: scale(1.02);
+    }
+
+    .btn-delete:active {
+      transform: scale(0.98);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 40px;
+      background: rgba(26, 26, 58, 0.4);
+      backdrop-filter: blur(8px);
+      border-radius: 24px;
+      border: 1px solid rgba(201, 168, 76, 0.06);
+    }
+
+    .empty-state .icon {
+      font-size: 4rem;
+      color: rgba(201, 168, 76, 0.15);
+      margin-bottom: 16px;
+    }
+
+    .empty-state h3 {
+      color: rgba(245, 237, 224, 0.4);
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+    }
+
+    .empty-state p {
+      color: rgba(245, 237, 224, 0.2);
+      font-size: 0.9rem;
+    }
+
+    .empty-state .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 20px;
+      padding: 12px 28px;
+      background: linear-gradient(135deg, #C9A84C, #D4A373);
+      color: #0A0A1A;
+      border: none;
+      border-radius: 16px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    .empty-state .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 40px rgba(201, 168, 76, 0.2);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0A0A1A;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #C9A84C, #D4A373);
+      border-radius: 10px;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .card-image-wrapper {
+        height: 160px;
+      }
+      .empty-state {
+        padding: 40px 20px;
+      }
+      .empty-state .icon {
+        font-size: 3rem;
+      }
+    }
   </style>
 </head>
 <body>
 
+<!-- ==================== NAVBAR ==================== -->
 <nav class="navbar">
-  <div class="navbar-container">
-    <a href="/" class="navbar-brand">🕌 گشت و گذار در ایران</a>
-    <ul class="nav-links">
-      <li><a href="/">خانه</a></li>
-      <li><a href="/places">🏛️ مکان‌ها</a></li>
-      <li><a href="/travelogues">📖 سفرنامه‌ها</a></li>
-      <li><a href="/add-place">➕ افزودن مکان</a></li>
-      <li><a href="/my-places">📍 مکان‌های من</a></li>
-      <li><a href="/create-travelogue">✍️ نوشتن سفرنامه</a></li>
-      <li><a href="/my-travelogues">📚 سفرنامه‌های من</a></li>
-      <li><button id="logoutBtn" class="nav-btn logout-btn">🚪 خروج</button></li>
-    </ul>
+  <div class="max-w-7xl mx-auto flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <div class="relative">
+        <i class="fas fa-map-location-dot text-2xl text-persian-gold"></i>
+        <i class="fas fa-star text-[8px] text-persian-saffron absolute -top-1 -right-1"></i>
+      </div>
+      <a href="/" class="text-xl font-extrabold">
+        <span class="text-persian-gold">نقشه</span>
+        <span class="text-persian-cream">گرد</span>
+      </a>
+    </div>
+
+    <div class="hidden md:flex items-center gap-1">
+      <a href="/" class="text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-1.5">
+        <i class="fas fa-home"></i> خانه
+      </a>
+      <a href="/places" class="text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-1.5">
+        <i class="fas fa-landmark"></i> مکان‌ها
+      </a>
+      <a href="/travelogues" class="text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-1.5">
+        <i class="fas fa-book-open"></i> سفرنامه‌ها
+      </a>
+      <a href="/add-place" class="text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-1.5">
+        <i class="fas fa-plus-circle"></i> افزودن مکان
+      </a>
+      <a href="/my-places" class="text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-1.5">
+        <i class="fas fa-map-pin"></i> مکان‌های من
+      </a>
+      <a href="/my-travelogues" class="text-persian-gold bg-persian-gold/10 px-3 py-2 rounded-xl transition-all duration-300 text-sm flex items-center gap-1.5 border border-persian-gold/20">
+        <i class="fas fa-book"></i> سفرنامه‌های من
+      </a>
+      <button id="logoutBtn" class="text-persian-cream/60 hover:text-red-400 px-3 py-2 rounded-xl hover:bg-red-500/10 transition-all duration-300 text-sm flex items-center gap-1.5">
+        <i class="fas fa-sign-out-alt"></i> خروج
+      </button>
+    </div>
+
+    <button id="hamburgerBtn" class="md:hidden text-persian-cream/60 hover:text-persian-cream transition-colors text-xl">
+      <i class="fas fa-bars"></i>
+    </button>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="mobileMenu" class="md:hidden hidden mt-3 pt-3 border-t border-persian-gold/10 space-y-1">
+    <a href="/" class="block text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-2">
+      <i class="fas fa-home w-5"></i> خانه
+    </a>
+    <a href="/places" class="block text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-2">
+      <i class="fas fa-landmark w-5"></i> مکان‌ها
+    </a>
+    <a href="/travelogues" class="block text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-2">
+      <i class="fas fa-book-open w-5"></i> سفرنامه‌ها
+    </a>
+    <a href="/add-place" class="block text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-2">
+      <i class="fas fa-plus-circle w-5"></i> افزودن مکان
+    </a>
+    <a href="/my-places" class="block text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-2">
+      <i class="fas fa-map-pin w-5"></i> مکان‌های من
+    </a>
+    <a href="/my-travelogues" class="block text-persian-gold bg-persian-gold/10 px-3 py-2 rounded-xl text-sm flex items-center gap-2 border border-persian-gold/20">
+      <i class="fas fa-book w-5"></i> سفرنامه‌های من
+    </a>
+    <button id="mobileLogoutBtn" class="w-full text-red-400 hover:text-red-300 px-3 py-2 rounded-xl hover:bg-red-500/10 transition-all duration-300 text-sm flex items-center gap-2 text-right">
+      <i class="fas fa-sign-out-alt w-5"></i> خروج
+    </button>
   </div>
 </nav>
 
-<div class="container">
-  <h1 class="page-title">📚 سفرنامه‌های من</h1>
-  <div id="traveloguesContainer"><div class="loading">⏳ در حال بارگذاری...</div></div>
+<!-- ==================== MAIN CONTENT ==================== -->
+<div class="relative z-10 max-w-7xl mx-auto px-4 pt-28 pb-12">
+
+  <!-- Page Header -->
+  <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-10">
+    <div>
+      <h1 class="text-3xl md:text-4xl font-bold text-persian-cream flex items-center gap-3">
+        <i class="fas fa-book text-persian-gold"></i>
+        سفرنامه‌های من
+      </h1>
+      <p class="text-persian-cream/40 text-sm mt-1">
+        تمام سفرنامه‌هایی که شما به سایت اضافه کرده‌اید
+      </p>
+    </div>
+    <a href="/create-travelogue" class="inline-flex items-center gap-2 bg-persian-gold/10 hover:bg-persian-gold/20 text-persian-gold px-5 py-3 rounded-2xl transition-all duration-300 border border-persian-gold/20 hover:border-persian-gold/40 text-sm font-medium">
+      <i class="fas fa-plus-circle"></i>
+      نوشتن سفرنامه جدید
+    </a>
+  </div>
+
+  <!-- Travelogues Grid -->
+  <div id="traveloguesContainer">
+    <div class="flex items-center justify-center py-20">
+      <div class="text-center">
+        <i class="fas fa-spinner fa-spin text-4xl text-persian-gold/30 mb-4 block"></i>
+        <p class="text-persian-cream/30">در حال بارگذاری سفرنامه‌ها...</p>
+      </div>
+    </div>
+  </div>
+
 </div>
 
-<footer>🇮🇷 گشت و گذار در ایران - سفرنامه‌های شما 🇮🇷</footer>
+<!-- ==================== FOOTER ==================== -->
+<footer class="relative z-10 text-center text-persian-cream/20 text-xs py-6 border-t border-persian-gold/5 mt-8">
+  <p>
+    <i class="fas fa-heart text-persian-rose/30 ml-1"></i>
+    با افتخار برای ایران
+    <i class="fas fa-heart text-persian-rose/30 mr-1"></i>
+  </p>
+  <p class="mt-1">© ۱۴۰۴ نقشه گرد - تمامی حقوق محفوظ است</p>
+</footer>
 
+<!-- ==================== JAVASCRIPT ==================== -->
 <script>
+  // ========== کوکی‌ها ==========
   function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
@@ -104,76 +403,234 @@
     document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
   }
 
+  // ========== بررسی توکن ==========
   const token = getCookie('token');
-  if (!token) window.location.href = '/login';
+  if (!token) {
+    window.location.href = '/login';
+  }
 
-  document.getElementById('logoutBtn').addEventListener('click', () => {
+  // ========== خروج ==========
+  function handleLogout() {
     deleteCookie('token');
     deleteCookie('username');
     deleteCookie('role');
     window.location.href = '/';
+  }
+
+  document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+  document.getElementById('mobileLogoutBtn').addEventListener('click', handleLogout);
+
+  // ========== منوی موبایل ==========
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  let menuOpen = false;
+
+  hamburgerBtn?.addEventListener('click', () => {
+    menuOpen = !menuOpen;
+    mobileMenu.classList.toggle('hidden');
+    hamburgerBtn.innerHTML = menuOpen ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
   });
 
-  async function loadMyTravelogues() {
+  // ========== توابع کمکی ==========
+  function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  function formatDate(dateString) {
+    if (!dateString) return '';
     try {
-      // ====== مهم: اینجا از آدرس سفرنامه‌های من استفاده می‌شود ======
-      const res = await fetch('/api/travelogues/my-travelogues');
-      if (res.status === 401) { deleteCookie('token'); window.location.href = '/login'; return; }
-      if (res.ok) {
-        const travelogues = await res.json();
-        displayTravelogues(travelogues);
-      } else {
-        document.getElementById('traveloguesContainer').innerHTML = '<div class="empty-message">❌ خطا در دریافت اطلاعات</div>';
-      }
-    } catch(e) {
-      document.getElementById('traveloguesContainer').innerHTML = '<div class="empty-message">❌ خطا در ارتباط با سرور</div>';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('fa-IR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch {
+      return dateString;
     }
   }
 
+  // ========== بارگذاری سفرنامه‌ها ==========
+  async function loadMyTravelogues() {
+    const container = document.getElementById('traveloguesContainer');
+
+    try {
+      const response = await fetch('/api/travelogues/my-travelogues', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.status === 401) {
+        deleteCookie('token');
+        window.location.href = '/login';
+        return;
+      }
+
+      if (response.ok) {
+        const travelogues = await response.json();
+        displayTravelogues(travelogues);
+      } else {
+        container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon"><i class="fas fa-exclamation-triangle"></i></div>
+                        <h3>خطا در دریافت اطلاعات</h3>
+                        <p>لطفاً مجدداً تلاش کنید</p>
+                    </div>
+                `;
+      }
+    } catch (error) {
+      console.error('Error loading travelogues:', error);
+      container.innerHTML = `
+                <div class="empty-state">
+                    <div class="icon"><i class="fas fa-wifi-slash"></i></div>
+                    <h3>خطا در ارتباط با سرور</h3>
+                    <p>لطفاً اتصال اینترنت خود را بررسی کنید</p>
+                </div>
+            `;
+    }
+  }
+
+  // ========== نمایش سفرنامه‌ها ==========
   function displayTravelogues(travelogues) {
     const container = document.getElementById('traveloguesContainer');
+
     if (!travelogues || travelogues.length === 0) {
-      container.innerHTML = '<div class="empty-message">📖 شما هنوز سفرنامه‌ای ننوشته‌اید<br><a href="/create-travelogue">✍️ اولین سفرنامه خود را بنویسید</a></div>';
+      container.innerHTML = `
+                <div class="empty-state">
+                    <div class="icon"><i class="fas fa-book-open"></i></div>
+                    <h3>شما هنوز سفرنامه‌ای ننوشته‌اید</h3>
+                    <p>اولین سفرنامه خود را بنویسید و تجربیات سفرتان را به اشتراک بگذارید</p>
+                    <a href="/create-travelogue" class="btn-primary">
+                        <i class="fas fa-pen-fancy"></i>
+                        نوشتن اولین سفرنامه
+                    </a>
+                </div>
+            `;
       return;
     }
 
-    container.innerHTML = `<div class="travelogues-grid">${travelogues.map(t => `
-            <div class="travelogue-card">
-                <img src="${t.coverImageUrl || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%232a9d8f%22/%3E%3Ctext x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22%3E📖%3C/text%3E%3C/svg%3E'}" class="card-cover" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%232a9d8f%22/%3E%3Ctext x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22%3E📖%3C/text%3E%3C/svg%3E'">
-                <div class="card-body">
-                    <span class="status-badge ${t.approved ? 'status-approved' : 'status-pending'}">${t.approved ? '✓ تایید شده' : '⏳ در انتظار تایید'}</span>
-                    <h3 class="card-title" onclick="location.href='/travelogue/${t.id}'">${escapeHtml(t.title)}</h3>
-                    <p>${escapeHtml(t.content?.substring(0, 100))}${(t.content?.length || 0) > 100 ? '...' : ''}</p>
-                    <div class="card-stats">
-                        <span>👁️ ${t.viewCount}</span>
-                        <span>❤️ ${t.likeCount}</span>
-                        <span>📅 ${new Date(t.createdAt).toLocaleDateString('fa-IR')}</span>
-                    </div>
-                    <button class="delete-btn" onclick="deleteTravelogue(${t.id})">🗑️ حذف سفرنامه</button>
-                </div>
+    container.innerHTML = `
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                ${travelogues.map(t => {
+      const statusClass = t.approved ? 'status-approved' : 'status-pending';
+      const statusIcon = t.approved ? 'fa-check-circle' : 'fa-clock';
+      const statusText = t.approved ? 'تایید شده' : 'در انتظار تایید';
+      const coverUrl = t.coverImageUrl || null;
+
+      return `
+                        <div class="glass-card rounded-2xl overflow-hidden">
+                            <div class="card-image-wrapper">
+                                ${coverUrl ?
+              `<img src="${coverUrl}" alt="${escapeHtml(t.title)}" onerror="this.parentElement.innerHTML='<div class=\\'card-image-placeholder\\'><i class=\\'fas fa-book-open\\'></i></div>'">` :
+              `<div class="card-image-placeholder"><i class="fas fa-book-open"></i></div>`
+      }
+                            </div>
+
+                            <div class="p-5">
+                                <div class="flex items-start justify-between gap-2 mb-2">
+                                    <h3 class="text-lg font-bold text-persian-cream hover:text-persian-gold transition-colors cursor-pointer flex-1"
+                                        onclick="location.href='/travelogue/${t.id}'">
+                                        ${escapeHtml(t.title)}
+                                    </h3>
+                                    <span class="status-badge ${statusClass} flex-shrink-0">
+                                        <i class="fas ${statusIcon}"></i>
+                                        ${statusText}
+                                    </span>
+                                </div>
+
+                                <p class="text-persian-cream/40 text-sm leading-relaxed line-clamp-2 mb-3">
+                                    ${escapeHtml((t.content || '').substring(0, 120))}${(t.content || '').length > 120 ? '...' : ''}
+                                </p>
+
+                                <div class="flex items-center gap-4 mb-4 pt-3 border-t border-persian-gold/5">
+                                    <span class="stat-item">
+                                        <i class="fas fa-eye"></i>
+                                        ${t.viewCount || 0}
+                                    </span>
+                                    <span class="stat-item">
+                                        <i class="fas fa-heart text-rose-400/40"></i>
+                                        ${t.likeCount || 0}
+                                    </span>
+                                    <span class="stat-item">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        ${formatDate(t.createdAt)}
+                                    </span>
+                                </div>
+
+                                <button class="btn-delete" onclick="deleteTravelogue(${t.id})">
+                                    <i class="fas fa-trash-alt"></i>
+                                    حذف سفرنامه
+                                </button>
+                            </div>
+                        </div>
+                    `;
+    }).join('')}
             </div>
-        `).join('')}</div>`;
+        `;
   }
 
+  // ========== حذف سفرنامه ==========
   window.deleteTravelogue = async function(id) {
-    if (!confirm('آیا از حذف این سفرنامه مطمئن هستید؟')) return;
+    if (!confirm('آیا از حذف این سفرنامه مطمئن هستید؟ این عمل غیرقابل بازگشت است.')) {
+      return;
+    }
+
     try {
-      const res = await fetch(`/api/travelogues/${id}`, { method: 'DELETE' });
-      if (res.ok) {
-        alert('سفرنامه حذف شد');
+      const response = await fetch(`/api/travelogues/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.status === 401) {
+        deleteCookie('token');
+        window.location.href = '/login';
+        return;
+      }
+
+      if (response.ok) {
+        showToast('✅ سفرنامه با موفقیت حذف شد', 'success');
         loadMyTravelogues();
       } else {
-        const error = await res.text();
-        alert('خطا در حذف: ' + error);
+        const error = await response.text();
+        showToast('❌ خطا در حذف: ' + error, 'error');
       }
-    } catch(e) {
-      alert('خطا در ارتباط با سرور');
+    } catch (error) {
+      showToast('❌ خطا در ارتباط با سرور', 'error');
     }
   };
 
-  function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+  // ========== Toast Notification ==========
+  function showToast(message, type = 'info') {
+    const colors = {
+      success: 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400',
+      error: 'bg-rose-500/20 border-rose-500/30 text-rose-400',
+      info: 'bg-sky-500/20 border-sky-500/30 text-sky-400'
+    };
 
-  loadMyTravelogues();
+    const toast = document.createElement('div');
+    toast.className = `fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-2xl backdrop-blur-xl border ${colors[type] || colors.info} text-sm font-medium transition-all duration-500 transform translate-y-20 opacity-0`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+      toast.classList.remove('translate-y-20', 'opacity-0');
+    }, 10);
+
+    setTimeout(() => {
+      toast.classList.add('translate-y-20', 'opacity-0');
+      setTimeout(() => toast.remove(), 500);
+    }, 4000);
+  }
+
+  // ========== اجرا ==========
+  document.addEventListener('DOMContentLoaded', loadMyTravelogues);
 </script>
+
 </body>
 </html>

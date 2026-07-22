@@ -1,158 +1,511 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html xmlns:th="http://www.thymeleaf.org" lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>جزئیات مکان گردشگری | گشت و گذار در ایران</title>
+    <title>جزئیات مکان | نقشه گرد</title>
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'persian-navy': '#0A0A1A',
+                        'persian-dark': '#111128',
+                        'persian-night': '#1A1A3A',
+                        'persian-teal': '#1A6B6B',
+                        'persian-turquoise': '#2A9D8F',
+                        'persian-saffron': '#D4A373',
+                        'persian-gold': '#C9A84C',
+                        'persian-lapis': '#1B2A4A',
+                        'persian-rose': '#BC6C8C',
+                        'persian-cream': '#F5EDE0',
+                    },
+                    fontFamily: {
+                        'persian': ['Vazirmatn', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Tahoma', 'Vazir', system-ui;
-            background: linear-gradient(135deg, #0a5c4a 0%, #1a7a5c 50%, #0a5c4a 100%);
+            font-family: 'Vazirmatn', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0A0A1A 0%, #111128 50%, #0A0A1A 100%);
             min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
         }
-        :root {
-            --persian-green: #0a5c4a;
-            --persian-turquoise: #2a9d8f;
-            --persian-orange: #e76f51;
-            --persian-gold: #f4a261;
-            --persian-cream: #fefae0;
-            --persian-red: #bc4a2c;
+
+        /* پس‌زمینه با ستاره */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                    radial-gradient(1.5px 1.5px at 10% 20%, rgba(255,255,255,0.4), transparent),
+                    radial-gradient(1px 1px at 25% 45%, rgba(255,255,255,0.3), transparent),
+                    radial-gradient(2px 2px at 40% 10%, rgba(255,255,255,0.5), transparent),
+                    radial-gradient(1px 1px at 55% 60%, rgba(255,255,255,0.2), transparent),
+                    radial-gradient(1.5px 1.5px at 70% 30%, rgba(255,255,255,0.4), transparent),
+                    radial-gradient(1px 1px at 85% 70%, rgba(255,255,255,0.3), transparent);
+            background-size: 100% 100%;
+            opacity: 0.3;
+            z-index: 0;
         }
+
+        /* Navbar */
         .navbar {
-            background: rgba(10, 92, 74, 0.95);
-            padding: 1rem 2rem;
+            background: rgba(10, 10, 26, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(201, 168, 76, 0.08);
             position: fixed;
             top: 0;
             right: 0;
             left: 0;
             z-index: 1000;
+            padding: 0.75rem 2rem;
         }
-        .navbar-container {
-            max-width: 1200px;
-            margin: 0 auto;
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0.75rem 1rem;
+            }
+        }
+
+        /* Glass Card */
+        .glass-card {
+            background: rgba(26, 26, 58, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(201, 168, 76, 0.08);
+        }
+
+        .glass-input {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(201, 168, 76, 0.12);
+            color: #F5EDE0;
+            transition: all 0.3s ease;
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .glass-input:focus {
+            outline: none;
+            border-color: #C9A84C;
+            box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.08);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .glass-input::placeholder {
+            color: rgba(245, 237, 224, 0.25);
+        }
+
+        .glass-select {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(201, 168, 76, 0.12);
+            color: #F5EDE0;
+            transition: all 0.3s ease;
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='rgba(245,237,224,0.3)' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: left 16px center;
+        }
+
+        .glass-select:focus {
+            outline: none;
+            border-color: #C9A84C;
+            box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.08);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .glass-select option {
+            background: #1A1A3A;
+            color: #F5EDE0;
+        }
+
+        /* ===== گالری اسلایدر ===== */
+        .gallery-slider {
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .gallery-slider .slides {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .navbar-brand { color: var(--persian-gold); font-size: 1.5rem; font-weight: bold; text-decoration: none; }
-        .nav-links { display: flex; gap: 20px; list-style: none; flex-wrap: wrap; align-items: center; }
-        .nav-links a, .nav-btn { color: var(--persian-cream); text-decoration: none; padding: 8px 16px; border-radius: 8px; background: none; border: none; cursor: pointer; font-family: inherit; font-size: 1rem; }
-        .nav-links a:hover, .nav-btn:hover { background: var(--persian-gold); color: var(--persian-green); }
-        .logout-btn:hover { background: var(--persian-red); color: white; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 100px 20px 50px; }
-        .gallery {
-            background: var(--persian-cream);
-            border-radius: 25px;
-            padding: 20px;
-            margin-bottom: 30px;
+
+        .gallery-slider .slide {
+            min-width: 100%;
+            aspect-ratio: 16/9;
+            position: relative;
         }
-        .gallery-title { color: var(--persian-green); margin-bottom: 15px; }
-        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
-        .gallery-img { width: 100%; height: 180px; object-fit: cover; border-radius: 12px; cursor: pointer; }
-        .place-info {
-            background: var(--persian-cream);
-            border-radius: 25px;
-            padding: 30px;
-            margin-bottom: 30px;
+
+        .gallery-slider .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
-        .place-name { color: var(--persian-green); font-size: 2rem; margin-bottom: 15px; }
-        .place-description { color: #333; line-height: 1.8; margin-bottom: 20px; }
-        .stars { color: var(--persian-gold); font-size: 1.3rem; margin: 10px 0; }
-        .place-stats { display: flex; gap: 30px; margin: 20px 0; padding: 15px 0; border-top: 1px solid #eee; border-bottom: 1px solid #eee; }
-        .stat-item { text-align: center; }
-        .stat-number { font-size: 1.5rem; font-weight: bold; color: var(--persian-green); }
-        .like-btn {
-            background: var(--persian-orange);
+
+        .gallery-slider .slide .slide-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 30px 20px 20px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+        }
+
+        .gallery-slider .slide .slide-counter {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .gallery-slider .slide-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: white;
-            border: none;
-            padding: 10px 25px;
-            border-radius: 30px;
             cursor: pointer;
-            margin-top: 10px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
         }
-        .like-btn:hover { background: var(--persian-red); }
-        .map-container {
-            background: var(--persian-cream);
-            border-radius: 25px;
-            padding: 20px;
-            margin-bottom: 30px;
+
+        .gallery-slider .slide-nav:hover {
+            background: rgba(201, 168, 76, 0.3);
+            border-color: rgba(201, 168, 76, 0.3);
         }
-        #map { height: 350px; border-radius: 15px; }
-        .google-map-link {
-            display: inline-block;
-            margin-top: 15px;
-            background: var(--persian-green);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 30px;
-            text-decoration: none;
+
+        .gallery-slider .slide-nav.prev {
+            right: 16px;
         }
-        .reviews-section {
-            background: var(--persian-cream);
-            border-radius: 25px;
-            padding: 30px;
-            margin-bottom: 30px;
+
+        .gallery-slider .slide-nav.next {
+            left: 16px;
         }
+
+        .gallery-slider .dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 16px 0 8px;
+        }
+
+        .gallery-slider .dots .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(245, 237, 224, 0.15);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+
+        .gallery-slider .dots .dot.active {
+            background: #C9A84C;
+            width: 28px;
+            border-radius: 10px;
+        }
+
+        .gallery-slider .dots .dot:hover {
+            background: rgba(201, 168, 76, 0.4);
+        }
+
+        /* ===== ستاره‌ها ===== */
+        .stars-display {
+            color: #C9A84C;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+        }
+
+        .stars-display .empty-star {
+            color: rgba(245, 237, 224, 0.1);
+        }
+
+        /* ===== دکمه‌ها ===== */
+        .btn-primary {
+            background: linear-gradient(135deg, #C9A84C, #D4A373);
+            color: #0A0A1A;
+            transition: all 0.3s ease;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(201, 168, 76, 0.2);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: rgba(201, 168, 76, 0.08);
+            color: #D4A373;
+            border: 1px solid rgba(201, 168, 76, 0.12);
+            transition: all 0.3s ease;
+            padding: 10px 24px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(201, 168, 76, 0.15);
+        }
+
+        .btn-secondary.liked {
+            background: rgba(231, 111, 81, 0.15);
+            border-color: rgba(231, 111, 81, 0.2);
+            color: #E76F51;
+        }
+
+        .btn-secondary.liked:hover {
+            background: rgba(231, 111, 81, 0.25);
+        }
+
+        /* ===== نظرات ===== */
         .review-card {
-            background: #f9f9f9;
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-right: 4px solid var(--persian-gold);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(201, 168, 76, 0.06);
+            border-radius: 16px;
+            padding: 16px 20px;
+            transition: all 0.3s ease;
         }
-        .review-user { color: var(--persian-green); font-weight: bold; margin-bottom: 8px; }
-        .review-stars { color: var(--persian-gold); font-size: 0.9rem; }
-        .add-review-form {
-            background: var(--persian-cream);
-            border-radius: 25px;
-            padding: 30px;
+
+        .review-card:hover {
+            border-color: rgba(201, 168, 76, 0.12);
         }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; color: var(--persian-green); font-weight: bold; margin-bottom: 5px; }
-        select, textarea { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 10px; font-family: inherit; }
-        .btn-submit { background: var(--persian-green); color: white; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; }
-        .loading, .error-message { text-align: center; padding: 50px; background: var(--persian-cream); border-radius: 20px; }
-        .alert { padding: 12px; border-radius: 10px; margin-bottom: 20px; display: none; }
-        .alert-success { background: #d4edda; color: #155724; }
-        .alert-danger { background: #f8d7da; color: #721c24; }
-        footer { background: var(--persian-green); color: var(--persian-cream); text-align: center; padding: 20px; margin-top: 50px; }
-        @media (max-width: 768px) { .place-name { font-size: 1.5rem; } .gallery-grid { grid-template-columns: 1fr; } }
+
+        /* ===== نقشه ===== */
+        #map {
+            height: 350px;
+            border-radius: 16px;
+            z-index: 1;
+        }
+
+        /* ===== اسکرول بار ===== */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0A0A1A;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #C9A84C, #D4A373);
+            border-radius: 10px;
+        }
+
+        /* ===== ریسپانسیو ===== */
+        @media (max-width: 640px) {
+            .gallery-slider .slide-nav {
+                width: 36px;
+                height: 36px;
+                font-size: 0.8rem;
+            }
+            .gallery-slider .slide-nav.prev {
+                right: 8px;
+            }
+            .gallery-slider .slide-nav.next {
+                left: 8px;
+            }
+            .glass-card {
+                padding: 16px !important;
+            }
+            #map {
+                height: 250px;
+            }
+        }
     </style>
 </head>
 <body>
 
+<!-- ==================== NAVBAR ==================== -->
 <nav class="navbar">
-    <div class="navbar-container">
-        <a href="/" class="navbar-brand">🕌 گشت و گذار در ایران</a>
-        <ul class="nav-links">
-            <li><a href="/">خانه</a></li>
-            <li><a href="/places">🏛️ مکان‌ها</a></li>
-            <li><a href="/travelogues">📖 سفرنامه‌ها</a></li>
-            <li><a href="/add-place" id="addPlaceLink" style="display:none;">➕ افزودن مکان</a></li>
-            <li><a href="/my-places" id="myPlacesLink" style="display:none;">📍 مکان‌های من</a></li>
-            <li><a href="/create-travelogue" id="createLink" style="display:none;">✍️ نوشتن سفرنامه</a></li>
-            <li><a href="/my-travelogues" id="myLink" style="display:none;">📚 سفرنامه‌های من</a></li>
-            <li><a href="/login" id="loginBtn">ورود</a></li>
-            <li><a href="/register" id="registerBtn">ثبت نام</a></li>
-            <li><button id="logoutBtn" class="nav-btn logout-btn" style="display:none;">🚪 خروج</button></li>
-        </ul>
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="relative">
+                <i class="fas fa-map-location-dot text-2xl text-persian-gold"></i>
+                <i class="fas fa-star text-[8px] text-persian-saffron absolute -top-1 -right-1"></i>
+            </div>
+            <a href="/" class="text-xl font-extrabold">
+                <span class="text-persian-gold">نقشه</span>
+                <span class="text-persian-cream">گرد</span>
+            </a>
+        </div>
+
+        <div class="hidden md:flex items-center gap-1">
+            <a href="/" class="text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-1.5">
+                <i class="fas fa-home"></i> خانه
+            </a>
+            <a href="/places" class="text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-1.5">
+                <i class="fas fa-landmark"></i> مکان‌ها
+            </a>
+            <a href="/travelogues" class="text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-1.5">
+                <i class="fas fa-book-open"></i> سفرنامه‌ها
+            </a>
+
+            <div id="userLinks" style="display:none;" class="flex items-center gap-1 mr-2 pr-2 border-r border-persian-gold/20">
+                <a href="/add-place" class="text-persian-cream/70 hover:text-persian-gold px-2.5 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-xs flex items-center gap-1.5">
+                    <i class="fas fa-plus-circle"></i> افزودن
+                </a>
+                <a href="/my-places" class="text-persian-cream/70 hover:text-persian-gold px-2.5 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-xs flex items-center gap-1.5">
+                    <i class="fas fa-map-pin"></i> مکان‌ها
+                </a>
+                <a href="/create-travelogue" class="text-persian-cream/70 hover:text-persian-gold px-2.5 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-xs flex items-center gap-1.5">
+                    <i class="fas fa-pen-fancy"></i> نوشتن
+                </a>
+                <a href="/my-travelogues" class="text-persian-cream/70 hover:text-persian-gold px-2.5 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-xs flex items-center gap-1.5">
+                    <i class="fas fa-book"></i> سفرنامه‌ها
+                </a>
+            </div>
+
+            <div id="authButtons" class="flex items-center gap-1 mr-2 pr-2 border-r border-persian-gold/20">
+                <a href="/login" class="text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-1.5">
+                    <i class="fas fa-sign-in-alt"></i> ورود
+                </a>
+                <a href="/register" class="bg-persian-gold/20 hover:bg-persian-gold/30 text-persian-gold px-4 py-2 rounded-xl transition-all duration-300 text-sm flex items-center gap-1.5 border border-persian-gold/20">
+                    <i class="fas fa-user-plus"></i> ثبت‌نام
+                </a>
+            </div>
+
+            <button id="logoutBtn" style="display:none;" class="text-persian-cream/60 hover:text-red-400 px-3 py-2 rounded-xl hover:bg-red-500/10 transition-all duration-300 text-sm flex items-center gap-1.5">
+                <i class="fas fa-sign-out-alt"></i> خروج
+            </button>
+        </div>
+
+        <button id="hamburgerBtn" class="md:hidden text-persian-cream/60 hover:text-persian-cream transition-colors text-xl">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="md:hidden hidden mt-3 pt-3 border-t border-persian-gold/10 space-y-1">
+        <a href="/" class="block text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-2">
+            <i class="fas fa-home w-5"></i> خانه
+        </a>
+        <a href="/places" class="block text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-2">
+            <i class="fas fa-landmark w-5"></i> مکان‌ها
+        </a>
+        <a href="/travelogues" class="block text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-2">
+            <i class="fas fa-book-open w-5"></i> سفرنامه‌ها
+        </a>
+
+        <div id="mobileUserLinks" style="display:none;" class="border-t border-persian-gold/10 pt-2 space-y-1">
+            <a href="/add-place" class="block text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-2">
+                <i class="fas fa-plus-circle w-5"></i> افزودن مکان
+            </a>
+            <a href="/my-places" class="block text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-2">
+                <i class="fas fa-map-pin w-5"></i> مکان‌های من
+            </a>
+            <a href="/create-travelogue" class="block text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-2">
+                <i class="fas fa-pen-fancy w-5"></i> نوشتن سفرنامه
+            </a>
+            <a href="/my-travelogues" class="block text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-2">
+                <i class="fas fa-book w-5"></i> سفرنامه‌های من
+            </a>
+        </div>
+
+        <div id="mobileAuthButtons" class="border-t border-persian-gold/10 pt-2 space-y-1">
+            <a href="/login" class="block text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-2">
+                <i class="fas fa-sign-in-alt w-5"></i> ورود
+            </a>
+            <a href="/register" class="block bg-persian-gold/20 hover:bg-persian-gold/30 text-persian-gold px-3 py-2 rounded-xl transition-all duration-300 text-sm flex items-center gap-2 border border-persian-gold/20">
+                <i class="fas fa-user-plus w-5"></i> ثبت‌نام
+            </a>
+        </div>
+
+        <button id="mobileLogoutBtn" style="display:none;" class="w-full text-red-400 hover:text-red-300 px-3 py-2 rounded-xl hover:bg-red-500/10 transition-all duration-300 text-sm flex items-center gap-2 text-right border-t border-persian-gold/10 pt-2">
+            <i class="fas fa-sign-out-alt w-5"></i> خروج
+        </button>
     </div>
 </nav>
 
-<div class="container">
-    <div id="loading" class="loading">⏳ در حال بارگذاری...</div>
+<!-- ==================== MAIN CONTENT ==================== -->
+<div class="relative z-10 max-w-5xl mx-auto px-4 pt-28 pb-12">
+
+    <div id="loading" class="flex items-center justify-center py-20">
+        <div class="text-center">
+            <i class="fas fa-spinner fa-spin text-4xl text-persian-gold/30 mb-4 block"></i>
+            <p class="text-persian-cream/30">در حال بارگذاری...</p>
+        </div>
+    </div>
+
     <div id="placeContent" style="display: none;"></div>
+
 </div>
 
-<footer>🇮🇷 گشت و گذار در ایران - کشف زیبایی‌های میهن عزیزمان 🇮🇷</footer>
+<!-- ==================== FOOTER ==================== -->
+<footer class="relative z-10 text-center text-persian-cream/20 text-xs py-6 border-t border-persian-gold/5 mt-8">
+    <p>
+        <i class="fas fa-heart text-persian-rose/30 ml-1"></i>
+        با افتخار برای ایران
+        <i class="fas fa-heart text-persian-rose/30 mr-1"></i>
+    </p>
+    <p class="mt-1">© ۱۴۰۴ نقشه گرد - تمامی حقوق محفوظ است</p>
+</footer>
 
+<!-- ==================== JAVASCRIPT ==================== -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    const placeId = window.location.pathname.split('/').pop();
-
+    // ========== کوکی‌ها ==========
     function getCookie(name) {
         const value = `; ${document.cookie}`;
         const parts = value.split(`; ${name}=`);
@@ -164,105 +517,325 @@
         document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     }
 
+    // ========== متغیرها ==========
+    const placeId = window.location.pathname.split('/').pop();
     const token = getCookie('token');
     let map = null;
+    let currentSlide = 0;
+    let isLiked = false;
+    let likeCount = 0;
 
-    // منو
-    const addPlaceLink = document.getElementById('addPlaceLink');
-    const myPlacesLink = document.getElementById('myPlacesLink');
-    const createLink = document.getElementById('createLink');
-    const myLink = document.getElementById('myLink');
-    const loginBtn = document.getElementById('loginBtn');
-    const registerBtn = document.getElementById('registerBtn');
+    // ========== مدیریت احراز هویت ==========
+    const userLinks = document.getElementById('userLinks');
+    const mobileUserLinks = document.getElementById('mobileUserLinks');
+    const authButtons = document.getElementById('authButtons');
+    const mobileAuthButtons = document.getElementById('mobileAuthButtons');
     const logoutBtn = document.getElementById('logoutBtn');
+    const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
 
     if (token) {
-        if (addPlaceLink) addPlaceLink.style.display = 'inline-block';
-        if (myPlacesLink) myPlacesLink.style.display = 'inline-block';
-        if (createLink) createLink.style.display = 'inline-block';
-        if (myLink) myLink.style.display = 'inline-block';
-        if (loginBtn) loginBtn.style.display = 'none';
-        if (registerBtn) registerBtn.style.display = 'none';
-        if (logoutBtn) logoutBtn.style.display = 'inline-block';
+        if (userLinks) userLinks.style.display = 'flex';
+        if (mobileUserLinks) mobileUserLinks.style.display = 'block';
+        if (authButtons) authButtons.style.display = 'none';
+        if (mobileAuthButtons) mobileAuthButtons.style.display = 'none';
+        if (logoutBtn) logoutBtn.style.display = 'inline-flex';
+        if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'block';
     }
 
-    logoutBtn?.addEventListener('click', () => {
+    function handleLogout() {
         deleteCookie('token');
         deleteCookie('username');
         deleteCookie('role');
         window.location.href = '/';
-    });
-
-    function displayStars(rating) {
-        if (!rating || rating === 0) return '☆☆☆☆☆ (0/5)';
-        const full = Math.floor(rating);
-        return '★'.repeat(full) + '☆'.repeat(5 - full) + ` (${rating.toFixed(1)}/5)`;
     }
 
-    async function loadPlace() {
+    logoutBtn?.addEventListener('click', handleLogout);
+    mobileLogoutBtn?.addEventListener('click', handleLogout);
+
+    // ========== منوی موبایل ==========
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    let menuOpen = false;
+
+    hamburgerBtn?.addEventListener('click', () => {
+        menuOpen = !menuOpen;
+        mobileMenu.classList.toggle('hidden');
+        hamburgerBtn.innerHTML = menuOpen ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+    });
+
+    // ========== توابع کمکی ==========
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function displayStars(rating) {
+        if (!rating || rating === 0) {
+            return '<span class="stars-display">☆☆☆☆☆</span>';
+        }
+        const full = Math.floor(rating);
+        const empty = 5 - full;
+        let html = '<span class="stars-display">';
+        html += '★'.repeat(full);
+        html += '<span class="empty-star">' + '☆'.repeat(empty) + '</span>';
+        html += '</span>';
+        return html;
+    }
+
+    function formatDate(dateString) {
+        if (!dateString) return '';
         try {
-            const res = await fetch(`/api/places/${placeId}`);
-            if (res.ok) {
-                const place = await res.json();
-                displayPlace(place);
-                loadReviews();
-            } else {
-                document.getElementById('loading').innerHTML = '<div class="error-message">❌ مکان مورد نظر یافت نشد</div>';
-            }
-        } catch(e) {
-            document.getElementById('loading').innerHTML = '<div class="error-message">❌ خطا در ارتباط با سرور</div>';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('fa-IR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        } catch {
+            return dateString;
         }
     }
 
+    // ========== گالری اسلایدر ==========
+    function initGallery(images, containerId) {
+        const container = document.getElementById(containerId);
+        if (!images || images.length === 0) {
+            container.innerHTML = `
+                <div class="gallery-slider">
+                    <div class="slides">
+                        <div class="slide">
+                            <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1A2A4A,#2A4A6A);">
+                                <i class="fas fa-landmark" style="font-size:4rem;color:rgba(201,168,76,0.2);"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        let slidesHtml = images.map((url, index) => `
+            <div class="slide">
+                <img src="${url}" alt="تصویر ${index + 1}" loading="lazy" onerror="this.parentElement.innerHTML='<div style=\\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1A2A4A,#2A4A6A);\\'><i class=\\'fas fa-image\\' style=\\'font-size:4rem;color:rgba(201,168,76,0.15);\\'></i></div>'">
+                <div class="slide-counter">${index + 1} / ${images.length}</div>
+            </div>
+        `).join('');
+
+        let dotsHtml = images.map((_, index) => `
+            <button class="dot ${index === 0 ? 'active' : ''}" onclick="goToSlide(${index})" aria-label="اسلاید ${index + 1}"></button>
+        `).join('');
+
+        container.innerHTML = `
+            <div class="gallery-slider">
+                <div class="slides" id="slidesContainer">
+                    ${slidesHtml}
+                </div>
+                ${images.length > 1 ? `
+                    <button class="slide-nav prev" onclick="changeSlide(-1)" aria-label="قبلی">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <button class="slide-nav next" onclick="changeSlide(1)" aria-label="بعدی">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                ` : ''}
+                ${images.length > 1 ? `<div class="dots">${dotsHtml}</div>` : ''}
+            </div>
+        `;
+
+        currentSlide = 0;
+        updateSlidePosition();
+    }
+
+    window.changeSlide = function(direction) {
+        const images = document.querySelectorAll('.gallery-slider .slide');
+        if (images.length === 0) return;
+        currentSlide = (currentSlide + direction + images.length) % images.length;
+        updateSlidePosition();
+        updateDots();
+    };
+
+    window.goToSlide = function(index) {
+        currentSlide = index;
+        updateSlidePosition();
+        updateDots();
+    };
+
+    function updateSlidePosition() {
+        const slidesContainer = document.getElementById('slidesContainer');
+        if (!slidesContainer) return;
+        slidesContainer.style.transform = `translateX(${currentSlide * 100}%)`;
+    }
+
+    function updateDots() {
+        document.querySelectorAll('.gallery-slider .dot').forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentSlide);
+        });
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowRight') changeSlide(-1);
+        if (e.key === 'ArrowLeft') changeSlide(1);
+    });
+
+    // ========== بارگذاری مکان ==========
+    async function loadPlace() {
+        try {
+            const response = await fetch(`/api/places/${placeId}`);
+            if (response.ok) {
+                const place = await response.json();
+                displayPlace(place);
+                loadReviews();
+            } else {
+                document.getElementById('loading').innerHTML = `
+                    <div class="text-center py-16">
+                        <i class="fas fa-exclamation-triangle text-4xl text-persian-saffron/30 mb-4 block"></i>
+                        <p class="text-persian-cream/40">مکان مورد نظر یافت نشد</p>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('Error loading place:', error);
+            document.getElementById('loading').innerHTML = `
+                <div class="text-center py-16">
+                    <i class="fas fa-wifi-slash text-4xl text-persian-saffron/30 mb-4 block"></i>
+                    <p class="text-persian-cream/40">خطا در ارتباط با سرور</p>
+                </div>
+            `;
+        }
+    }
+
+    // ========== نمایش مکان ==========
     function displayPlace(place) {
         document.getElementById('loading').style.display = 'none';
         document.getElementById('placeContent').style.display = 'block';
 
-        let galleryHtml = '';
-        if (place.photoUrls && place.photoUrls.length > 0) {
-            galleryHtml = `
-                <div class="gallery">
-                    <h3 class="gallery-title">📸 گالری تصاویر</h3>
-                    <div class="gallery-grid">
-                        ${place.photoUrls.map(url => `<img src="${url}" class="gallery-img" onclick="openModal('${url}')" loading="lazy">`).join('')}
-                    </div>
+        likeCount = place.likeCount || 0;
+
+        const isApproved = place.status === 'APPROVED';
+        const statusBadge = isApproved
+            ? '<span class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs px-3 py-1 rounded-full"><i class="fas fa-check-circle ml-1"></i> تایید شده</span>'
+            : '<span class="bg-persian-gold/10 border border-persian-gold/20 text-persian-gold text-xs px-3 py-1 rounded-full"><i class="fas fa-clock ml-1"></i> در انتظار تایید</span>';
+
+        const galleryContainer = document.getElementById('galleryContainer') || document.createElement('div');
+        galleryContainer.id = 'galleryContainer';
+
+        let mapHtml = '';
+        if (place.latitude && place.longitude) {
+            mapHtml = `
+                <div class="mt-6">
+                    <h4 class="text-persian-cream/60 text-sm font-medium mb-3">
+                        <i class="fas fa-map-location-dot text-persian-gold ml-1"></i>
+                        موقعیت مکانی
+                    </h4>
+                    <div id="map"></div>
+                </div>
+            `;
+            setTimeout(() => initMap(place.latitude, place.longitude, place.name), 300);
+        } else if (place.googleMapsLink) {
+            mapHtml = `
+                <div class="mt-6 text-center">
+                    <a href="${place.googleMapsLink}" target="_blank" class="inline-flex items-center gap-2 text-persian-gold/60 hover:text-persian-gold transition-colors border border-persian-gold/20 hover:border-persian-gold/40 px-6 py-3 rounded-2xl">
+                        <i class="fas fa-map-location-dot"></i>
+                        مشاهده در گوگل مپ
+                        <i class="fas fa-arrow-left text-xs"></i>
+                    </a>
                 </div>
             `;
         }
 
-        let mapHtml = '';
-        if (place.latitude && place.longitude) {
-            mapHtml = `<div class="map-container"><h3 class="map-title">📍 موقعیت مکانی</h3><div id="map"></div></div>`;
-            setTimeout(() => initMap(place.latitude, place.longitude, place.name), 100);
-        } else if (place.googleMapsLink) {
-            mapHtml = `<div class="map-container"><a href="${place.googleMapsLink}" target="_blank" class="google-map-link">🗺️ مشاهده در گوگل مپ</a></div>`;
-        } else {
-            mapHtml = `<div class="map-container"><div style="text-align:center;">📍 موقعیت مکانی ثبت نشده است</div></div>`;
-        }
-
         document.getElementById('placeContent').innerHTML = `
-            ${galleryHtml}
-            <div class="place-info">
-                <h1 class="place-name">${escapeHtml(place.name)}</h1>
-                <div class="stars">${displayStars(place.averageRating)}</div>
-                <p class="place-description">${escapeHtml(place.description)}</p>
-                <div class="place-stats">
-                    <div class="stat-item"><div class="stat-number">${place.viewCount || 0}</div><div>👁️ بازدید</div></div>
-                    <div class="stat-item"><div class="stat-number" id="likeCount">${place.likeCount || 0}</div><div>❤️ لایک</div></div>
-                    <div class="stat-item"><div class="stat-number">${place.averageRating?.toFixed(1) || 0}</div><div>⭐ امتیاز</div></div>
-                </div>
-                ${token ? `<button id="likeBtn" class="like-btn">❤️ لایک کردن</button>` : ''}
-                <div class="place-meta">👤 معرفی شده توسط: ${escapeHtml(place.introducerUsername)}</div>
+            <div class="glass-card rounded-2xl p-4 md:p-6 mb-6" id="galleryWrapper">
+                <div id="galleryContainer"></div>
             </div>
+
+            <div class="glass-card rounded-2xl p-6 md:p-8 mb-6">
+                <div class="flex flex-wrap items-start justify-between gap-4 mb-4">
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-bold text-persian-cream">${escapeHtml(place.name)}</h1>
+                        <div class="flex items-center gap-3 mt-2 flex-wrap">
+                            <div class="flex items-center gap-1 text-persian-cream/40 text-sm">
+                                <i class="fas fa-user ml-1"></i>
+                                ${escapeHtml(place.introducerUsername)}
+                            </div>
+                            ${statusBadge}
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-persian-gold">${place.averageRating?.toFixed(1) || '۰'}</div>
+                            <div class="text-persian-cream/30 text-xs">امتیاز</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-1 mb-4">
+                    ${displayStars(place.averageRating)}
+                </div>
+
+                <p class="text-persian-cream/70 leading-relaxed text-sm md:text-base">${escapeHtml(place.description)}</p>
+
+                <div class="flex flex-wrap items-center gap-6 mt-6 pt-5 border-t border-persian-gold/5">
+                    <div class="flex items-center gap-2 text-persian-cream/30 text-sm">
+                        <i class="fas fa-eye"></i>
+                        <span>${place.viewCount || 0} بازدید</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-persian-cream/30 text-sm">
+                        <i class="fas fa-heart text-rose-400/40"></i>
+                        <span id="likeCount">${likeCount} لایک</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-persian-cream/30 text-sm">
+                        <i class="fas fa-comment"></i>
+                        <span id="reviewCount">۰ نظر</span>
+                    </div>
+                </div>
+
+                ${token ? `
+                    <div class="flex flex-wrap gap-3 mt-5">
+                        <button id="likeBtn" class="btn-secondary flex items-center gap-2 ${isLiked ? 'liked' : ''}" ${isLiked ? 'disabled' : ''}>
+                            <i class="fas fa-heart"></i>
+                            ${isLiked ? 'لایک شده' : 'لایک کردن'}
+                        </button>
+                    </div>
+                ` : `
+                    <div class="mt-5 text-persian-cream/30 text-sm">
+                        <i class="fas fa-info-circle ml-1"></i>
+                        برای لایک کردن <a href="/login" class="text-persian-gold hover:underline">وارد شوید</a>
+                    </div>
+                `}
+            </div>
+
             ${mapHtml}
-            <div class="reviews-section"><h3 class="reviews-title">💬 نظرات کاربران</h3><div id="reviewsContainer"></div></div>
+
+            <div class="glass-card rounded-2xl p-6 md:p-8 mt-6">
+                <h3 class="text-xl font-bold text-persian-cream mb-6 flex items-center gap-3">
+                    <i class="fas fa-comments text-persian-gold"></i>
+                    نظرات کاربران
+                    <span id="reviewCountBadge" class="text-sm text-persian-cream/30 font-normal"></span>
+                </h3>
+                <div id="reviewsContainer">
+                    <div class="text-center py-8 text-persian-cream/30">
+                        <i class="fas fa-spinner fa-spin text-2xl mb-2 block"></i>
+                        در حال بارگذاری نظرات...
+                    </div>
+                </div>
+            </div>
+
             ${token ? `
-                <div class="add-review-form">
-                    <h3 class="form-title">✍️ ثبت نظر جدید</h3>
-                    <div id="reviewAlert" class="alert alert-success"></div>
-                    <form id="reviewForm">
-                        <div class="form-group"><label>امتیاز شما (1 تا 5)</label>
-                            <select id="rating" required>
+                <div class="glass-card rounded-2xl p-6 md:p-8 mt-6">
+                    <h3 class="text-xl font-bold text-persian-cream mb-4 flex items-center gap-3">
+                        <i class="fas fa-pen-fancy text-persian-gold"></i>
+                        ثبت نظر جدید
+                    </h3>
+                    <div id="reviewAlert" class="hidden"></div>
+                    <form id="reviewForm" class="space-y-4">
+                        <div>
+                            <label class="block text-persian-cream/60 text-sm font-medium mb-1.5">
+                                <i class="fas fa-star text-persian-gold ml-1"></i>
+                                امتیاز شما
+                            </label>
+                            <select id="rating" required class="glass-select">
                                 <option value="">انتخاب کنید</option>
                                 <option value="5">⭐⭐⭐⭐⭐ - عالی</option>
                                 <option value="4">⭐⭐⭐⭐ - خوب</option>
@@ -271,94 +844,225 @@
                                 <option value="1">⭐ - خیلی ضعیف</option>
                             </select>
                         </div>
-                        <div class="form-group"><label>نظر شما</label><textarea id="comment" placeholder="نظر خود را در مورد این مکان بنویسید..."></textarea></div>
-                        <button type="submit" class="btn-submit">✨ ثبت نظر ✨</button>
+                        <div>
+                            <label class="block text-persian-cream/60 text-sm font-medium mb-1.5">
+                                <i class="fas fa-align-right text-persian-gold ml-1"></i>
+                                نظر شما
+                            </label>
+                            <textarea id="comment" class="glass-input glass-textarea" rows="3" placeholder="نظر خود را در مورد این مکان بنویسید..."></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary flex items-center gap-2">
+                            <i class="fas fa-paper-plane"></i>
+                            ثبت نظر
+                        </button>
                     </form>
                 </div>
-            ` : '<p style="text-align:center;"><a href="/login">وارد شوید</a> تا بتوانید نظر دهید و لایک کنید</p>'}
+            ` : `
+                <div class="glass-card rounded-2xl p-6 md:p-8 mt-6 text-center">
+                    <p class="text-persian-cream/30 text-sm">
+                        <i class="fas fa-info-circle ml-1"></i>
+                        برای ثبت نظر <a href="/login" class="text-persian-gold hover:underline">وارد شوید</a>
+                    </p>
+                </div>
+            `}
         `;
 
-        if (token) {
-            document.getElementById('likeBtn')?.addEventListener('click', async () => {
-                const res = await fetch(`/api/places/${placeId}/like`, { method: 'POST' });
-                if (res.ok) {
-                    const likeSpan = document.getElementById('likeCount');
-                    likeSpan.textContent = parseInt(likeSpan.textContent) + 1;
-                    alert('❤️ لایک شد!');
-                }
-            });
+        initGallery(place.photoUrls || [], 'galleryContainer');
 
-            document.getElementById('reviewForm')?.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const rating = document.getElementById('rating').value;
-                const comment = document.getElementById('comment').value;
-                if (!rating) { showReviewAlert('لطفاً امتیاز را انتخاب کنید', 'danger'); return; }
-                const res = await fetch('/api/reviews/add', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ placeId: parseInt(placeId), rating: parseInt(rating), comment })
-                });
-                if (res.ok) {
-                    showReviewAlert('نظر شما ثبت شد!', 'success');
-                    document.getElementById('reviewForm').reset();
-                    setTimeout(() => loadReviews(), 1000);
-                } else { showReviewAlert('خطا در ثبت نظر', 'danger'); }
+        // ===== دکمه لایک با جلوگیری از اسپم =====
+        if (token) {
+            const likeBtn = document.getElementById('likeBtn');
+
+            // بررسی وضعیت لایک کاربر از سرور
+            checkLikeStatus();
+
+            likeBtn?.addEventListener('click', async function() {
+                // جلوگیری از کلیک چندباره
+                if (this.disabled) return;
+                if (isLiked) {
+                    showToast('شما قبلاً این مکان را لایک کرده‌اید', 'info');
+                    return;
+                }
+
+                // غیرفعال کردن موقت دکمه
+                this.disabled = true;
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال ثبت...';
+
+                try {
+                    const response = await fetch(`/api/places/${placeId}/like`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (response.ok) {
+                        isLiked = true;
+                        likeCount++;
+
+                        // به‌روزرسانی دکمه
+                        this.classList.add('liked');
+                        this.innerHTML = '<i class="fas fa-heart"></i> لایک شده';
+                        this.disabled = true; // غیرفعال کردن بعد از لایک
+
+                        // به‌روزرسانی تعداد
+                        const likeSpan = document.getElementById('likeCount');
+                        likeSpan.textContent = `${likeCount} لایک`;
+
+                        showToast('❤️ لایک شد!', 'success');
+                    } else if (response.status === 401) {
+                        deleteCookie('token');
+                        window.location.href = '/login';
+                    } else if (response.status === 409) {
+                        // Conflict - کاربر قبلاً لایک کرده
+                        isLiked = true;
+                        this.classList.add('liked');
+                        this.innerHTML = '<i class="fas fa-heart"></i> لایک شده';
+                        this.disabled = true;
+                        showToast('شما قبلاً این مکان را لایک کرده‌اید', 'info');
+                    } else {
+                        const error = await response.text();
+                        showToast(error || 'خطا در لایک کردن', 'error');
+                        this.disabled = false;
+                        this.innerHTML = originalText;
+                    }
+                } catch (error) {
+                    showToast('خطا در ارتباط با سرور', 'error');
+                    this.disabled = false;
+                    this.innerHTML = originalText;
+                }
             });
         }
     }
 
+    // ========== بررسی وضعیت لایک ==========
+    async function checkLikeStatus() {
+        if (!token) return;
+
+        try {
+            const response = await fetch(`/api/places/${placeId}/like-status`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                isLiked = data.liked || false;
+
+                const likeBtn = document.getElementById('likeBtn');
+                if (likeBtn && isLiked) {
+                    likeBtn.classList.add('liked');
+                    likeBtn.innerHTML = '<i class="fas fa-heart"></i> لایک شده';
+                    likeBtn.disabled = true;
+                }
+            }
+        } catch (error) {
+            console.error('Error checking like status:', error);
+        }
+    }
+
+    // ========== نقشه ==========
     function initMap(lat, lng, name) {
         if (map) map.remove();
         map = L.map('map').setView([lat, lng], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-        L.marker([lat, lng]).addTo(map).bindPopup(`<b>${name}</b>`).openPopup();
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+        L.marker([lat, lng]).addTo(map)
+            .bindPopup(`<b>${escapeHtml(name)}</b>`)
+            .openPopup();
     }
 
+    // ========== بارگذاری نظرات ==========
     async function loadReviews() {
         try {
-            const res = await fetch(`/api/reviews/place/${placeId}`);
-            if (res.ok) {
-                const reviews = await res.json();
+            const response = await fetch(`/api/reviews/place/${placeId}`);
+            if (response.ok) {
+                const reviews = await response.json();
                 const container = document.getElementById('reviewsContainer');
+                const countBadge = document.getElementById('reviewCountBadge');
+                const countSpan = document.getElementById('reviewCount');
+
                 if (!reviews || reviews.length === 0) {
-                    container.innerHTML = '<p style="text-align:center;">هنوز نظری ثبت نشده است</p>';
+                    container.innerHTML = `
+                        <div class="text-center py-8 text-persian-cream/30 text-sm">
+                            <i class="fas fa-comment-slash text-2xl block mb-2 text-persian-cream/10"></i>
+                            هنوز نظری ثبت نشده است
+                        </div>
+                    `;
+                    if (countBadge) countBadge.textContent = '(۰)';
+                    if (countSpan) countSpan.textContent = '۰ نظر';
                     return;
                 }
+
+                if (countBadge) countBadge.textContent = `(${reviews.length})`;
+                if (countSpan) countSpan.textContent = `${reviews.length} نظر`;
+
                 container.innerHTML = reviews.map(r => `
                     <div class="review-card">
-                        <div class="review-user">${escapeHtml(r.username)}</div>
-                        <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
-                        <div class="review-comment">${escapeHtml(r.comment)}</div>
-                        <div class="review-date">${new Date(r.createdAt).toLocaleDateString('fa-IR')}</div>
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-full bg-persian-gold/10 flex items-center justify-center text-persian-gold text-sm font-bold">
+                                    ${escapeHtml((r.username || 'کاربر')[0])}
+                                </div>
+                                <span class="text-persian-cream/70 font-medium text-sm">${escapeHtml(r.username || 'کاربر مهمان')}</span>
+                            </div>
+                            <span class="text-persian-cream/20 text-xs">${formatDate(r.createdAt)}</span>
+                        </div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-persian-cream/20 text-xs">امتیاز:</span>
+                            <span class="text-persian-gold text-sm">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
+                        </div>
+                        ${r.comment ? `<p class="text-persian-cream/50 text-sm leading-relaxed">${escapeHtml(r.comment)}</p>` : ''}
                     </div>
                 `).join('');
             }
-        } catch(e) { console.error(e); }
-    }
-
-    function showReviewAlert(msg, type) {
-        const alert = document.getElementById('reviewAlert');
-        alert.textContent = msg;
-        alert.className = `alert alert-${type === 'success' ? 'success' : 'danger'}`;
-        alert.style.display = 'block';
-        setTimeout(() => alert.style.display = 'none', 3000);
-    }
-
-    window.openModal = function(src) {
-        let modal = document.getElementById('imageModal');
-        if (!modal) {
-            const modalHtml = `<div id="imageModal" style="display:none; position:fixed; z-index:2000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.9); cursor:pointer;" onclick="closeModal()"><img id="modalImg" style="margin:auto; display:block; max-width:90%; max-height:90%; margin-top:50px;"></div>`;
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-            modal = document.getElementById('imageModal');
+        } catch (error) {
+            console.error('Error loading reviews:', error);
         }
-        document.getElementById('modalImg').src = src;
-        modal.style.display = 'block';
-    };
+    }
 
-    window.closeModal = () => { const m = document.getElementById('imageModal'); if (m) m.style.display = 'none'; };
-    function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+    // ========== نمایش پیام‌ها ==========
+    function showReviewAlert(message, type) {
+        const alert = document.getElementById('reviewAlert');
+        if (!alert) return;
+        alert.textContent = message;
+        alert.className = `p-3 rounded-2xl text-sm flex items-center gap-2 mb-4 ${
+            type === 'success'
+                ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
+                : 'bg-rose-500/10 border border-rose-500/20 text-rose-400'
+        }`;
+        alert.style.display = 'flex';
+        setTimeout(() => { alert.style.display = 'none'; }, 4000);
+    }
 
-    loadPlace();
+    function showToast(message, type) {
+        const colors = {
+            success: 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400',
+            error: 'bg-rose-500/20 border-rose-500/30 text-rose-400',
+            info: 'bg-sky-500/20 border-sky-500/30 text-sky-400'
+        };
+
+        const toast = document.createElement('div');
+        toast.className = `fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-2xl backdrop-blur-xl border ${colors[type] || colors.info} text-sm font-medium transition-all duration-500 transform translate-y-20 opacity-0`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.remove('translate-y-20', 'opacity-0');
+        }, 10);
+
+        setTimeout(() => {
+            toast.classList.add('translate-y-20', 'opacity-0');
+            setTimeout(() => toast.remove(), 500);
+        }, 3500);
+    }
+
+    // ========== بارگذاری اولیه ==========
+    document.addEventListener('DOMContentLoaded', loadPlace);
 </script>
+
 </body>
 </html>

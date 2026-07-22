@@ -1,141 +1,505 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html xmlns:th="http://www.thymeleaf.org" lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>افزودن مکان جدید | گشت و گذار در ایران</title>
+  <title>افزودن مکان جدید | نقشه گرد</title>
+
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'persian-navy': '#0A0A1A',
+            'persian-dark': '#111128',
+            'persian-night': '#1A1A3A',
+            'persian-teal': '#1A6B6B',
+            'persian-turquoise': '#2A9D8F',
+            'persian-saffron': '#D4A373',
+            'persian-gold': '#C9A84C',
+            'persian-lapis': '#1B2A4A',
+            'persian-rose': '#BC6C8C',
+            'persian-cream': '#F5EDE0',
+          },
+          fontFamily: {
+            'persian': ['Vazirmatn', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: 'Tahoma', 'Vazir', system-ui;
-      background: linear-gradient(135deg, #0a5c4a 0%, #1a7a5c 50%, #0a5c4a 100%);
+      font-family: 'Vazirmatn', system-ui, sans-serif;
+      background: linear-gradient(135deg, #0A0A1A 0%, #111128 50%, #0A0A1A 100%);
       min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
     }
-    :root {
-      --persian-green: #0a5c4a;
-      --persian-turquoise: #2a9d8f;
-      --persian-orange: #e76f51;
-      --persian-gold: #f4a261;
-      --persian-cream: #fefae0;
-      --persian-red: #bc4a2c;
+
+    /* پس‌زمینه با ستاره */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+              radial-gradient(1.5px 1.5px at 10% 20%, rgba(255,255,255,0.4), transparent),
+              radial-gradient(1px 1px at 25% 45%, rgba(255,255,255,0.3), transparent),
+              radial-gradient(2px 2px at 40% 10%, rgba(255,255,255,0.5), transparent),
+              radial-gradient(1px 1px at 55% 60%, rgba(255,255,255,0.2), transparent),
+              radial-gradient(1.5px 1.5px at 70% 30%, rgba(255,255,255,0.4), transparent),
+              radial-gradient(1px 1px at 85% 70%, rgba(255,255,255,0.3), transparent);
+      background-size: 100% 100%;
+      opacity: 0.3;
+      z-index: 0;
     }
+
+    /* Navbar */
     .navbar {
-      background: rgba(10, 92, 74, 0.95);
-      padding: 1rem 2rem;
+      background: rgba(10, 10, 26, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(201, 168, 76, 0.08);
       position: fixed;
       top: 0;
       right: 0;
       left: 0;
       z-index: 1000;
+      padding: 0.75rem 2rem;
     }
-    .navbar-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
+
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 0.75rem 1rem;
+      }
     }
-    .navbar-brand { color: var(--persian-gold); font-size: 1.5rem; font-weight: bold; text-decoration: none; }
-    .nav-links { display: flex; gap: 20px; list-style: none; flex-wrap: wrap; align-items: center; }
-    .nav-links a, .nav-btn { color: var(--persian-cream); text-decoration: none; padding: 8px 16px; border-radius: 8px; background: none; border: none; cursor: pointer; font-family: inherit; font-size: 1rem; }
-    .nav-links a:hover, .nav-btn:hover { background: var(--persian-gold); color: var(--persian-green); }
-    .logout-btn:hover { background: var(--persian-red); color: white; }
-    .container { max-width: 800px; margin: 0 auto; padding: 100px 20px 50px; }
-    .form-card {
-      background: var(--persian-cream);
-      border-radius: 30px;
-      padding: 35px;
+
+    /* Glass Card */
+    .glass-card {
+      background: rgba(26, 26, 58, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(201, 168, 76, 0.1);
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5), 0 0 40px rgba(201, 168, 76, 0.02);
     }
-    .form-header { text-align: center; margin-bottom: 30px; }
-    .form-icon { font-size: 50px; background: linear-gradient(135deg, var(--persian-green), var(--persian-turquoise)); width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; }
-    .form-header h2 { color: var(--persian-green); }
-    .form-group { margin-bottom: 20px; }
-    label { display: block; color: var(--persian-green); font-weight: bold; margin-bottom: 8px; }
-    input, textarea {
+
+    .glass-input {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(201, 168, 76, 0.12);
+      color: #F5EDE0;
+      transition: all 0.3s ease;
       width: 100%;
-      padding: 12px 15px;
-      border: 2px solid #ddd;
-      border-radius: 12px;
+      padding: 12px 16px;
+      border-radius: 16px;
       font-family: inherit;
-      font-size: 1rem;
+      font-size: 0.95rem;
     }
-    textarea { resize: vertical; min-height: 120px; }
-    .file-input { padding: 12px; background: white; border: 2px dashed var(--persian-turquoise); border-radius: 12px; cursor: pointer; width: 100%; }
-    .image-preview { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 15px; }
-    .preview-item { position: relative; width: 100px; height: 100px; border-radius: 12px; overflow: hidden; border: 2px solid var(--persian-turquoise); }
-    .preview-item img { width: 100%; height: 100%; object-fit: cover; }
-    .remove-image { position: absolute; top: -8px; right: -8px; background: var(--persian-red); color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-    .btn-submit { width: 100%; padding: 14px; background: var(--persian-green); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 20px; }
-    .btn-submit:hover { background: var(--persian-turquoise); transform: translateY(-2px); }
-    .alert { padding: 12px; border-radius: 12px; margin-bottom: 20px; display: none; text-align: center; }
-    .alert-success { background: #d4edda; color: #155724; }
-    .alert-danger { background: #f8d7da; color: #721c24; }
-    .alert-info { background: #d1ecf1; color: #0c5460; }
-    footer { background: var(--persian-green); color: var(--persian-cream); text-align: center; padding: 20px; margin-top: 50px; }
-    @media (max-width: 768px) { .form-card { padding: 20px; } }
+
+    .glass-input:focus {
+      outline: none;
+      border-color: #C9A84C;
+      box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.08), 0 0 30px rgba(201, 168, 76, 0.03);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .glass-input::placeholder {
+      color: rgba(245, 237, 224, 0.25);
+    }
+
+    .glass-input:-webkit-autofill {
+      -webkit-box-shadow: 0 0 0 30px #1A1A3A inset !important;
+      -webkit-text-fill-color: #F5EDE0 !important;
+    }
+
+    .glass-textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    /* File Upload */
+    .file-upload-area {
+      background: rgba(255, 255, 255, 0.02);
+      border: 2px dashed rgba(201, 168, 76, 0.15);
+      border-radius: 16px;
+      padding: 30px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .file-upload-area:hover {
+      border-color: rgba(201, 168, 76, 0.3);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .file-upload-area.dragover {
+      border-color: #C9A84C;
+      background: rgba(201, 168, 76, 0.05);
+      transform: scale(1.01);
+    }
+
+    .file-upload-area input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .file-upload-icon {
+      font-size: 2.5rem;
+      color: rgba(201, 168, 76, 0.3);
+      margin-bottom: 10px;
+    }
+
+    .file-upload-text {
+      color: rgba(245, 237, 224, 0.3);
+      font-size: 0.9rem;
+    }
+
+    .file-upload-text strong {
+      color: rgba(201, 168, 76, 0.5);
+    }
+
+    /* Image Preview */
+    .image-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .preview-item {
+      position: relative;
+      aspect-ratio: 1/1;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 2px solid rgba(201, 168, 76, 0.1);
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .preview-item:hover {
+      border-color: rgba(201, 168, 76, 0.3);
+      transform: scale(1.02);
+    }
+
+    .preview-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .remove-image-btn {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #BC4A2C;
+      color: white;
+      border: 2px solid rgba(26, 26, 58, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: all 0.3s ease;
+      opacity: 0;
+    }
+
+    .preview-item:hover .remove-image-btn {
+      opacity: 1;
+    }
+
+    .remove-image-btn:hover {
+      transform: scale(1.1);
+      background: #E76F51;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      background: linear-gradient(135deg, #C9A84C, #D4A373);
+      color: #0A0A1A;
+      transition: all 0.3s ease;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 16px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 40px rgba(201, 168, 76, 0.2);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Alert */
+    .alert {
+      padding: 12px 16px;
+      border-radius: 14px;
+      margin-bottom: 16px;
+      display: none;
+      font-size: 0.9rem;
+      display: none;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .alert.show {
+      display: flex;
+    }
+
+    .alert-success {
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.15);
+      color: #34D399;
+    }
+
+    .alert-danger {
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.15);
+      color: #F87171;
+    }
+
+    .alert-info {
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.15);
+      color: #38BDF8;
+    }
+
+    .alert i {
+      font-size: 1.1rem;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0A0A1A;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #C9A84C, #D4A373);
+      border-radius: 10px;
+    }
+
+    @media (max-width: 640px) {
+      .glass-card {
+        padding: 20px !important;
+      }
+      .file-upload-area {
+        padding: 20px 15px;
+      }
+      .image-preview-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      }
+    }
   </style>
 </head>
 <body>
 
+<!-- ==================== NAVBAR ==================== -->
 <nav class="navbar">
-  <div class="navbar-container">
-    <a href="/" class="navbar-brand">🕌 گشت و گذار در ایران</a>
-    <ul class="nav-links">
-      <li><a href="/">خانه</a></li>
-      <li><a href="/places">🏛️ مکان‌ها</a></li>
-      <li><a href="/travelogues">📖 سفرنامه‌ها</a></li>
-      <li><a href="/my-places">📍 مکان‌های من</a></li>
-      <li><a href="/create-travelogue">✍️ نوشتن سفرنامه</a></li>
-      <li><a href="/my-travelogues">📚 سفرنامه‌های من</a></li>
-      <li><button id="logoutBtn" class="nav-btn logout-btn">🚪 خروج</button></li>
-    </ul>
+  <div class="max-w-7xl mx-auto flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <div class="relative">
+        <i class="fas fa-map-location-dot text-2xl text-persian-gold"></i>
+        <i class="fas fa-star text-[8px] text-persian-saffron absolute -top-1 -right-1"></i>
+      </div>
+      <a href="/" class="text-xl font-extrabold">
+        <span class="text-persian-gold">نقشه</span>
+        <span class="text-persian-cream">گرد</span>
+      </a>
+    </div>
+
+    <div class="hidden md:flex items-center gap-1">
+      <a href="/" class="text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-1.5">
+        <i class="fas fa-home"></i> خانه
+      </a>
+      <a href="/places" class="text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-1.5">
+        <i class="fas fa-landmark"></i> مکان‌ها
+      </a>
+      <a href="/my-places" class="text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-1.5">
+        <i class="fas fa-map-pin"></i> مکان‌های من
+      </a>
+      <button id="logoutBtn" class="text-persian-cream/60 hover:text-red-400 px-3 py-2 rounded-xl hover:bg-red-500/10 transition-all duration-300 text-sm flex items-center gap-1.5">
+        <i class="fas fa-sign-out-alt"></i> خروج
+      </button>
+    </div>
+
+    <button id="hamburgerBtn" class="md:hidden text-persian-cream/60 hover:text-persian-cream transition-colors text-xl">
+      <i class="fas fa-bars"></i>
+    </button>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="mobileMenu" class="md:hidden hidden mt-3 pt-3 border-t border-persian-gold/10 space-y-1">
+    <a href="/" class="block text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-2">
+      <i class="fas fa-home w-5"></i> خانه
+    </a>
+    <a href="/places" class="block text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-2">
+      <i class="fas fa-landmark w-5"></i> مکان‌ها
+    </a>
+    <a href="/my-places" class="block text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-2">
+      <i class="fas fa-map-pin w-5"></i> مکان‌های من
+    </a>
+    <button id="mobileLogoutBtn" class="w-full text-red-400 hover:text-red-300 px-3 py-2 rounded-xl hover:bg-red-500/10 transition-all duration-300 text-sm flex items-center gap-2 text-right">
+      <i class="fas fa-sign-out-alt w-5"></i> خروج
+    </button>
   </div>
 </nav>
 
-<div class="container">
-  <div class="form-card">
-    <div class="form-header">
-      <div class="form-icon">📍</div>
-      <h2>ثبت مکان گردشگری جدید</h2>
-      <p>مکان مورد نظر را با جزئیات معرفی کنید</p>
+<!-- ==================== MAIN CONTENT ==================== -->
+<div class="relative z-10 max-w-2xl mx-auto px-4 pt-28 pb-12">
+
+  <div class="glass-card rounded-3xl p-8 md:p-10">
+
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-persian-gold/10 to-persian-saffron/5 border border-persian-gold/20 mb-4">
+        <i class="fas fa-plus-circle text-3xl text-persian-gold"></i>
+      </div>
+      <h2 class="text-2xl md:text-3xl font-bold text-persian-cream">
+        <i class="fas fa-map-pin text-persian-gold ml-2"></i>
+        ثبت مکان گردشگری جدید
+      </h2>
+      <p class="text-persian-cream/40 text-sm mt-1">
+        مکان مورد نظر را با جزئیات کامل معرفی کنید
+      </p>
     </div>
 
-    <div class="alert alert-success" id="successAlert"></div>
-    <div class="alert alert-danger" id="errorAlert"></div>
-    <div class="alert alert-info" id="infoAlert">ℹ️ مکان شما پس از تایید ادمین در سایت نمایش داده می‌شود</div>
+    <!-- Alerts -->
+    <div id="successAlert" class="alert alert-success">
+      <i class="fas fa-check-circle"></i>
+      <span id="successMessage"></span>
+    </div>
+    <div id="errorAlert" class="alert alert-danger">
+      <i class="fas fa-exclamation-circle"></i>
+      <span id="errorMessage"></span>
+    </div>
+    <div id="infoAlert" class="alert alert-info show">
+      <i class="fas fa-info-circle"></i>
+      <span>مکان شما پس از تایید ادمین در سایت نمایش داده می‌شود</span>
+    </div>
 
-    <form id="addPlaceForm" enctype="multipart/form-data">
-      <div class="form-group">
-        <label>نام مکان <span style="color: var(--persian-red);">*</span></label>
-        <input type="text" id="name" required placeholder="مثال: تخت جمشید، میدان نقش جهان، برج میلاد...">
+    <!-- Form -->
+    <form id="addPlaceForm" enctype="multipart/form-data" class="space-y-5">
+
+      <!-- Name -->
+      <div>
+        <label class="block text-persian-cream/70 text-sm font-medium mb-1.5">
+          <i class="fas fa-tag text-persian-gold ml-1.5"></i>
+          نام مکان <span class="text-rose-400">*</span>
+        </label>
+        <input type="text" id="name" required
+               class="glass-input"
+               placeholder="مثال: تخت جمشید، میدان نقش جهان، برج میلاد...">
       </div>
 
-      <div class="form-group">
-        <label>توضیحات <span style="color: var(--persian-red);">*</span></label>
-        <textarea id="description" required placeholder="توضیحات کامل درباره این مکان دیدنی..."></textarea>
+      <!-- Description -->
+      <div>
+        <label class="block text-persian-cream/70 text-sm font-medium mb-1.5">
+          <i class="fas fa-align-right text-persian-gold ml-1.5"></i>
+          توضیحات <span class="text-rose-400">*</span>
+        </label>
+        <textarea id="description" required class="glass-input glass-textarea"
+                  placeholder="توضیحات کامل درباره این مکان دیدنی..."></textarea>
       </div>
 
-      <div class="form-group">
-        <label>📍 لینک گوگل مپ</label>
-        <input type="url" id="googleMapsLink" placeholder="https://maps.app.goo.gl/... یا https://www.google.com/maps/place/...">
-        <small style="color:#666; display:block; margin-top:5px;">لینک موقعیت مکانی را از گوگل مپ کپی کنید</small>
+      <!-- Google Maps Link -->
+      <div>
+        <label class="block text-persian-cream/70 text-sm font-medium mb-1.5">
+          <i class="fas fa-map-location-dot text-persian-gold ml-1.5"></i>
+          لینک گوگل مپ
+        </label>
+        <input type="url" id="googleMapsLink" class="glass-input"
+               placeholder="https://maps.app.goo.gl/... یا https://www.google.com/maps/place/...">
+        <p class="text-persian-cream/20 text-xs mt-1.5">
+          <i class="fas fa-info-circle ml-1"></i>
+          لینک موقعیت مکانی را از گوگل مپ کپی کنید
+        </p>
       </div>
 
-      <div class="form-group">
-        <label>📸 تصاویر مکان (حداکثر ۵ عکس)</label>
-        <input type="file" id="images" accept="image/*" multiple class="file-input">
-        <div id="imagePreview" class="image-preview"></div>
+      <!-- Images Upload -->
+      <div>
+        <label class="block text-persian-cream/70 text-sm font-medium mb-1.5">
+          <i class="fas fa-images text-persian-gold ml-1.5"></i>
+          تصاویر مکان <span class="text-persian-cream/30 text-xs">(حداکثر ۵ عکس)</span>
+        </label>
+
+        <div class="file-upload-area" id="fileUploadArea">
+          <div class="file-upload-icon">
+            <i class="fas fa-cloud-upload-alt"></i>
+          </div>
+          <div class="file-upload-text">
+            <strong>برای آپلود کلیک کنید</strong> یا عکس‌ها را بکشید و رها کنید
+            <br>
+            <span style="font-size: 0.75rem; color: rgba(245,237,224,0.15);">
+                            PNG, JPG, JPEG, WEBP
+                        </span>
+          </div>
+          <input type="file" id="images" accept="image/*" multiple>
+        </div>
+
+        <div id="imagePreview" class="image-preview-grid"></div>
       </div>
 
-      <button type="submit" class="btn-submit" id="submitBtn">✨ ثبت و معرفی مکان ✨</button>
+      <!-- Submit -->
+      <button type="submit" class="btn-primary" id="submitBtn">
+        <i class="fas fa-check-circle ml-2"></i>
+        ثبت و معرفی مکان
+      </button>
+
     </form>
+
   </div>
+
 </div>
 
-<footer>🇮🇷 گشت و گذار در ایران - کشف زیبایی‌های میهن عزیزمان 🇮🇷</footer>
+<!-- ==================== FOOTER ==================== -->
+<footer class="relative z-10 text-center text-persian-cream/20 text-xs py-6 border-t border-persian-gold/5 mt-8">
+  <p>
+    <i class="fas fa-heart text-persian-rose/30 ml-1"></i>
+    با افتخار برای ایران
+    <i class="fas fa-heart text-persian-rose/30 mr-1"></i>
+  </p>
+  <p class="mt-1">© ۱۴۰۴ نقشه گرد - تمامی حقوق محفوظ است</p>
+</footer>
 
+<!-- ==================== JAVASCRIPT ==================== -->
 <script>
+  // ========== کوکی‌ها ==========
   function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
@@ -147,47 +511,153 @@
     document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
   }
 
+  // ========== بررسی توکن ==========
   const token = getCookie('token');
-  if (!token) window.location.href = '/login';
+  if (!token) {
+    window.location.href = '/login';
+  }
 
-  document.getElementById('logoutBtn').addEventListener('click', () => {
+  // ========== خروج ==========
+  function handleLogout() {
     deleteCookie('token');
     deleteCookie('username');
     deleteCookie('role');
     window.location.href = '/';
+  }
+
+  document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+  document.getElementById('mobileLogoutBtn').addEventListener('click', handleLogout);
+
+  // ========== منوی موبایل ==========
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  let menuOpen = false;
+
+  hamburgerBtn?.addEventListener('click', () => {
+    menuOpen = !menuOpen;
+    mobileMenu.classList.toggle('hidden');
+    hamburgerBtn.innerHTML = menuOpen ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
   });
 
-  // پیش‌نمایش عکس
+  // ========== آپلود عکس ==========
   let selectedFiles = [];
   const imageInput = document.getElementById('images');
   const imagePreview = document.getElementById('imagePreview');
+  const fileUploadArea = document.getElementById('fileUploadArea');
 
-  imageInput.addEventListener('change', function(e) {
-    const files = Array.from(e.target.files);
-    if (files.length > 5) { alert('حداکثر ۵ عکس می‌توانید انتخاب کنید'); imageInput.value = ''; return; }
-    selectedFiles = files;
+  // پیش‌نمایش عکس‌ها
+  function updatePreview() {
     imagePreview.innerHTML = '';
-    files.forEach((file, index) => {
+    selectedFiles.forEach((file, index) => {
       const reader = new FileReader();
       reader.onload = function(e) {
-        imagePreview.innerHTML += `<div class="preview-item"><img src="${e.target.result}"><div class="remove-image" data-index="${index}">×</div></div>`;
+        const div = document.createElement('div');
+        div.className = 'preview-item';
+        div.innerHTML = `
+                    <img src="${e.target.result}" alt="پیش‌نمایش عکس ${index + 1}">
+                    <div class="remove-image-btn" data-index="${index}">
+                        <i class="fas fa-times"></i>
+                    </div>
+                `;
+        imagePreview.appendChild(div);
       };
       reader.readAsDataURL(file);
     });
-  });
+  }
 
+  // حذف عکس
   imagePreview.addEventListener('click', function(e) {
-    if (e.target.classList.contains('remove-image')) {
-      const index = parseInt(e.target.getAttribute('data-index'));
+    const btn = e.target.closest('.remove-image-btn');
+    if (btn) {
+      const index = parseInt(btn.getAttribute('data-index'));
       selectedFiles.splice(index, 1);
+      updatePreview();
+
+      // آپدیت input
       const dt = new DataTransfer();
       selectedFiles.forEach(f => dt.items.add(f));
       imageInput.files = dt.files;
-      imageInput.dispatchEvent(new Event('change'));
+
+      // به‌روزرسانی متن
+      updateFileCount();
     }
   });
 
-  // ثبت مکان
+  // آپدیت تعداد فایل‌ها
+  function updateFileCount() {
+    const count = selectedFiles.length;
+    const text = fileUploadArea.querySelector('.file-upload-text strong');
+    if (count > 0) {
+      text.textContent = `${count} عکس انتخاب شده`;
+    } else {
+      text.textContent = 'برای آپلود کلیک کنید';
+    }
+  }
+
+  // انتخاب فایل
+  imageInput.addEventListener('change', function(e) {
+    const files = Array.from(e.target.files);
+    if (selectedFiles.length + files.length > 5) {
+      alert('حداکثر ۵ عکس می‌توانید انتخاب کنید');
+      imageInput.value = '';
+      return;
+    }
+    selectedFiles = [...selectedFiles, ...files];
+    updatePreview();
+    updateFileCount();
+  });
+
+  // Drag & Drop
+  fileUploadArea.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    this.classList.add('dragover');
+  });
+
+  fileUploadArea.addEventListener('dragleave', function(e) {
+    e.preventDefault();
+    this.classList.remove('dragover');
+  });
+
+  fileUploadArea.addEventListener('drop', function(e) {
+    e.preventDefault();
+    this.classList.remove('dragover');
+
+    const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+    if (selectedFiles.length + files.length > 5) {
+      alert('حداکثر ۵ عکس می‌توانید انتخاب کنید');
+      return;
+    }
+    selectedFiles = [...selectedFiles, ...files];
+    updatePreview();
+    updateFileCount();
+
+    // آپدیت input
+    const dt = new DataTransfer();
+    selectedFiles.forEach(f => dt.items.add(f));
+    imageInput.files = dt.files;
+  });
+
+  // ========== نمایش پیام‌ها ==========
+  function showAlert(type, message) {
+    const alerts = ['successAlert', 'errorAlert', 'infoAlert'];
+    alerts.forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.remove('show');
+    });
+
+    const alertEl = document.getElementById(type + 'Alert');
+    const messageEl = document.getElementById(type + 'Message');
+    if (messageEl) messageEl.textContent = message;
+    alertEl.classList.add('show');
+
+    if (type !== 'info') {
+      setTimeout(() => {
+        alertEl.classList.remove('show');
+      }, 5000);
+    }
+  }
+
+  // ========== ثبت مکان ==========
   document.getElementById('addPlaceForm').addEventListener('submit', async function(e) {
     e.preventDefault();
 
@@ -195,38 +665,71 @@
     const description = document.getElementById('description').value.trim();
     const googleMapsLink = document.getElementById('googleMapsLink').value.trim();
 
-    if (!name || !description) { showError('لطفاً نام و توضیحات مکان را وارد کنید'); return; }
+    if (!name || !description) {
+      showAlert('error', 'لطفاً نام و توضیحات مکان را وارد کنید');
+      return;
+    }
 
     const submitBtn = document.getElementById('submitBtn');
     submitBtn.disabled = true;
-    submitBtn.textContent = '⏳ در حال ثبت...';
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin ml-2"></i> در حال ثبت...';
 
     const formData = new FormData();
-    const placeData = { name, description, googleMapsLink };
+    const placeData = {
+      name,
+      description,
+      googleMapsLink: googleMapsLink || null
+    };
     formData.append('place', new Blob([JSON.stringify(placeData)], {type: 'application/json'}));
 
+    // اضافه کردن عکس‌ها
     const files = document.getElementById('images').files;
-    for (let i = 0; i < files.length; i++) formData.append('images', files[i]);
+    for (let i = 0; i < files.length; i++) {
+      formData.append('images', files[i]);
+    }
 
     try {
-      const res = await fetch('/api/places/add', {
+      const response = await fetch('/api/places/add', {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: formData
       });
-      if (res.status === 401) { deleteCookie('token'); window.location.href = '/login'; return; }
-      if (res.ok) {
-        showSuccess('✅ مکان شما با موفقیت ثبت شد! پس از تایید ادمین نمایش داده می‌شود.');
-        setTimeout(() => window.location.href = '/', 2000);
-      } else {
-        const error = await res.text();
-        showError(error || 'خطا در ثبت مکان');
+
+      if (response.status === 401) {
+        deleteCookie('token');
+        window.location.href = '/login';
+        return;
       }
-    } catch(e) { showError('خطا در ارتباط با سرور'); }
-    finally { submitBtn.disabled = false; submitBtn.textContent = '✨ ثبت و معرفی مکان ✨'; }
+
+      if (response.ok) {
+        showAlert('success', '✅ مکان شما با موفقیت ثبت شد! پس از تایید ادمین نمایش داده می‌شود.');
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 2000);
+      } else {
+        const error = await response.text();
+        showAlert('error', error || 'خطا در ثبت مکان');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-check-circle ml-2"></i> ثبت و معرفی مکان';
+      }
+    } catch (error) {
+      showAlert('error', 'خطا در ارتباط با سرور. لطفاً مجدداً تلاش کنید.');
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="fas fa-check-circle ml-2"></i> ثبت و معرفی مکان';
+    }
   });
 
-  function showSuccess(msg) { const a = document.getElementById('successAlert'); a.textContent = msg; a.style.display = 'block'; setTimeout(() => a.style.display = 'none', 3000); }
-  function showError(msg) { const a = document.getElementById('errorAlert'); a.textContent = msg; a.style.display = 'block'; setTimeout(() => a.style.display = 'none', 3000); }
+  // ========== نمایش اطلاعات کاربر ==========
+  document.addEventListener('DOMContentLoaded', function() {
+    const username = getCookie('username');
+    if (username) {
+      // می‌توانید نام کاربر را در جایی نمایش دهید
+      console.log(`خوش آمدید ${username}`);
+    }
+  });
 </script>
+
 </body>
 </html>

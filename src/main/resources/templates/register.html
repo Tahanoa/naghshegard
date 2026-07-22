@@ -1,9 +1,43 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html xmlns:th="http://www.thymeleaf.org" lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ثبت نام | گشت و گذار در ایران</title>
+  <title>ثبت‌نام | نقشه گرد</title>
+
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'persian-navy': '#0A0A1A',
+            'persian-dark': '#111128',
+            'persian-night': '#1A1A3A',
+            'persian-teal': '#1A6B6B',
+            'persian-turquoise': '#2A9D8F',
+            'persian-saffron': '#D4A373',
+            'persian-gold': '#C9A84C',
+            'persian-lapis': '#1B2A4A',
+            'persian-rose': '#BC6C8C',
+            'persian-cream': '#F5EDE0',
+          },
+          fontFamily: {
+            'persian': ['Vazirmatn', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
     * {
       margin: 0;
@@ -12,247 +46,147 @@
     }
 
     body {
-      font-family: 'Tahoma', 'Vazir', system-ui, sans-serif;
-      background: linear-gradient(135deg, #0a5c4a 0%, #1a7a5c 50%, #0a5c4a 100%);
+      font-family: 'Vazirmatn', system-ui, sans-serif;
+      background: linear-gradient(135deg, #0A0A1A 0%, #111128 50%, #0A0A1A 100%);
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 20px;
-    }
-
-    :root {
-      --persian-green: #0a5c4a;
-      --persian-turquoise: #2a9d8f;
-      --persian-orange: #e76f51;
-      --persian-gold: #f4a261;
-      --persian-cream: #fefae0;
-      --persian-red: #bc4a2c;
-    }
-
-    .register-container {
-      background: var(--persian-cream);
-      border-radius: 30px;
-      padding: 40px;
-      width: 90%;
-      max-width: 450px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      animation: fadeIn 0.5s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .register-header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    .register-icon {
-      font-size: 50px;
-      background: linear-gradient(135deg, var(--persian-green), var(--persian-turquoise));
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 20px;
-    }
-
-    .register-header h2 {
-      color: var(--persian-green);
-      font-size: 1.8rem;
-    }
-
-    .step-indicator {
-      display: flex;
-      justify-content: center;
-      gap: 40px;
-      margin-bottom: 30px;
       position: relative;
+      overflow-x: hidden;
     }
 
-    .step-indicator::before {
+    /* پس‌زمینه با ستاره */
+    body::before {
       content: '';
-      position: absolute;
-      top: 15px;
-      left: 30%;
-      right: 30%;
-      height: 2px;
-      background: #ddd;
+      position: fixed;
+      inset: 0;
+      background-image:
+              radial-gradient(1.5px 1.5px at 10% 20%, rgba(255,255,255,0.4), transparent),
+              radial-gradient(1px 1px at 25% 45%, rgba(255,255,255,0.3), transparent),
+              radial-gradient(2px 2px at 40% 10%, rgba(255,255,255,0.5), transparent),
+              radial-gradient(1px 1px at 55% 60%, rgba(255,255,255,0.2), transparent),
+              radial-gradient(1.5px 1.5px at 70% 30%, rgba(255,255,255,0.4), transparent),
+              radial-gradient(1px 1px at 85% 70%, rgba(255,255,255,0.3), transparent);
+      background-size: 100% 100%;
+      opacity: 0.4;
       z-index: 0;
     }
 
-    .step {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      z-index: 1;
-      cursor: pointer;
+    /* المان‌های تزئینی */
+    .decoration {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.05;
+      font-size: 12rem;
     }
 
-    .step-number {
-      width: 30px;
-      height: 30px;
+    .decoration-1 {
+      top: 5%;
+      right: 3%;
+      transform: rotate(15deg);
+    }
+
+    .decoration-2 {
+      bottom: 5%;
+      left: 3%;
+      transform: rotate(-10deg);
+    }
+
+    /* افکت شیشه‌ای */
+    .glass-card {
+      background: rgba(26, 26, 58, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(201, 168, 76, 0.12);
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6), 0 0 40px rgba(201, 168, 76, 0.03);
+    }
+
+    .glass-input {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(201, 168, 76, 0.15);
+      color: #F5EDE0;
+      transition: all 0.3s ease;
+    }
+
+    .glass-input:focus {
+      outline: none;
+      border-color: #C9A84C;
+      box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.1), 0 0 20px rgba(201, 168, 76, 0.05);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .glass-input::placeholder {
+      color: rgba(245, 237, 224, 0.3);
+    }
+
+    .glass-input:-webkit-autofill {
+      -webkit-box-shadow: 0 0 0 30px #1A1A3A inset !important;
+      -webkit-text-fill-color: #F5EDE0 !important;
+    }
+
+    /* استپ‌ها */
+    .step-circle {
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      background: #ddd;
-      color: white;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: bold;
+      font-weight: 800;
       font-size: 0.9rem;
-      transition: all 0.3s;
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      border: 2px solid rgba(201, 168, 76, 0.2);
+      background: rgba(255, 255, 255, 0.03);
+      color: rgba(245, 237, 224, 0.3);
     }
 
-    .step.active .step-number {
-      background: var(--persian-green);
+    .step.active .step-circle {
+      background: linear-gradient(135deg, #C9A84C, #D4A373);
+      border-color: #C9A84C;
+      color: #0A0A1A;
+      box-shadow: 0 0 30px rgba(201, 168, 76, 0.2);
+      transform: scale(1.05);
     }
 
-    .step.completed .step-number {
-      background: var(--persian-turquoise);
+    .step.completed .step-circle {
+      background: #1A6B6B;
+      border-color: #2A9D8F;
+      color: #F5EDE0;
     }
 
-    .step-label {
-      font-size: 0.7rem;
-      color: #888;
-      margin-top: 5px;
+    .step-line {
+      flex: 1;
+      height: 2px;
+      background: rgba(201, 168, 76, 0.1);
+      position: relative;
+      margin: 0 8px;
+      transition: all 0.5s ease;
     }
 
-    .step.active .step-label {
-      color: var(--persian-green);
-      font-weight: bold;
+    .step-line.completed {
+      background: linear-gradient(90deg, #C9A84C, #2A9D8F);
     }
 
-    .form-group {
-      margin-bottom: 18px;
+    /* انیمیشن‌ها */
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
 
-    label {
-      display: block;
-      color: var(--persian-green);
-      font-weight: bold;
-      margin-bottom: 6px;
+    .step-content {
+      animation: fadeSlideUp 0.5s ease;
     }
 
-    input {
-      width: 100%;
-      padding: 10px 15px;
-      border: 2px solid #ddd;
-      border-radius: 12px;
-      font-size: 0.95rem;
-      transition: all 0.3s;
-      font-family: inherit;
-    }
-
-    input:focus {
-      outline: none;
-      border-color: var(--persian-turquoise);
-      box-shadow: 0 0 0 3px rgba(42,157,143,0.2);
-    }
-
-    .btn {
-      width: 100%;
-      padding: 12px;
-      background: var(--persian-green);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 1rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s;
-      margin-top: 10px;
-    }
-
-    .btn:hover {
-      background: var(--persian-turquoise);
-      transform: translateY(-2px);
-    }
-
-    .btn-secondary {
-      background: var(--persian-orange);
-    }
-
-    .btn-secondary:hover {
-      background: var(--persian-red);
-    }
-
-    .btn:disabled {
-      background: #aaa;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .login-link {
-      text-align: center;
-      margin-top: 20px;
-      padding-top: 15px;
-      border-top: 1px solid #ddd;
-    }
-
-    .login-link a {
-      color: var(--persian-orange);
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .alert {
-      padding: 12px;
-      border-radius: 12px;
-      margin-bottom: 20px;
-      display: none;
-      text-align: center;
-    }
-
-    .alert-success {
-      background: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-    }
-
-    .alert-danger {
-      background: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
-    }
-
-    .alert-info {
-      background: #d1ecf1;
-      color: #0c5460;
-      border: 1px solid #bee5eb;
-    }
-
-    .back-home {
-      text-align: center;
-      margin-top: 15px;
-    }
-
-    .back-home a {
-      color: var(--persian-turquoise);
-      text-decoration: none;
-      font-size: 0.9rem;
-    }
-
-    .password-hint {
-      font-size: 0.8rem;
-      color: #888;
-      margin-top: 5px;
-    }
-
-    .resend-btn {
-      background: none;
-      border: none;
-      color: var(--persian-orange);
-      cursor: pointer;
-      text-decoration: underline;
-      font-family: inherit;
-      font-size: 0.9rem;
-    }
-
+    /* استپ‌ها - مخفی/نمایش */
     .step-content {
       display: none;
     }
@@ -261,125 +195,405 @@
       display: block;
     }
 
-    .code-input {
-      text-align: center;
-      font-size: 1.5rem;
-      letter-spacing: 10px;
+    @keyframes pulseGlow {
+      0%, 100% {
+        box-shadow: 0 0 20px rgba(201, 168, 76, 0.1);
+      }
+      50% {
+        box-shadow: 0 0 40px rgba(201, 168, 76, 0.2);
+      }
     }
 
-    @media (max-width: 768px) {
-      .register-container { padding: 25px; }
+    .btn-primary {
+      background: linear-gradient(135deg, #C9A84C, #D4A373);
+      color: #0A0A1A;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 40px rgba(201, 168, 76, 0.25);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      background: rgba(201, 168, 76, 0.1);
+      color: #D4A373;
+      border: 1px solid rgba(201, 168, 76, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(201, 168, 76, 0.2);
+      transform: translateY(-2px);
+    }
+
+    /* کد ورودی */
+    .code-input {
+      letter-spacing: 12px;
+      font-size: 1.8rem;
+      text-align: center;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.03);
+      border: 2px solid rgba(201, 168, 76, 0.15);
+      border-radius: 16px;
+      padding: 16px;
+      color: #F5EDE0;
+      width: 100%;
+      max-width: 280px;
+      margin: 0 auto;
+    }
+
+    .code-input:focus {
+      border-color: #C9A84C;
+      box-shadow: 0 0 30px rgba(201, 168, 76, 0.05);
+    }
+
+    /* اسکرول بار */
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0A0A1A;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #C9A84C, #D4A373);
+      border-radius: 10px;
+    }
+
+    /* ریسپانسیو */
+    @media (max-width: 640px) {
+      .glass-card {
+        padding: 24px 20px !important;
+      }
+      .step-circle {
+        width: 32px;
+        height: 32px;
+        font-size: 0.75rem;
+      }
+      .decoration {
+        display: none;
+      }
+      .code-input {
+        font-size: 1.4rem;
+        letter-spacing: 8px;
+        padding: 12px;
+        max-width: 220px;
+      }
     }
   </style>
 </head>
 <body>
-<div class="register-container">
-  <div class="register-header">
-    <div class="register-icon">🇮🇷</div>
-    <h2>عضویت در سایت</h2>
-    <p>به جمع گردشگران ایران بپیوندید</p>
-  </div>
 
-  <div class="step-indicator">
-    <div class="step active" id="step1Indicator">
-      <div class="step-number">1</div>
-      <div class="step-label">اطلاعات</div>
-    </div>
-    <div class="step" id="step2Indicator">
-      <div class="step-number">2</div>
-      <div class="step-label">تایید ایمیل</div>
-    </div>
-  </div>
-
-  <div class="alert alert-success" id="successAlert">
-    ✅ <span id="successMessage"></span>
-  </div>
-  <div class="alert alert-danger" id="errorAlert">
-    ❌ <span id="errorMessage"></span>
-  </div>
-  <div class="alert alert-info" id="infoAlert">
-    ℹ️ <span id="infoMessage"></span>
-  </div>
-
-  <!-- Step 1: Register Form -->
-  <div class="step-content active" id="step1">
-    <form id="registerForm">
-      <div class="form-group">
-        <label>📝 Username</label>
-        <input type="text" id="username" name="username" required minlength="3" placeholder="Min 3 characters">
-      </div>
-      <div class="form-group">
-        <label>📧 Email</label>
-        <input type="email" id="email" name="email" required placeholder="example@domain.com">
-      </div>
-      <div class="form-group">
-        <label>🔒 Password</label>
-        <input type="password" id="password" name="password" required minlength="6" placeholder="Min 6 characters">
-        <div class="password-hint">Password must be at least 6 characters</div>
-      </div>
-      <div class="form-group">
-        <label>🔒 Confirm Password</label>
-        <input type="password" id="confirmPassword" required placeholder="Re-enter your password">
-      </div>
-      <button type="submit" class="btn" id="step1Btn">📧 Send Verification Code</button>
-    </form>
-  </div>
-
-  <!-- Step 2: Verify Code -->
-  <div class="step-content" id="step2">
-    <form id="verifyForm">
-      <div class="form-group">
-        <label>📧 Verification Code</label>
-        <p style="color: #666; font-size: 0.9rem; margin-bottom: 10px;">
-          A 6-digit code has been sent to <strong id="verifyEmailDisplay"></strong>
-        </p>
-        <input type="text" id="verifyCode" class="code-input" maxlength="6" placeholder="123456" required>
-      </div>
-      <div style="display: flex; gap: 10px;">
-        <button type="submit" class="btn" id="step2Btn">✅ Verify & Register</button>
-      </div>
-      <div style="text-align: center; margin-top: 15px;">
-        <button type="button" class="resend-btn" id="resendBtn">🔄 Resend Code</button>
-      </div>
-    </form>
-  </div>
-
-  <div class="login-link">
-    <p>Already registered? <a href="/login">Login</a></p>
-  </div>
-  <div class="back-home">
-    <a href="/">← Back to Home</a>
-  </div>
+<!-- المان‌های تزئینی -->
+<div class="decoration decoration-1">
+  <i class="fas fa-mosque"></i>
+</div>
+<div class="decoration decoration-2">
+  <i class="fas fa-mountain"></i>
 </div>
 
+<!-- ==================== کارت ثبت‌نام ==================== -->
+<div class="relative z-10 w-full max-w-md">
+
+  <div class="glass-card rounded-3xl p-8 md:p-10">
+
+    <!-- هدر -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center gap-3 mb-4">
+        <div class="relative">
+          <i class="fas fa-map-location-dot text-3xl text-persian-gold"></i>
+          <i class="fas fa-star text-[8px] text-persian-saffron absolute -top-1 -right-1"></i>
+        </div>
+        <span class="text-2xl font-extrabold">
+                    <span class="text-persian-gold">نقشه</span>
+                    <span class="text-persian-cream">گرد</span>
+                </span>
+      </div>
+
+      <h2 class="text-2xl md:text-3xl font-bold text-persian-cream">
+        <i class="fas fa-user-plus text-persian-gold ml-2"></i>
+        عضویت در سایت
+      </h2>
+      <p class="text-persian-cream/40 text-sm mt-1">
+        به جمع گردشگران ایران بپیوندید
+      </p>
+    </div>
+
+    <!-- استپ‌ها -->
+    <div class="flex items-center justify-between mb-8">
+      <div class="step active flex flex-col items-center gap-1" id="step1Indicator">
+        <div class="step-circle">۱</div>
+        <span class="text-[10px] text-persian-cream/40 font-medium">اطلاعات</span>
+      </div>
+
+      <div class="step-line" id="stepLine"></div>
+
+      <div class="step flex flex-col items-center gap-1" id="step2Indicator">
+        <div class="step-circle">۲</div>
+        <span class="text-[10px] text-persian-cream/40 font-medium">تایید</span>
+      </div>
+    </div>
+
+    <!-- Alert‌ها -->
+    <div id="successAlert" class="hidden bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-3 mb-4 text-emerald-400 text-sm flex items-center gap-3">
+      <i class="fas fa-check-circle text-emerald-400"></i>
+      <span id="successMessage"></span>
+    </div>
+    <div id="errorAlert" class="hidden bg-rose-500/10 border border-rose-500/20 rounded-2xl p-3 mb-4 text-rose-400 text-sm flex items-center gap-3">
+      <i class="fas fa-exclamation-circle text-rose-400"></i>
+      <span id="errorMessage"></span>
+    </div>
+    <div id="infoAlert" class="hidden bg-sky-500/10 border border-sky-500/20 rounded-2xl p-3 mb-4 text-sky-400 text-sm flex items-center gap-3">
+      <i class="fas fa-info-circle text-sky-400"></i>
+      <span id="infoMessage"></span>
+    </div>
+
+    <!-- استپ ۱: فرم ثبت‌نام -->
+    <div class="step-content active" id="step1">
+      <form id="registerForm" class="space-y-4">
+        <div>
+          <label class="block text-persian-cream/70 text-sm font-medium mb-1.5">
+            <i class="fas fa-user text-persian-gold ml-1.5"></i>
+            نام کاربری
+          </label>
+          <input type="text" id="username" name="username" required minlength="3"
+                 class="glass-input w-full px-4 py-3 rounded-2xl text-persian-cream text-sm"
+                 placeholder="حداقل ۳ کاراکتر">
+        </div>
+
+        <div>
+          <label class="block text-persian-cream/70 text-sm font-medium mb-1.5">
+            <i class="fas fa-envelope text-persian-gold ml-1.5"></i>
+            ایمیل
+          </label>
+          <input type="email" id="email" name="email" required
+                 class="glass-input w-full px-4 py-3 rounded-2xl text-persian-cream text-sm"
+                 placeholder="example@domain.com">
+        </div>
+
+        <div>
+          <label class="block text-persian-cream/70 text-sm font-medium mb-1.5">
+            <i class="fas fa-lock text-persian-gold ml-1.5"></i>
+            رمز عبور
+          </label>
+          <input type="password" id="password" name="password" required minlength="6"
+                 class="glass-input w-full px-4 py-3 rounded-2xl text-persian-cream text-sm"
+                 placeholder="حداقل ۶ کاراکتر">
+          <p class="text-persian-cream/20 text-xs mt-1.5">
+            <i class="fas fa-shield-alt ml-1"></i>
+            رمز عبور باید حداقل ۶ کاراکتر باشد
+          </p>
+        </div>
+
+        <div>
+          <label class="block text-persian-cream/70 text-sm font-medium mb-1.5">
+            <i class="fas fa-check-double text-persian-gold ml-1.5"></i>
+            تکرار رمز عبور
+          </label>
+          <input type="password" id="confirmPassword" required
+                 class="glass-input w-full px-4 py-3 rounded-2xl text-persian-cream text-sm"
+                 placeholder="رمز عبور را دوباره وارد کنید">
+        </div>
+
+        <button type="submit" class="btn-primary w-full py-3.5 rounded-2xl font-bold text-sm flex items-center justify-center gap-2" id="step1Btn">
+          <i class="fas fa-paper-plane"></i>
+          ارسال کد تایید
+        </button>
+      </form>
+    </div>
+
+    <!-- استپ ۲: تایید کد -->
+    <div class="step-content" id="step2">
+      <form id="verifyForm" class="space-y-5">
+        <div class="text-center">
+          <div class="inline-flex items-center gap-2 bg-persian-gold/5 border border-persian-gold/10 rounded-full px-4 py-1.5 mb-3">
+            <i class="fas fa-envelope-open-text text-persian-gold/60 text-xs"></i>
+            <span class="text-persian-cream/50 text-xs">کد تایید به ایمیل ارسال شد</span>
+          </div>
+          <p class="text-persian-cream/40 text-sm">
+            کد ۶ رقمی ارسال شده به
+            <strong class="text-persian-gold" id="verifyEmailDisplay"></strong>
+          </p>
+        </div>
+
+        <div class="flex justify-center">
+          <input type="text" id="verifyCode" class="code-input" maxlength="6" placeholder="۱۲۳۴۵۶" required>
+        </div>
+
+        <div class="flex flex-col gap-3">
+          <button type="submit" class="btn-primary w-full py-3.5 rounded-2xl font-bold text-sm flex items-center justify-center gap-2" id="step2Btn">
+            <i class="fas fa-check-circle"></i>
+            تایید و ثبت‌نام
+          </button>
+
+          <button type="button" class="btn-secondary w-full py-3 rounded-2xl font-medium text-sm flex items-center justify-center gap-2" id="resendBtn">
+            <i class="fas fa-rotate-right"></i>
+            ارسال مجدد کد
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- لینک‌های پایین -->
+    <div class="mt-6 pt-5 border-t border-persian-gold/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm">
+      <div class="flex items-center gap-2 text-persian-cream/40">
+        <i class="fas fa-user-check text-persian-gold/40"></i>
+        <span>قبلاً ثبت‌نام کردید؟</span>
+        <a href="/login" class="text-persian-gold hover:text-persian-saffron transition-colors font-medium">
+          ورود
+          <i class="fas fa-arrow-left mr-1 text-xs"></i>
+        </a>
+      </div>
+      <a href="/" class="text-persian-cream/30 hover:text-persian-cream/60 transition-colors flex items-center gap-1.5">
+        <i class="fas fa-home text-xs"></i>
+        بازگشت به خانه
+      </a>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ==================== جاوااسکریپت ==================== -->
 <script>
+  // ========== متغیرها ==========
   let registeredEmail = '';
   let registeredUsername = '';
   let registeredPassword = '';
   let resendTimer = 60;
+  let resendInterval = null;
 
-  document.getElementById('registerForm').addEventListener('submit', async function(e) {
+  // ========== المان‌ها ==========
+  const registerForm = document.getElementById('registerForm');
+  const verifyForm = document.getElementById('verifyForm');
+  const step1 = document.getElementById('step1');
+  const step2 = document.getElementById('step2');
+  const step1Indicator = document.getElementById('step1Indicator');
+  const step2Indicator = document.getElementById('step2Indicator');
+  const stepLine = document.getElementById('stepLine');
+  const step1Btn = document.getElementById('step1Btn');
+  const step2Btn = document.getElementById('step2Btn');
+  const resendBtn = document.getElementById('resendBtn');
+  const verifyEmailDisplay = document.getElementById('verifyEmailDisplay');
+
+  // ========== توابع نمایش پیام ==========
+  function showSuccess(message) {
+    const alert = document.getElementById('successAlert');
+    document.getElementById('successMessage').textContent = message;
+    alert.classList.remove('hidden');
+    document.getElementById('errorAlert').classList.add('hidden');
+    document.getElementById('infoAlert').classList.add('hidden');
+    setTimeout(() => alert.classList.add('hidden'), 5000);
+  }
+
+  function showError(message) {
+    const alert = document.getElementById('errorAlert');
+    document.getElementById('errorMessage').textContent = message;
+    alert.classList.remove('hidden');
+    document.getElementById('successAlert').classList.add('hidden');
+    document.getElementById('infoAlert').classList.add('hidden');
+    setTimeout(() => alert.classList.add('hidden'), 5000);
+  }
+
+  function showInfo(message) {
+    const alert = document.getElementById('infoAlert');
+    document.getElementById('infoMessage').textContent = message;
+    alert.classList.remove('hidden');
+    document.getElementById('successAlert').classList.add('hidden');
+    document.getElementById('errorAlert').classList.add('hidden');
+    setTimeout(() => alert.classList.add('hidden'), 5000);
+  }
+
+  // ========== مدیریت استپ‌ها ==========
+  function goToStep(step) {
+    // مخفی کردن همه استپ‌ها
+    document.querySelectorAll('.step-content').forEach(el => {
+      el.classList.remove('active');
+    });
+
+    if (step === 1) {
+      // نمایش استپ ۱
+      step1.classList.add('active');
+      step1Indicator.classList.add('active');
+      step1Indicator.classList.remove('completed');
+      step2Indicator.classList.remove('active');
+      step2Indicator.classList.remove('completed');
+      stepLine.classList.remove('completed');
+    } else {
+      // نمایش استپ ۲
+      step2.classList.add('active');
+      step1Indicator.classList.remove('active');
+      step1Indicator.classList.add('completed');
+      step2Indicator.classList.add('active');
+      stepLine.classList.add('completed');
+    }
+  }
+
+  // ========== تایمر ارسال مجدد ==========
+  function startResendTimer() {
+    resendTimer = 60;
+    resendBtn.disabled = true;
+    resendBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${resendTimer} ثانیه`;
+
+    if (resendInterval) clearInterval(resendInterval);
+
+    resendInterval = setInterval(() => {
+      resendTimer--;
+      if (resendTimer <= 0) {
+        clearInterval(resendInterval);
+        resendBtn.disabled = false;
+        resendBtn.innerHTML = `<i class="fas fa-rotate-right"></i> ارسال مجدد کد`;
+      } else {
+        resendBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${resendTimer} ثانیه`;
+      }
+    }, 1000);
+  }
+
+  // ========== ثبت‌نام - استپ ۱ ==========
+  registerForm.addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    const username = document.getElementById('username').value;
-    const email = document.getElementById('email').value;
+    const username = document.getElementById('username').value.trim();
+    const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
 
+    // اعتبارسنجی
     if (username.length < 3) {
-      showError('Username must be at least 3 characters');
+      showError('نام کاربری باید حداقل ۳ کاراکتر باشد');
       return;
     }
 
-    if (password !== confirmPassword) {
-      showError('Passwords do not match');
+    if (!email || !email.includes('@')) {
+      showError('لطفاً یک ایمیل معتبر وارد کنید');
       return;
     }
 
     if (password.length < 6) {
-      showError('Password must be at least 6 characters');
+      showError('رمز عبور باید حداقل ۶ کاراکتر باشد');
       return;
     }
+
+    if (password !== confirmPassword) {
+      showError('رمز عبور و تکرار آن مطابقت ندارند');
+      return;
+    }
+
+    // غیرفعال کردن دکمه
+    step1Btn.disabled = true;
+    step1Btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال ارسال...';
 
     try {
       const response = await fetch('/api/auth/register/send-code', {
@@ -393,28 +607,42 @@
         registeredUsername = username;
         registeredPassword = password;
 
-        document.getElementById('verifyEmailDisplay').textContent = email;
-        showInfo('Verification code sent to your email. Please check your inbox.');
+        verifyEmailDisplay.textContent = email;
+        showInfo('کد تایید به ایمیل شما ارسال شد. لطفاً صندوق ورودی خود را بررسی کنید.');
+
+        // 🔥 تغییر استپ به مرحله ۲
         goToStep(2);
         startResendTimer();
+
+        // پاک کردن پیام‌های قبلی
+        document.getElementById('errorAlert').classList.add('hidden');
+        document.getElementById('successAlert').classList.add('hidden');
       } else {
         const error = await response.text();
-        showError(error);
+        showError(error || 'خطا در ارسال کد تایید');
+        step1Btn.disabled = false;
+        step1Btn.innerHTML = '<i class="fas fa-paper-plane"></i> ارسال کد تایید';
       }
     } catch (error) {
-      showError('Server connection error. Please try again.');
+      showError('خطا در ارتباط با سرور. لطفاً مجدداً تلاش کنید.');
+      step1Btn.disabled = false;
+      step1Btn.innerHTML = '<i class="fas fa-paper-plane"></i> ارسال کد تایید';
     }
   });
 
-  document.getElementById('verifyForm').addEventListener('submit', async function(e) {
+  // ========== تایید کد - استپ ۲ ==========
+  verifyForm.addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    const code = document.getElementById('verifyCode').value;
+    const code = document.getElementById('verifyCode').value.trim();
 
-    if (code.length !== 6) {
-      showError('Please enter the full 6-digit code');
+    if (code.length !== 6 || !/^\d{6}$/.test(code)) {
+      showError('لطفاً کد ۶ رقمی را به درستی وارد کنید');
       return;
     }
+
+    step2Btn.disabled = true;
+    step2Btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال ثبت‌نام...';
 
     try {
       const response = await fetch('/api/auth/register/verify', {
@@ -429,21 +657,29 @@
       });
 
       if (response.ok) {
-        showSuccess('Registration successful! Redirecting to login...');
+        showSuccess('🎉 ثبت‌نام با موفقیت انجام شد! در حال انتقال به صفحه ورود...');
         setTimeout(() => {
           window.location.href = '/login';
         }, 2000);
       } else {
         const error = await response.text();
-        showError(error);
+        showError(error || 'کد تایید نامعتبر است');
+        step2Btn.disabled = false;
+        step2Btn.innerHTML = '<i class="fas fa-check-circle"></i> تایید و ثبت‌نام';
       }
     } catch (error) {
-      showError('Server connection error. Please try again.');
+      showError('خطا در ارتباط با سرور. لطفاً مجدداً تلاش کنید.');
+      step2Btn.disabled = false;
+      step2Btn.innerHTML = '<i class="fas fa-check-circle"></i> تایید و ثبت‌نام';
     }
   });
 
-  document.getElementById('resendBtn').addEventListener('click', async function() {
-    if (resendTimer > 0) return;
+  // ========== ارسال مجدد کد ==========
+  resendBtn.addEventListener('click', async function() {
+    if (resendBtn.disabled) return;
+
+    resendBtn.disabled = true;
+    resendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال ارسال...';
 
     try {
       const response = await fetch('/api/auth/register/send-code', {
@@ -453,72 +689,33 @@
       });
 
       if (response.ok) {
-        showInfo('New verification code sent to your email.');
+        showInfo('کد تایید جدید به ایمیل شما ارسال شد.');
         startResendTimer();
       } else {
         const error = await response.text();
-        showError(error);
+        showError(error || 'خطا در ارسال مجدد کد');
+        resendBtn.disabled = false;
+        resendBtn.innerHTML = '<i class="fas fa-rotate-right"></i> ارسال مجدد کد';
       }
     } catch (error) {
-      showError('Failed to resend code');
+      showError('خطا در ارتباط با سرور');
+      resendBtn.disabled = false;
+      resendBtn.innerHTML = '<i class="fas fa-rotate-right"></i> ارسال مجدد کد';
     }
   });
 
-  function startResendTimer() {
-    resendTimer = 60;
-    const btn = document.getElementById('resendBtn');
-    btn.textContent = `⏳ Wait ${resendTimer}s`;
-    btn.disabled = true;
-
-    const interval = setInterval(() => {
-      resendTimer--;
-      btn.textContent = `⏳ Wait ${resendTimer}s`;
-      if (resendTimer <= 0) {
-        clearInterval(interval);
-        btn.textContent = '🔄 Resend Code';
-        btn.disabled = false;
-      }
-    }, 1000);
-  }
-
-  function goToStep(step) {
-    document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.step').forEach(el => el.classList.remove('active', 'completed'));
-
-    if (step === 1) {
-      document.getElementById('step1').classList.add('active');
-      document.getElementById('step1Indicator').classList.add('active');
-    } else {
-      document.getElementById('step2').classList.add('active');
-      document.getElementById('step1Indicator').classList.add('completed');
-      document.getElementById('step2Indicator').classList.add('active');
+  // ========== ورود خودکار با Enter در کد ==========
+  document.getElementById('verifyCode').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      verifyForm.dispatchEvent(new Event('submit'));
     }
-  }
+  });
 
-  function showSuccess(message) {
-    const alertDiv = document.getElementById('successAlert');
-    document.getElementById('successMessage').textContent = message;
-    alertDiv.style.display = 'block';
-    document.getElementById('errorAlert').style.display = 'none';
-    document.getElementById('infoAlert').style.display = 'none';
-    setTimeout(() => alertDiv.style.display = 'none', 3000);
-  }
-
-  function showError(message) {
-    const alertDiv = document.getElementById('errorAlert');
-    document.getElementById('errorMessage').textContent = message;
-    alertDiv.style.display = 'block';
-    document.getElementById('successAlert').style.display = 'none';
-    document.getElementById('infoAlert').style.display = 'none';
-    setTimeout(() => alertDiv.style.display = 'none', 3000);
-  }
-
-  function showInfo(message) {
-    const alertDiv = document.getElementById('infoAlert');
-    document.getElementById('infoMessage').textContent = message;
-    alertDiv.style.display = 'block';
-    setTimeout(() => alertDiv.style.display = 'none', 5000);
-  }
+  // ========== محدود کردن ورودی کد به عدد ==========
+  document.getElementById('verifyCode').addEventListener('input', function(e) {
+    this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6);
+  });
 </script>
+
 </body>
 </html>

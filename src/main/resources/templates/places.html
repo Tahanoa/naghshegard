@@ -1,117 +1,483 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html xmlns:th="http://www.thymeleaf.org" lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مکان‌های دیدنی ایران | گشت و گذار در ایران</title>
+    <title>مکان‌های دیدنی ایران | نقشه گرد</title>
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'persian-navy': '#0A0A1A',
+                        'persian-dark': '#111128',
+                        'persian-night': '#1A1A3A',
+                        'persian-teal': '#1A6B6B',
+                        'persian-turquoise': '#2A9D8F',
+                        'persian-saffron': '#D4A373',
+                        'persian-gold': '#C9A84C',
+                        'persian-lapis': '#1B2A4A',
+                        'persian-rose': '#BC6C8C',
+                        'persian-cream': '#F5EDE0',
+                    },
+                    fontFamily: {
+                        'persian': ['Vazirmatn', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Tahoma', 'Vazir', system-ui;
-            background: linear-gradient(135deg, #0a5c4a 0%, #1a7a5c 50%, #0a5c4a 100%);
+            font-family: 'Vazirmatn', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0A0A1A 0%, #111128 50%, #0A0A1A 100%);
             min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
         }
-        :root {
-            --persian-green: #0a5c4a;
-            --persian-turquoise: #2a9d8f;
-            --persian-gold: #f4a261;
-            --persian-cream: #fefae0;
-            --persian-red: #bc4a2c;
+
+        /* پس‌زمینه با ستاره */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                    radial-gradient(1.5px 1.5px at 10% 20%, rgba(255,255,255,0.4), transparent),
+                    radial-gradient(1px 1px at 25% 45%, rgba(255,255,255,0.3), transparent),
+                    radial-gradient(2px 2px at 40% 10%, rgba(255,255,255,0.5), transparent),
+                    radial-gradient(1px 1px at 55% 60%, rgba(255,255,255,0.2), transparent),
+                    radial-gradient(1.5px 1.5px at 70% 30%, rgba(255,255,255,0.4), transparent),
+                    radial-gradient(1px 1px at 85% 70%, rgba(255,255,255,0.3), transparent);
+            background-size: 100% 100%;
+            opacity: 0.3;
+            z-index: 0;
         }
+
+        /* Navbar */
         .navbar {
-            background: rgba(10, 92, 74, 0.95);
-            padding: 1rem 2rem;
+            background: rgba(10, 10, 26, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(201, 168, 76, 0.08);
             position: fixed;
             top: 0;
             right: 0;
             left: 0;
             z-index: 1000;
+            padding: 0.75rem 2rem;
         }
-        .navbar-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0.75rem 1rem;
+            }
         }
-        .navbar-brand { color: var(--persian-gold); font-size: 1.5rem; font-weight: bold; text-decoration: none; }
-        .nav-links { display: flex; gap: 20px; list-style: none; flex-wrap: wrap; align-items: center; }
-        .nav-links a, .nav-btn { color: var(--persian-cream); text-decoration: none; padding: 8px 16px; border-radius: 8px; background: none; border: none; cursor: pointer; font-family: inherit; font-size: 1rem; }
-        .nav-links a:hover, .nav-btn:hover { background: var(--persian-gold); color: var(--persian-green); }
-        .logout-btn:hover { background: var(--persian-red); color: white; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 100px 20px 50px; }
-        .search-section {
-            background: var(--persian-cream);
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 30px;
+
+        /* Glass Card for items */
+        .glass-card {
+            background: rgba(26, 26, 58, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(201, 168, 76, 0.08);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            perspective: 1000px;
         }
-        .search-box { display: flex; gap: 15px; flex-wrap: wrap; }
-        .search-box input { flex: 1; padding: 12px 20px; border: 2px solid #ddd; border-radius: 12px; font-size: 1rem; }
-        .search-box button { padding: 12px 30px; background: var(--persian-green); color: white; border: none; border-radius: 12px; cursor: pointer; }
-        .filter-buttons { display: flex; gap: 15px; margin-top: 20px; flex-wrap: wrap; }
-        .filter-btn { padding: 8px 20px; background: #f0f0f0; border: none; border-radius: 25px; cursor: pointer; }
-        .filter-btn.active { background: var(--persian-gold); color: var(--persian-green); font-weight: bold; }
-        .places-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; }
-        .place-card {
-            background: var(--persian-cream);
-            border-radius: 20px;
-            overflow: hidden;
+
+        .glass-card:hover {
+            transform: translateY(-8px) rotateX(2deg) rotateY(-2deg);
+            border-color: rgba(201, 168, 76, 0.2);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 30px rgba(201, 168, 76, 0.03);
+        }
+
+        /* Glass Input */
+        .glass-input {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(201, 168, 76, 0.12);
+            color: #F5EDE0;
+            transition: all 0.3s ease;
+            width: 100%;
+            padding: 12px 18px;
+            border-radius: 16px;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .glass-input:focus {
+            outline: none;
+            border-color: #C9A84C;
+            box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.08), 0 0 30px rgba(201, 168, 76, 0.03);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .glass-input::placeholder {
+            color: rgba(245, 237, 224, 0.25);
+        }
+
+        /* Filter Buttons */
+        .filter-btn {
+            padding: 8px 20px;
+            border-radius: 50px;
+            border: 1px solid rgba(201, 168, 76, 0.1);
+            background: rgba(255, 255, 255, 0.03);
+            color: rgba(245, 237, 224, 0.5);
             cursor: pointer;
-            transition: transform 0.3s;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-size: 0.85rem;
+            white-space: nowrap;
         }
-        .place-card:hover { transform: translateY(-5px); }
-        .card-img { width: 100%; height: 200px; object-fit: cover; background: linear-gradient(135deg, #2a9d8f, #0a5c4a); }
-        .card-body { padding: 20px; }
-        .card-title { color: var(--persian-green); font-size: 1.2rem; margin-bottom: 8px; }
-        .card-stats { display: flex; gap: 15px; color: #888; font-size: 0.8rem; margin: 10px 0; }
-        .stars { color: var(--persian-gold); font-size: 0.9rem; }
-        .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 40px; flex-wrap: wrap; }
-        .page-btn { padding: 8px 15px; background: var(--persian-cream); border: none; border-radius: 8px; cursor: pointer; }
-        .page-btn.active { background: var(--persian-green); color: white; }
-        .loading, .empty-message { text-align: center; padding: 50px; background: var(--persian-cream); border-radius: 20px; }
-        footer { background: var(--persian-green); color: var(--persian-cream); text-align: center; padding: 20px; margin-top: 50px; }
-        @media (max-width: 768px) { .places-grid { grid-template-columns: 1fr; } }
+
+        .filter-btn:hover {
+            border-color: rgba(201, 168, 76, 0.2);
+            color: rgba(245, 237, 224, 0.7);
+        }
+
+        .filter-btn.active {
+            background: rgba(201, 168, 76, 0.12);
+            border-color: rgba(201, 168, 76, 0.3);
+            color: #C9A84C;
+        }
+
+        .filter-btn i {
+            margin-left: 6px;
+        }
+
+        /* Image container */
+        .card-image-wrapper {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1A2A4A, #2A4A6A);
+        }
+
+        .card-image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .glass-card:hover .card-image-wrapper img {
+            transform: scale(1.05);
+        }
+
+        .card-image-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            font-size: 4rem;
+            color: rgba(201, 168, 76, 0.2);
+        }
+
+        /* Stats */
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: rgba(245, 237, 224, 0.3);
+            font-size: 0.75rem;
+        }
+
+        .stat-item i {
+            font-size: 0.7rem;
+        }
+
+        /* Stars */
+        .stars-display {
+            color: #C9A84C;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+        }
+
+        .stars-display .empty-star {
+            color: rgba(245, 237, 224, 0.1);
+        }
+
+        /* Pagination */
+        .pagination-btn {
+            padding: 8px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(201, 168, 76, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            color: rgba(245, 237, 224, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-size: 0.85rem;
+            min-width: 40px;
+        }
+
+        .pagination-btn:hover {
+            border-color: rgba(201, 168, 76, 0.2);
+            color: rgba(245, 237, 224, 0.7);
+        }
+
+        .pagination-btn.active {
+            background: rgba(201, 168, 76, 0.12);
+            border-color: rgba(201, 168, 76, 0.3);
+            color: #C9A84C;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 40px;
+            background: rgba(26, 26, 58, 0.4);
+            backdrop-filter: blur(8px);
+            border-radius: 24px;
+            border: 1px solid rgba(201, 168, 76, 0.06);
+        }
+
+        .empty-state .icon {
+            font-size: 4rem;
+            color: rgba(201, 168, 76, 0.15);
+            margin-bottom: 16px;
+        }
+
+        .empty-state h3 {
+            color: rgba(245, 237, 224, 0.4);
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: rgba(245, 237, 224, 0.2);
+            font-size: 0.9rem;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0A0A1A;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #C9A84C, #D4A373);
+            border-radius: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .card-image-wrapper {
+                height: 160px;
+            }
+            .empty-state {
+                padding: 40px 20px;
+            }
+            .empty-state .icon {
+                font-size: 3rem;
+            }
+            .filter-buttons {
+                flex-wrap: wrap;
+            }
+            .filter-btn {
+                font-size: 0.75rem;
+                padding: 6px 14px;
+            }
+        }
     </style>
 </head>
 <body>
 
+<!-- ==================== NAVBAR ==================== -->
 <nav class="navbar">
-    <div class="navbar-container">
-        <a href="/" class="navbar-brand">🕌 گشت و گذار در ایران</a>
-        <ul class="nav-links">
-            <li><a href="/">خانه</a></li>
-            <li><a href="/places">🏛️ مکان‌ها</a></li>
-            <li><a href="/travelogues">📖 سفرنامه‌ها</a></li>
-            <li><a href="/login" id="loginBtn">ورود</a></li>
-            <li><a href="/register" id="registerBtn">ثبت نام</a></li>
-            <li><button id="logoutBtn" class="nav-btn logout-btn" style="display:none;">🚪 خروج</button></li>
-        </ul>
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="relative">
+                <i class="fas fa-map-location-dot text-2xl text-persian-gold"></i>
+                <i class="fas fa-star text-[8px] text-persian-saffron absolute -top-1 -right-1"></i>
+            </div>
+            <a href="/" class="text-xl font-extrabold">
+                <span class="text-persian-gold">نقشه</span>
+                <span class="text-persian-cream">گرد</span>
+            </a>
+        </div>
+
+        <div class="hidden md:flex items-center gap-1">
+            <a href="/" class="text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-1.5">
+                <i class="fas fa-home"></i> خانه
+            </a>
+            <a href="/places" class="text-persian-gold bg-persian-gold/10 px-3 py-2 rounded-xl transition-all duration-300 text-sm flex items-center gap-1.5 border border-persian-gold/20">
+                <i class="fas fa-landmark"></i> مکان‌ها
+            </a>
+            <a href="/travelogues" class="text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-1.5">
+                <i class="fas fa-book-open"></i> سفرنامه‌ها
+            </a>
+
+            <!-- Auth buttons -->
+            <div id="authButtons" class="flex items-center gap-1 mr-2 pr-2 border-r border-persian-gold/20">
+                <a href="/login" class="text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-1.5">
+                    <i class="fas fa-sign-in-alt"></i> ورود
+                </a>
+                <a href="/register" class="bg-persian-gold/20 hover:bg-persian-gold/30 text-persian-gold px-4 py-2 rounded-xl transition-all duration-300 text-sm flex items-center gap-1.5 border border-persian-gold/20">
+                    <i class="fas fa-user-plus"></i> ثبت‌نام
+                </a>
+            </div>
+
+            <div id="userLinks" style="display:none;" class="flex items-center gap-1 mr-2 pr-2 border-r border-persian-gold/20">
+                <a href="/add-place" class="text-persian-cream/70 hover:text-persian-gold px-2.5 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-xs flex items-center gap-1.5">
+                    <i class="fas fa-plus-circle"></i> افزودن
+                </a>
+                <a href="/my-places" class="text-persian-cream/70 hover:text-persian-gold px-2.5 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-xs flex items-center gap-1.5">
+                    <i class="fas fa-map-pin"></i> مکان‌ها
+                </a>
+                <a href="/my-travelogues" class="text-persian-cream/70 hover:text-persian-gold px-2.5 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-xs flex items-center gap-1.5">
+                    <i class="fas fa-book"></i> سفرنامه‌ها
+                </a>
+            </div>
+
+            <button id="logoutBtn" style="display:none;" class="text-persian-cream/60 hover:text-red-400 px-3 py-2 rounded-xl hover:bg-red-500/10 transition-all duration-300 text-sm flex items-center gap-1.5">
+                <i class="fas fa-sign-out-alt"></i> خروج
+            </button>
+        </div>
+
+        <button id="hamburgerBtn" class="md:hidden text-persian-cream/60 hover:text-persian-cream transition-colors text-xl">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="md:hidden hidden mt-3 pt-3 border-t border-persian-gold/10 space-y-1">
+        <a href="/" class="block text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-2">
+            <i class="fas fa-home w-5"></i> خانه
+        </a>
+        <a href="/places" class="block text-persian-gold bg-persian-gold/10 px-3 py-2 rounded-xl text-sm flex items-center gap-2 border border-persian-gold/20">
+            <i class="fas fa-landmark w-5"></i> مکان‌ها
+        </a>
+        <a href="/travelogues" class="block text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-2">
+            <i class="fas fa-book-open w-5"></i> سفرنامه‌ها
+        </a>
+
+        <div id="mobileAuthButtons" class="border-t border-persian-gold/10 pt-2 space-y-1">
+            <a href="/login" class="block text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-2">
+                <i class="fas fa-sign-in-alt w-5"></i> ورود
+            </a>
+            <a href="/register" class="block bg-persian-gold/20 hover:bg-persian-gold/30 text-persian-gold px-3 py-2 rounded-xl transition-all duration-300 text-sm flex items-center gap-2 border border-persian-gold/20">
+                <i class="fas fa-user-plus w-5"></i> ثبت‌نام
+            </a>
+        </div>
+
+        <div id="mobileUserLinks" style="display:none;" class="border-t border-persian-gold/10 pt-2 space-y-1">
+            <a href="/add-place" class="block text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-2">
+                <i class="fas fa-plus-circle w-5"></i> افزودن مکان
+            </a>
+            <a href="/my-places" class="block text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-2">
+                <i class="fas fa-map-pin w-5"></i> مکان‌های من
+            </a>
+            <a href="/my-travelogues" class="block text-persian-cream/70 hover:text-persian-gold px-3 py-2 rounded-xl hover:bg-persian-gold/10 transition-all duration-300 text-sm flex items-center gap-2">
+                <i class="fas fa-book w-5"></i> سفرنامه‌های من
+            </a>
+        </div>
+
+        <button id="mobileLogoutBtn" style="display:none;" class="w-full text-red-400 hover:text-red-300 px-3 py-2 rounded-xl hover:bg-red-500/10 transition-all duration-300 text-sm flex items-center gap-2 text-right border-t border-persian-gold/10 pt-2">
+            <i class="fas fa-sign-out-alt w-5"></i> خروج
+        </button>
     </div>
 </nav>
 
-<div class="container">
-    <div class="search-section">
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="جستجوی مکان‌های دیدنی...">
-            <button id="searchBtn">🔍 جستجو</button>
+<!-- ==================== MAIN CONTENT ==================== -->
+<div class="relative z-10 max-w-7xl mx-auto px-4 pt-28 pb-12">
+
+    <!-- Page Header -->
+    <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
+        <div>
+            <h1 class="text-3xl md:text-4xl font-bold text-persian-cream flex items-center gap-3">
+                <i class="fas fa-landmark text-persian-gold"></i>
+                مکان‌های دیدنی ایران
+            </h1>
+            <p class="text-persian-cream/40 text-sm mt-1">
+                جاذبه‌های گردشگری ایران را کشف کنید
+            </p>
         </div>
-        <div class="filter-buttons">
-            <button class="filter-btn active" data-filter="latest">🆕 جدیدترین</button>
-            <button class="filter-btn" data-filter="most-viewed">👁️ پربازدیدترین</button>
-            <button class="filter-btn" data-filter="most-liked">❤️ پرلایک‌ترین</button>
+        <div class="flex items-center gap-3">
+            <span class="text-persian-cream/20 text-xs">
+                <i class="fas fa-flag ml-1"></i>
+                سرزمین چهارفصل
+            </span>
         </div>
     </div>
-    <div id="placesContainer"><div class="loading">⏳ در حال بارگذاری...</div></div>
-    <div id="pagination" class="pagination"></div>
+
+    <!-- Search & Filters -->
+    <div class="bg-persian-navy/40 backdrop-blur-sm border border-persian-gold/5 rounded-2xl p-5 md:p-6 mb-8">
+        <div class="flex flex-col md:flex-row gap-3">
+            <div class="flex-1 relative">
+                <i class="fas fa-search absolute right-4 top-1/2 -translate-y-1/2 text-persian-cream/20"></i>
+                <input type="text" id="searchInput" class="glass-input pr-12" placeholder="جستجوی مکان‌های دیدنی...">
+            </div>
+            <button id="searchBtn" class="bg-persian-gold/10 hover:bg-persian-gold/20 text-persian-gold px-6 py-3 rounded-2xl transition-all duration-300 border border-persian-gold/20 font-medium text-sm flex items-center justify-center gap-2 whitespace-nowrap">
+                <i class="fas fa-search"></i>
+                جستجو
+            </button>
+            <button id="clearSearchBtn" class="text-persian-cream/20 hover:text-persian-cream/40 transition-colors text-sm flex items-center gap-1">
+                <i class="fas fa-times"></i>
+                پاک کردن
+            </button>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mt-4" id="filterButtons">
+            <button class="filter-btn active" data-filter="latest">
+                <i class="fas fa-clock"></i> جدیدترین
+            </button>
+            <button class="filter-btn" data-filter="most-viewed">
+                <i class="fas fa-eye"></i> پربازدیدترین
+            </button>
+            <button class="filter-btn" data-filter="most-liked">
+                <i class="fas fa-heart"></i> پرلایک‌ترین
+            </button>
+            <button class="filter-btn" data-filter="top-rated">
+                <i class="fas fa-star"></i> بهترین امتیاز
+            </button>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div id="placesContainer">
+        <div class="flex items-center justify-center py-20">
+            <div class="text-center">
+                <i class="fas fa-spinner fa-spin text-4xl text-persian-gold/30 mb-4 block"></i>
+                <p class="text-persian-cream/30">در حال بارگذاری مکان‌ها...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div id="pagination" class="flex justify-center gap-2 mt-10"></div>
+
 </div>
 
-<footer>
-    <p>🇮🇷 گشت و گذار در ایران - معرفی جاذبه‌های گردشگری ایران 🇮🇷</p>
+<!-- ==================== FOOTER ==================== -->
+<footer class="relative z-10 text-center text-persian-cream/20 text-xs py-6 border-t border-persian-gold/5 mt-8">
+    <p>
+        <i class="fas fa-heart text-persian-rose/30 ml-1"></i>
+        با افتخار برای ایران
+        <i class="fas fa-heart text-persian-rose/30 mr-1"></i>
+    </p>
+    <p class="mt-1">© ۱۴۰۴ نقشه گرد - تمامی حقوق محفوظ است</p>
 </footer>
 
+<!-- ==================== JAVASCRIPT ==================== -->
 <script>
+    // ========== کوکی‌ها ==========
     function getCookie(name) {
         const value = `; ${document.cookie}`;
         const parts = value.split(`; ${name}=`);
@@ -119,119 +485,331 @@
         return null;
     }
 
-    const token = getCookie('token');
-    const loginBtn = document.getElementById('loginBtn');
-    const registerBtn = document.getElementById('registerBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-
-    if (token) {
-        if (loginBtn) loginBtn.style.display = 'none';
-        if (registerBtn) registerBtn.style.display = 'none';
-        if (logoutBtn) logoutBtn.style.display = 'inline-block';
+    function deleteCookie(name) {
+        document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     }
 
-    logoutBtn?.addEventListener('click', () => {
-        document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    // ========== مدیریت احراز هویت ==========
+    const token = getCookie('token');
+    const userRole = getCookie('role');
+
+    const authButtons = document.getElementById('authButtons');
+    const mobileAuthButtons = document.getElementById('mobileAuthButtons');
+    const userLinks = document.getElementById('userLinks');
+    const mobileUserLinks = document.getElementById('mobileUserLinks');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+
+    if (token) {
+        if (authButtons) authButtons.style.display = 'none';
+        if (mobileAuthButtons) mobileAuthButtons.style.display = 'none';
+        if (userLinks) userLinks.style.display = 'flex';
+        if (mobileUserLinks) mobileUserLinks.style.display = 'block';
+        if (logoutBtn) logoutBtn.style.display = 'inline-flex';
+        if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'block';
+    }
+
+    function handleLogout() {
+        deleteCookie('token');
+        deleteCookie('username');
+        deleteCookie('role');
         window.location.href = '/';
+    }
+
+    logoutBtn?.addEventListener('click', handleLogout);
+    mobileLogoutBtn?.addEventListener('click', handleLogout);
+
+    // ========== منوی موبایل ==========
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    let menuOpen = false;
+
+    hamburgerBtn?.addEventListener('click', () => {
+        menuOpen = !menuOpen;
+        mobileMenu.classList.toggle('hidden');
+        hamburgerBtn.innerHTML = menuOpen ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
     });
 
+    // ========== توابع کمکی ==========
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function displayStars(rating) {
+        if (!rating || rating === 0) {
+            return '<span class="stars-display">☆☆☆☆☆</span>';
+        }
+        const full = Math.floor(rating);
+        const empty = 5 - full;
+        let html = '<span class="stars-display">';
+        html += '★'.repeat(full);
+        html += '<span class="empty-star">' + '☆'.repeat(empty) + '</span>';
+        html += '</span>';
+        return html;
+    }
+
+    // ========== متغیرها ==========
     let currentPage = 0;
     let currentFilter = 'latest';
     let currentKeyword = '';
+    let totalPages = 1;
+    const pageSize = 9;
 
+    // ========== المان‌ها ==========
+    const container = document.getElementById('placesContainer');
+    const paginationEl = document.getElementById('pagination');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+
+    // ========== فیلترها ==========
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             currentFilter = this.dataset.filter;
             currentPage = 0;
+            currentKeyword = '';
+            searchInput.value = '';
             loadPlaces();
         });
     });
 
-    document.getElementById('searchBtn').addEventListener('click', () => {
-        currentKeyword = document.getElementById('searchInput').value.trim();
+    // ========== جستجو ==========
+    searchBtn.addEventListener('click', () => {
+        currentKeyword = searchInput.value.trim();
         currentPage = 0;
         loadPlaces();
     });
 
-    function displayStars(rating) {
-        if (!rating) return '☆☆☆☆☆';
-        const full = Math.floor(rating);
-        return '★'.repeat(full) + '☆'.repeat(5 - full);
-    }
+    searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            currentKeyword = searchInput.value.trim();
+            currentPage = 0;
+            loadPlaces();
+        }
+    });
 
+    clearSearchBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        currentKeyword = '';
+        currentPage = 0;
+        loadPlaces();
+    });
+
+    // ========== بارگذاری مکان‌ها ==========
     async function loadPlaces() {
-        const container = document.getElementById('placesContainer');
-        container.innerHTML = '<div class="loading">⏳ در حال بارگذاری...</div>';
+        container.innerHTML = `
+            <div class="flex items-center justify-center py-20">
+                <div class="text-center">
+                    <i class="fas fa-spinner fa-spin text-4xl text-persian-gold/30 mb-4 block"></i>
+                    <p class="text-persian-cream/30">در حال بارگذاری مکان‌ها...</p>
+                </div>
+            </div>
+        `;
+        paginationEl.innerHTML = '';
 
         try {
             let url;
+            let response;
+
             if (currentKeyword) {
-                url = `/api/places/public/search?keyword=${encodeURIComponent(currentKeyword)}&page=${currentPage}&size=9`;
-                const res = await fetch(url);
-                if (res.ok) {
-                    const data = await res.json();
+                // جستجو با کلمه کلیدی
+                url = `/api/places/public/search?keyword=${encodeURIComponent(currentKeyword)}&page=${currentPage}&size=${pageSize}`;
+                response = await fetch(url);
+                if (response.ok) {
+                    const data = await response.json();
                     displayPlaces(data.content);
                     displayPagination(data);
                 }
             } else {
+                // فیلترها
                 switch(currentFilter) {
                     case 'most-viewed':
-                        url = `/api/places/public/most-viewed?limit=9`;
-                        const res1 = await fetch(url);
-                        if (res1.ok) displayPlaces(await res1.json());
+                        url = `/api/places/public/most-viewed?limit=${pageSize}`;
+                        response = await fetch(url);
+                        if (response.ok) {
+                            const data = await response.json();
+                            displayPlaces(data);
+                            paginationEl.innerHTML = '';
+                        }
                         break;
                     case 'most-liked':
-                        url = `/api/places/public/most-liked?limit=9`;
-                        const res2 = await fetch(url);
-                        if (res2.ok) displayPlaces(await res2.json());
+                        url = `/api/places/public/most-liked?limit=${pageSize}`;
+                        response = await fetch(url);
+                        if (response.ok) {
+                            const data = await response.json();
+                            displayPlaces(data);
+                            paginationEl.innerHTML = '';
+                        }
+                        break;
+                    case 'top-rated':
+                        url = `/api/places/public/top-rated?limit=${pageSize}`;
+                        response = await fetch(url);
+                        if (response.ok) {
+                            const data = await response.json();
+                            displayPlaces(data);
+                            paginationEl.innerHTML = '';
+                        }
                         break;
                     default:
-                        url = `/api/places/public?page=${currentPage}&size=9`;
-                        const res3 = await fetch(url);
-                        if (res3.ok) {
-                            const data = await res3.json();
+                        url = `/api/places/public?page=${currentPage}&size=${pageSize}`;
+                        response = await fetch(url);
+                        if (response.ok) {
+                            const data = await response.json();
                             displayPlaces(data.content);
                             displayPagination(data);
                         }
                 }
             }
-        } catch(e) { container.innerHTML = '<div class="empty-message">❌ خطا در ارتباط با سرور</div>'; }
+        } catch (error) {
+            console.error('Error loading places:', error);
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="icon"><i class="fas fa-wifi-slash"></i></div>
+                    <h3>خطا در ارتباط با سرور</h3>
+                    <p>لطفاً اتصال اینترنت خود را بررسی کنید</p>
+                </div>
+            `;
+        }
     }
 
+    // ========== نمایش مکان‌ها ==========
     function displayPlaces(places) {
-        const container = document.getElementById('placesContainer');
         if (!places || places.length === 0) {
-            container.innerHTML = '<div class="empty-message">🏛️ هیچ مکانی یافت نشد</div>';
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="icon"><i class="fas fa-landmark"></i></div>
+                    <h3>هیچ مکانی یافت نشد</h3>
+                    <p>${currentKeyword ? `نتیجه‌ای برای "${currentKeyword}" یافت نشد` : 'هنوز مکانی ثبت نشده است'}</p>
+                </div>
+            `;
             return;
         }
-        container.innerHTML = `<div class="places-grid">${places.map(p => `
-            <div class="place-card" onclick="location.href='/place/${p.id}'">
-                <img src="${p.photoUrls?.[0] || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%232a9d8f%22/%3E%3Ctext x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22%3E🏛️%3C/text%3E%3C/svg%3E'}" class="card-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%232a9d8f%22/%3E%3Ctext x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22%3E🏛️%3C/text%3E%3C/svg%3E'">
-                <div class="card-body">
-                    <h3 class="card-title">${escapeHtml(p.name)}</h3>
-                    <div class="card-stats"><span>👁️ ${p.viewCount || 0}</span><span>❤️ ${p.likeCount || 0}</span><span>⭐ ${p.averageRating?.toFixed(1) || 0}</span></div>
-                    <div class="stars">${displayStars(p.averageRating)}</div>
-                </div>
+
+        container.innerHTML = `
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                ${places.map(p => {
+            const imgUrl = p.photoUrls && p.photoUrls.length > 0 ? p.photoUrls[0] : null;
+            const isApproved = p.status === 'APPROVED';
+
+            return `
+                        <div class="glass-card rounded-2xl overflow-hidden cursor-pointer" onclick="location.href='/place/${p.id}'">
+                            <div class="card-image-wrapper">
+                                ${imgUrl ?
+                `<img src="${imgUrl}" alt="${escapeHtml(p.name)}" onerror="this.parentElement.innerHTML='<div class=\\'card-image-placeholder\\'><i class=\\'fas fa-landmark\\'></i></div>'">` :
+                `<div class="card-image-placeholder"><i class="fas fa-landmark"></i></div>`
+            }
+                                ${!isApproved ? `
+                                    <div class="absolute top-3 left-3 bg-persian-gold/10 backdrop-blur-sm border border-persian-gold/20 rounded-full px-3 py-1 text-xs text-persian-cream/60">
+                                        <i class="fas fa-clock"></i> در انتظار تایید
+                                    </div>
+                                ` : ''}
+                            </div>
+
+                            <div class="p-5">
+                                <h3 class="text-lg font-bold text-persian-cream hover:text-persian-gold transition-colors line-clamp-2 mb-2">
+                                    ${escapeHtml(p.name)}
+                                </h3>
+
+                                <p class="text-persian-cream/40 text-sm leading-relaxed line-clamp-2 mb-3">
+                                    ${escapeHtml((p.description || '').substring(0, 100))}${(p.description || '').length > 100 ? '...' : ''}
+                                </p>
+
+                                <div class="flex items-center gap-4 mb-2">
+                                    <span class="stat-item">
+                                        <i class="fas fa-eye"></i>
+                                        ${p.viewCount || 0}
+                                    </span>
+                                    <span class="stat-item">
+                                        <i class="fas fa-heart text-rose-400/40"></i>
+                                        ${p.likeCount || 0}
+                                    </span>
+                                    <span class="stat-item">
+                                        <i class="fas fa-star text-persian-gold/40"></i>
+                                        ${p.averageRating?.toFixed(1) || '۰'}
+                                    </span>
+                                </div>
+
+                                <div class="stars-display">
+                                    ${displayStars(p.averageRating)}
+                                </div>
+
+                                <div class="text-xs text-persian-cream/20 mt-3 pt-2 border-t border-persian-gold/5">
+                                    <i class="fas fa-user ml-1"></i>
+                                    ${escapeHtml(p.introducerUsername || 'کاربر مهمان')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+        }).join('')}
             </div>
-        `).join('')}</div>`;
+        `;
     }
 
+    // ========== صفحه‌بندی ==========
     function displayPagination(pageData) {
-        const pagination = document.getElementById('pagination');
-        if (!pageData || pageData.totalPages <= 1) { pagination.innerHTML = ''; return; }
-        let html = '';
-        for (let i = 0; i < pageData.totalPages; i++) {
-            html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i + 1}</button>`;
+        if (!pageData || pageData.totalPages <= 1) {
+            paginationEl.innerHTML = '';
+            return;
         }
-        pagination.innerHTML = html;
+
+        totalPages = pageData.totalPages;
+        let html = '';
+
+        // دکمه قبلی
+        if (currentPage > 0) {
+            html += `<button class="pagination-btn" onclick="goToPage(${currentPage - 1})">
+                <i class="fas fa-chevron-right"></i>
+            </button>`;
+        }
+
+        // شماره صفحات
+        const startPage = Math.max(0, currentPage - 2);
+        const endPage = Math.min(totalPages - 1, currentPage + 2);
+
+        if (startPage > 0) {
+            html += `<button class="pagination-btn" onclick="goToPage(0)">۱</button>`;
+            if (startPage > 1) {
+                html += `<span class="text-persian-cream/20 px-1">...</span>`;
+            }
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i + 1}</button>`;
+        }
+
+        if (endPage < totalPages - 1) {
+            if (endPage < totalPages - 2) {
+                html += `<span class="text-persian-cream/20 px-1">...</span>`;
+            }
+            html += `<button class="pagination-btn" onclick="goToPage(${totalPages - 1})">${totalPages}</button>`;
+        }
+
+        // دکمه بعدی
+        if (currentPage < totalPages - 1) {
+            html += `<button class="pagination-btn" onclick="goToPage(${currentPage + 1})">
+                <i class="fas fa-chevron-left"></i>
+            </button>`;
+        }
+
+        paginationEl.innerHTML = html;
     }
 
-    window.goToPage = function(page) { currentPage = page; loadPlaces(); window.scrollTo({ top: 0 }); };
-    function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+    // ========== رفتن به صفحه ==========
+    window.goToPage = function(page) {
+        currentPage = page;
+        loadPlaces();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
-    loadPlaces();
+    // ========== بارگذاری اولیه ==========
+    document.addEventListener('DOMContentLoaded', loadPlaces);
 </script>
+
 </body>
 </html>
