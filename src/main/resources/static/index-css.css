@@ -1,0 +1,195 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Vazirmatn', system-ui, sans-serif;
+    background: linear-gradient(135deg, #0A0A1A 0%, #111128 50%, #0A0A1A 100%);
+    min-height: 100vh;
+    color: #F5EDE0;
+}
+
+/* افکت شیشه‌ای */
+.glass {
+    background: rgba(10, 10, 26, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(201, 168, 76, 0.1);
+}
+
+.glass-light {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(201, 168, 76, 0.08);
+}
+
+/* انیمیشن شهاب‌واره */
+@keyframes shootingStar {
+    0% {
+        transform: translateX(0) translateY(0) scale(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    30% {
+        transform: translateX(-300px) translateY(100px) scale(1);
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(-600px) translateY(200px) scale(0);
+        opacity: 0;
+    }
+}
+
+.shooting-star {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #C9A84C, #D4A373);
+    box-shadow: 0 0 20px 5px rgba(201, 168, 76, 0.3);
+    animation: shootingStar linear infinite;
+}
+
+.shooting-star::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    width: 80px;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(201, 168, 76, 0.4), transparent);
+    transform: translateY(-50%);
+}
+
+.shooting-star:nth-child(1) {
+    top: 10%;
+    left: 80%;
+    animation-duration: 4s;
+    animation-delay: 0s;
+}
+
+.shooting-star:nth-child(2) {
+    top: 20%;
+    left: 60%;
+    animation-duration: 5.5s;
+    animation-delay: 1.2s;
+    width: 3px;
+    height: 3px;
+}
+
+.shooting-star:nth-child(3) {
+    top: 5%;
+    left: 90%;
+    animation-duration: 6s;
+    animation-delay: 2.5s;
+    width: 5px;
+    height: 5px;
+}
+
+.shooting-star:nth-child(4) {
+    top: 30%;
+    left: 50%;
+    animation-duration: 4.8s;
+    animation-delay: 3.8s;
+    width: 3px;
+    height: 3px;
+}
+
+.shooting-star:nth-child(5) {
+    top: 15%;
+    left: 70%;
+    animation-duration: 5.2s;
+    animation-delay: 0.8s;
+    width: 4px;
+    height: 4px;
+    background: linear-gradient(135deg, #D4A373, #E76F51);
+}
+
+/* انیمیشن متن تایپ */
+@keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+@keyframes blink {
+    50% { border-color: transparent; }
+}
+
+.typewriter {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    border-left: 3px solid #C9A84C;
+    animation: typing 3s steps(30) 1s forwards, blink 0.75s step-end infinite;
+    width: 0;
+    max-width: fit-content;
+}
+
+/* کارت‌ها */
+.card-hover {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform-style: preserve-3d;
+    perspective: 1000px;
+}
+
+.card-hover:hover {
+    transform: translateY(-12px) rotateX(3deg) rotateY(-2deg);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(201, 168, 76, 0.08);
+}
+
+/* اسکرول بار */
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #0A0A1A;
+}
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #C9A84C, #D4A373);
+    border-radius: 10px;
+}
+
+/* همبرگری */
+.hamburger-line {
+    width: 28px;
+    height: 2.5px;
+    background: #F5EDE0;
+    margin: 5px 0;
+    transition: all 0.3s ease;
+    border-radius: 10px;
+}
+
+.hamburger-active .hamburger-line:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+.hamburger-active .hamburger-line:nth-child(2) {
+    opacity: 0;
+}
+.hamburger-active .hamburger-line:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* موج جداکننده */
+.wave-divider {
+    position: relative;
+    overflow: hidden;
+}
+
+.wave-divider::before {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    right: 0;
+    left: 0;
+    height: 50px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120'%3E%3Cpath d='M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z' fill='%230A0A1A' opacity='0.6'/%3E%3C/svg%3E") no-repeat bottom;
+    background-size: cover;
+}

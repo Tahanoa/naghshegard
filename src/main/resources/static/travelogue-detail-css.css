@@ -1,0 +1,350 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Vazirmatn', system-ui, sans-serif;
+    background: linear-gradient(135deg, #0A0A1A 0%, #111128 50%, #0A0A1A 100%);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* پس‌زمینه با ستاره */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+            radial-gradient(1.5px 1.5px at 10% 20%, rgba(255,255,255,0.4), transparent),
+            radial-gradient(1px 1px at 25% 45%, rgba(255,255,255,0.3), transparent),
+            radial-gradient(2px 2px at 40% 10%, rgba(255,255,255,0.5), transparent),
+            radial-gradient(1px 1px at 55% 60%, rgba(255,255,255,0.2), transparent),
+            radial-gradient(1.5px 1.5px at 70% 30%, rgba(255,255,255,0.4), transparent),
+            radial-gradient(1px 1px at 85% 70%, rgba(255,255,255,0.3), transparent);
+    background-size: 100% 100%;
+    opacity: 0.3;
+    z-index: 0;
+}
+
+/* Navbar */
+.navbar {
+    background: rgba(10, 10, 26, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(201, 168, 76, 0.08);
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 1000;
+    padding: 0.75rem 2rem;
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0.75rem 1rem;
+    }
+}
+
+/* Glass Card */
+.glass-card {
+    background: rgba(26, 26, 58, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(201, 168, 76, 0.08);
+    border-radius: 24px;
+}
+
+.glass-card-light {
+    background: rgba(26, 26, 58, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(201, 168, 76, 0.06);
+    border-radius: 20px;
+}
+
+/* ===== گالری اسلایدر ===== */
+.gallery-container {
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.gallery-slider {
+    display: flex;
+    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    touch-action: pan-y;
+}
+
+.gallery-slide {
+    min-width: 100%;
+    aspect-ratio: 16/9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1A2A4A, #2A4A6A);
+    position: relative;
+}
+
+.gallery-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.gallery-slide .placeholder-icon {
+    font-size: 5rem;
+    color: rgba(201, 168, 76, 0.15);
+}
+
+/* دکمه‌های ناوبری گالری */
+.gallery-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.gallery-btn:hover {
+    background: rgba(201, 168, 76, 0.3);
+    border-color: rgba(201, 168, 76, 0.3);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.gallery-btn.prev {
+    right: 16px;
+}
+
+.gallery-btn.next {
+    left: 16px;
+}
+
+/* دات‌های پایین گالری */
+.gallery-dots {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+.gallery-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+}
+
+.gallery-dot.active {
+    background: #C9A84C;
+    transform: scale(1.2);
+    box-shadow: 0 0 20px rgba(201, 168, 76, 0.3);
+}
+
+.gallery-dot:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+/* شمارنده عکس */
+.gallery-counter {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    padding: 4px 14px;
+    border-radius: 50px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.75rem;
+    z-index: 10;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* مودال بزرگنمایی */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    background: rgba(0, 0, 0, 0.92);
+    backdrop-filter: blur(20px);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal-overlay.show {
+    display: flex;
+}
+
+.modal-overlay img {
+    max-width: 95%;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.modal-close {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.3);
+    transform: scale(1.1);
+}
+
+/* چپ‌چین */
+.place-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(201, 168, 76, 0.1);
+    border: 1px solid rgba(201, 168, 76, 0.12);
+    color: #D4A373;
+    padding: 6px 16px;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 0.85rem;
+}
+
+.place-chip:hover {
+    background: rgba(201, 168, 76, 0.2);
+    border-color: rgba(201, 168, 76, 0.25);
+    transform: translateY(-2px);
+}
+
+.place-chip i {
+    font-size: 0.7rem;
+}
+
+/* دکمه لایک */
+.btn-like {
+    background: rgba(201, 168, 76, 0.08);
+    border: 1px solid rgba(201, 168, 76, 0.12);
+    color: #D4A373;
+    padding: 10px 24px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-like:hover {
+    background: rgba(201, 168, 76, 0.15);
+    transform: scale(1.02);
+}
+
+.btn-like:active {
+    transform: scale(0.95);
+}
+
+.btn-like.liked {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.15);
+    color: #F87171;
+}
+
+.btn-delete {
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.1);
+    color: #F87171;
+    padding: 10px 24px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-delete:hover {
+    background: rgba(239, 68, 68, 0.15);
+    transform: scale(1.02);
+}
+
+/* اسکرول بار */
+::-webkit-scrollbar {
+    width: 4px;
+}
+::-webkit-scrollbar-track {
+    background: #0A0A1A;
+}
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #C9A84C, #D4A373);
+    border-radius: 10px;
+}
+
+/* ریسپانسیو */
+@media (max-width: 640px) {
+    .gallery-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 0.9rem;
+    }
+    .gallery-btn.prev {
+        right: 8px;
+    }
+    .gallery-btn.next {
+        left: 8px;
+    }
+    .gallery-dots {
+        bottom: 10px;
+        gap: 6px;
+    }
+    .gallery-dot {
+        width: 8px;
+        height: 8px;
+    }
+    .gallery-slide {
+        aspect-ratio: 4/3;
+    }
+}

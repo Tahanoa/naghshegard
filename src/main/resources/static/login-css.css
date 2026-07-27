@@ -1,0 +1,201 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Vazirmatn', system-ui, sans-serif;
+    background: linear-gradient(135deg, #0A0A1A 0%, #111128 50%, #0A0A1A 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* پس‌زمینه با ستاره */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+            radial-gradient(1.5px 1.5px at 10% 20%, rgba(255,255,255,0.4), transparent),
+            radial-gradient(1px 1px at 25% 45%, rgba(255,255,255,0.3), transparent),
+            radial-gradient(2px 2px at 40% 10%, rgba(255,255,255,0.5), transparent),
+            radial-gradient(1px 1px at 55% 60%, rgba(255,255,255,0.2), transparent),
+            radial-gradient(1.5px 1.5px at 70% 30%, rgba(255,255,255,0.4), transparent),
+            radial-gradient(1px 1px at 85% 70%, rgba(255,255,255,0.3), transparent);
+    background-size: 100% 100%;
+    opacity: 0.4;
+    z-index: 0;
+}
+
+/* المان‌های تزئینی */
+.decoration {
+    position: fixed;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.05;
+    font-size: 12rem;
+}
+
+.decoration-1 {
+    top: 5%;
+    right: 3%;
+    transform: rotate(15deg);
+}
+
+.decoration-2 {
+    bottom: 5%;
+    left: 3%;
+    transform: rotate(-10deg);
+}
+
+/* افکت شیشه‌ای */
+.glass-card {
+    background: rgba(26, 26, 58, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(201, 168, 76, 0.12);
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6), 0 0 40px rgba(201, 168, 76, 0.03);
+}
+
+.glass-input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(201, 168, 76, 0.15);
+    color: #F5EDE0;
+    transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+    outline: none;
+    border-color: #C9A84C;
+    box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.1), 0 0 20px rgba(201, 168, 76, 0.05);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.glass-input::placeholder {
+    color: rgba(245, 237, 224, 0.3);
+}
+
+.glass-input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 30px #1A1A3A inset !important;
+    -webkit-text-fill-color: #F5EDE0 !important;
+}
+
+/* انیمیشن‌ها */
+@keyframes fadeSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.step-content {
+    animation: fadeSlideUp 0.5s ease;
+}
+
+.step-content {
+    display: none;
+}
+
+.step-content.active {
+    display: block;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #C9A84C, #D4A373);
+    color: #0A0A1A;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 40px rgba(201, 168, 76, 0.25);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-secondary {
+    background: rgba(201, 168, 76, 0.1);
+    color: #D4A373;
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: rgba(201, 168, 76, 0.2);
+    transform: translateY(-2px);
+}
+
+.btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* کد ورودی */
+.code-input {
+    letter-spacing: 12px;
+    font-size: 1.8rem;
+    text-align: center;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px solid rgba(201, 168, 76, 0.15);
+    border-radius: 16px;
+    padding: 16px;
+    color: #F5EDE0;
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
+}
+
+.code-input:focus {
+    border-color: #C9A84C;
+    box-shadow: 0 0 30px rgba(201, 168, 76, 0.05);
+}
+
+/* اسکرول بار */
+::-webkit-scrollbar {
+    width: 4px;
+}
+::-webkit-scrollbar-track {
+    background: #0A0A1A;
+}
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #C9A84C, #D4A373);
+    border-radius: 10px;
+}
+
+/* ریسپانسیو */
+@media (max-width: 640px) {
+    .glass-card {
+        padding: 24px 20px !important;
+    }
+    .decoration {
+        display: none;
+    }
+    .code-input {
+        font-size: 1.4rem;
+        letter-spacing: 8px;
+        padding: 12px;
+        max-width: 220px;
+    }
+}
