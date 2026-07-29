@@ -7,18 +7,23 @@
 
 > A comprehensive tourism platform for discovering and sharing Iran's beautiful destinations. Users can explore places, write travelogues, share experiences, and engage with a community of travelers.
 
+---
+
 ## 📋 Table of Contents
 
-- [Overview](#overview)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Architecture](#architecture)
-- [Getting Started](#getting-started)
-- [API Documentation](#api-documentation)
-- [Database Schema](#database-schema)
-- [Security](#security)
-- [Contributing](#contributing)
-- [License](#license)
+- [Overview](#-overview)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Architecture](#-architecture)
+- [Screenshots](#-screenshots)
+- [Getting Started](#-getting-started)
+- [API Documentation](#-api-documentation)
+- [Database Schema](#-database-schema)
+- [Security](#-security)
+- [Contributing](#-contributing)
+- [License](#-license)
+
+---
 
 ## 🎯 Overview
 
@@ -31,50 +36,54 @@
 - 🗺️ View locations on interactive maps
 - 👥 Connect with other travelers
 
+---
+
 ## ✨ Features
 
 ### 👤 User Features
 
-- **Authentication & Authorization**
-  - Secure JWT-based authentication
-  - Email verification for registration
-  - Password reset functionality
-  - Role-based access control (User, Moderator, Admin)
+**Authentication & Authorization**
+- Secure JWT-based authentication
+- Email verification for registration
+- Password reset functionality
+- Role-based access control (User, Moderator, Admin)
 
-- **Tourist Places**
-  - Browse approved places with pagination
-  - Search and filter by name, description
-  - View place details with photo gallery
-  - Interactive map integration (Leaflet + Google Maps)
-  - Rate and review places
-  - Like/unlike places
-  - Track view counts and popularity
+**Tourist Places**
+- Browse approved places with pagination
+- Search and filter by name, description
+- View place details with photo gallery
+- Interactive map integration (Leaflet + Google Maps)
+- Rate and review places
+- Like/unlike places
+- Track view counts and popularity
 
-- **Travelogues**
-  - Create and publish travelogues
-  - Upload multiple photos per travelogue
-  - Tag visited places
-  - Like and view count tracking
-  - Search and filter travelogues
+**Travelogues**
+- Create and publish travelogues
+- Upload multiple photos per travelogue
+- Tag visited places
+- Like and view count tracking
+- Search and filter travelogues
 
-- **User Dashboard**
-  - View personal places and travelogues
-  - Manage content (edit/delete)
-  - Track activity statistics
+**User Dashboard**
+- View personal places and travelogues
+- Manage content (edit/delete)
+- Track activity statistics
 
 ### 👑 Admin Features
 
-- **Admin Dashboard**
-  - Comprehensive statistics dashboard
-  - Manage all content (places, travelogues, reviews)
-  - Approve/reject submissions
-  - Bulk approval actions
-  - User management (roles, status)
+**Admin Dashboard**
+- Comprehensive statistics dashboard
+- Manage all content (places, travelogues, reviews)
+- Approve/reject submissions
+- Bulk approval actions
+- User management (roles, status)
 
-- **Moderator Capabilities**
-  - Manage content with limited permissions
-  - View all analytics
-  - Approve/reject pending content
+**Moderator Capabilities**
+- Manage content with limited permissions
+- View all analytics
+- Approve/reject pending content
+
+---
 
 ## 🛠️ Tech Stack
 
@@ -113,6 +122,8 @@
 - 🔑 Secure password reset flow
 - 📧 CSRF protection
 
+---
+
 ## 🏗️ Architecture
 
 ```
@@ -134,14 +145,53 @@
 │  ┌──────────────────▼───────────────────────────┐   │
 │  │              Repository                      │   │
 │  │  (Data Access Layer - JPA)                 │   │
-│  └──────────────────┬───────────────────────────┘   │
-└─────────────────────┼─────────────────────────────┘
+│  └──────────────────────────────────────────────┘   │
+└─────────────────────┬─────────────────────────────┘
                       │
 ┌─────────────────────▼─────────────────────────────┐
 │              PostgreSQL Database                   │
 │  (Users, Places, Travelogues, Reviews, Photos)    │
 └────────────────────────────────────────────────────┘
 ```
+
+---
+
+## 📸 Screenshots
+
+### Homepage - Latest Destinations
+![Homepage](https://github.com/Tahanoa/naghshegard/blob/master/src/main/resources/static/images/Screenshot%202026-07-29%20092449.png)
+
+*The main landing page showcasing featured tourist attractions across Iran with beautiful imagery and quick navigation options.*
+
+---
+
+### Explore Places
+![Explore Places](https://github.com/Tahanoa/naghshegard/blob/master/src/main/resources/static/images/Screenshot%202026-07-29%20092511.png)
+
+*Browse through various tourist destinations with search and filter functionality to find the perfect travel spot.*
+
+---
+
+### Place Details
+![Place Details](https://github.com/Tahanoa/naghshegard/blob/master/src/main/resources/static/images/Screenshot%202026-07-29%20092527.png)
+
+*Comprehensive view of a tourist place including description, photo gallery, interactive map, ratings, and user reviews.*
+
+---
+
+### Travelogues
+![Travelogues](https://github.com/Tahanoa/naghshegard/blob/master/src/main/resources/static/images/Screenshot%202026-07-29%20092649.png)
+
+*Read and share travel experiences through detailed travelogues with photos, stories, and visited places.*
+
+---
+
+### Admin Dashboard
+![Admin Dashboard](https://github.com/Tahanoa/naghshegard/blob/master/src/main/resources/static/images/Screenshot%202026-07-29%20092841.png)
+
+*Powerful admin panel with statistics, content moderation, user management, and approval workflows.*
+
+---
 
 ## 🚀 Getting Started
 
@@ -154,20 +204,20 @@
 
 ### Installation
 
-1. **Clone the repository**
+**1. Clone the repository**
 ```bash
 git clone https://github.com/yourusername/iran-travel-blog.git
 cd iran-travel-blog
 ```
 
-2. **Configure Database**
+**2. Configure Database**
 ```sql
 CREATE DATABASE tblog;
 CREATE USER your_user WITH PASSWORD 'your_password';
 GRANT ALL PRIVILEGES ON DATABASE tblog TO your_user;
 ```
 
-3. **Configure application.properties**
+**3. Configure application.properties**
 ```properties
 # Database
 spring.datasource.url=jdbc:postgresql://localhost:5432/tblog
@@ -183,13 +233,13 @@ jwt.secret=your_super_secret_key_min_64_characters
 jwt.expiration=86400000
 ```
 
-4. **Build and Run**
+**4. Build and Run**
 ```bash
 mvn clean install
 mvn spring-boot:run
 ```
 
-5. **Access Application**
+**5. Access Application**
 ```
 http://localhost:8080
 ```
@@ -203,6 +253,8 @@ http://localhost:8080
   "email": "admin@example.com"
 }
 ```
+
+---
 
 ## 📚 API Documentation
 
@@ -267,6 +319,8 @@ http://localhost:8080
 | PUT | `/api/admin/users/{id}/role` | Change user role |
 | PUT | `/api/admin/users/{id}/toggle-status` | Enable/disable user |
 
+---
+
 ## 📊 Database Schema
 
 ### Entity Relationship Diagram
@@ -325,6 +379,8 @@ http://localhost:8080
 - **Tourist Place → Photo**: One-to-Many (A place can have many photos)
 - **Travelogue → Photo**: One-to-Many (A travelogue can have many photos)
 
+---
+
 ## 🔐 Security
 
 ### Authentication Flow
@@ -351,6 +407,8 @@ http://localhost:8080
 | Bulk actions | ❌ | ❌ | ✅ |
 | Access admin panel | ❌ | ✅ | ✅ |
 
+---
+
 ## 📈 Performance Optimizations
 
 - **Caching**: Spring Cache for frequently accessed data
@@ -358,6 +416,8 @@ http://localhost:8080
 - **Lazy Loading**: JPA lazy loading for relationships
 - **Image Optimization**: Byte array storage in PostgreSQL
 - **Indexing**: Database indexes on frequently queried fields
+
+---
 
 ## 🤝 Contributing
 
@@ -374,9 +434,13 @@ http://localhost:8080
 - Add comments for complex logic
 - Write unit tests for new features
 
+---
+
 ## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
 
 ## 🙏 Acknowledgments
 
@@ -386,22 +450,16 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Font Awesome** - Beautiful icons
 - **OpenStreetMap** - Free map data
 
+---
+
 ## 📧 Contact
 
-- **Project Maintainer**: [Taha]
+- **Project Maintainer**: Taha Farzaneh
 - **Email**: tahafarzaneh3524@gmail.com
-- **GitHub**: [Your GitHub](https://github.com/Tahanoa)
+- **GitHub**: [Tahanoa](https://github.com/Tahanoa)
 
 ---
 
 <div align="center">
   <strong>🌟 Made with ❤️ for Iran's Tourism 🌟</strong>
 </div>
-
-
-این رد می رو برام باز نویسی کن و این اسکرین شات ها رو هم قرار بده به شکل زیبا
-https://github.com/Tahanoa/naghshegard/blob/master/src/main/resources/static/images/Screenshot%202026-07-29%20092449.png
-https://github.com/Tahanoa/naghshegard/blob/master/src/main/resources/static/images/Screenshot%202026-07-29%20092511.png
-https://github.com/Tahanoa/naghshegard/blob/master/src/main/resources/static/images/Screenshot%202026-07-29%20092527.png
-https://github.com/Tahanoa/naghshegard/blob/master/src/main/resources/static/images/Screenshot%202026-07-29%20092649.png
-https://github.com/Tahanoa/naghshegard/blob/master/src/main/resources/static/images/Screenshot%202026-07-29%20092841.png
