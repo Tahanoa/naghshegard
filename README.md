@@ -397,3 +397,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 <div align="center">
   <strong>🌟 Made with ❤️ for Iran's Tourism 🌟</strong>
 </div>
+
+
+این رد می رو برام باز نویسی کن و این اسکرین شات ها رو هم قرار بده به شکل زیبا
+https://github.com/Tahanoa/naghshegard/blob/master/src/main/resources/static/images/Screenshot%202026-07-29%20092449.png
+https://github.com/Tahanoa/naghshegard/blob/master/src/main/resources/static/images/Screenshot%202026-07-29%20092511.png
+https://github.com/Tahanoa/naghshegard/blob/master/src/main/resources/static/images/Screenshot%202026-07-29%20092527.png
+https://github.com/Tahanoa/naghshegard/blob/master/src/main/resources/static/images/Screenshot%202026-07-29%20092649.png
+https://github.com/Tahanoa/naghshegard/blob/master/src/main/resources/static/images/Screenshot%202026-07-29%20092841.png
