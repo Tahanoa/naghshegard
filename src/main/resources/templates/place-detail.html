@@ -10,7 +10,7 @@
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
-    <link href="/place-detail-css.css" rel="stylesheet">
+    <link href="/css/place-detail-css.css" rel="stylesheet">
 
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -41,10 +41,6 @@
             }
         }
     </script>
-
-    <style>
-
-    </style>
 </head>
 <body>
 
@@ -353,7 +349,7 @@
     // ========== بارگذاری مکان ==========
     async function loadPlace() {
         try {
-            const response = await fetch(`/api/places/${placeId}`);
+            const response = await fetch(`/api/places/public/${placeId}`);
             if (response.ok) {
                 const place = await response.json();
                 displayPlace(place);
@@ -540,22 +536,21 @@
 
         initGallery(place.photoUrls || [], 'galleryContainer');
 
-        // ===== دکمه لایک با جلوگیری از اسپم =====
+        // ===== راه‌اندازی فرم ثبت نظر =====
+        initReviewForm();
+
+        // ===== دکمه لایک =====
         if (token) {
             const likeBtn = document.getElementById('likeBtn');
-
-            // بررسی وضعیت لایک کاربر از سرور
             checkLikeStatus();
 
-            likeBtn?.addEventListener('click', async function() {
-                // جلوگیری از کلیک چندباره
+            likeBtn?.addEventListener('click', async function () {
                 if (this.disabled) return;
                 if (isLiked) {
                     showToast('شما قبلاً این مکان را لایک کرده‌اید', 'info');
                     return;
                 }
 
-                // غیرفعال کردن موقت دکمه
                 this.disabled = true;
                 const originalText = this.innerHTML;
                 this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال ثبت...';
@@ -563,30 +558,21 @@
                 try {
                     const response = await fetch(`/api/places/${placeId}/like`, {
                         method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
+                        headers: { 'Authorization': `Bearer ${token}` }
                     });
 
                     if (response.ok) {
                         isLiked = true;
                         likeCount++;
-
-                        // به‌روزرسانی دکمه
                         this.classList.add('liked');
                         this.innerHTML = '<i class="fas fa-heart"></i> لایک شده';
-                        this.disabled = true; // غیرفعال کردن بعد از لایک
-
-                        // به‌روزرسانی تعداد
-                        const likeSpan = document.getElementById('likeCount');
-                        likeSpan.textContent = `${likeCount} لایک`;
-
+                        this.disabled = true;
+                        document.getElementById('likeCount').textContent = `${likeCount} لایک`;
                         showToast('❤️ لایک شد!', 'success');
                     } else if (response.status === 401) {
                         deleteCookie('token');
                         window.location.href = '/login';
                     } else if (response.status === 409) {
-                        // Conflict - کاربر قبلاً لایک کرده
                         isLiked = true;
                         this.classList.add('liked');
                         this.innerHTML = '<i class="fas fa-heart"></i> لایک شده';
@@ -613,9 +599,7 @@
 
         try {
             const response = await fetch(`/api/places/${placeId}/like-status`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                headers: { 'Authorization': `Bearer ${token}` }
             });
 
             if (response.ok) {
@@ -695,20 +679,38 @@
         }
     }
 
-    // ========== نمایش پیام‌ها ==========
+    // ========== نمایش پیام‌ها در reviewAlert ==========
     function showReviewAlert(message, type) {
         const alert = document.getElementById('reviewAlert');
-        if (!alert) return;
-        alert.textContent = message;
+        if (!alert) {
+            console.warn('Review alert element not found');
+            return;
+        }
+
+        // پاک کردن کلاس‌های قبلی
+        alert.className = '';
+        alert.style.display = 'none';
+
+        // تنظیم آیکون مناسب
+        const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+
+        // تنظیم پیام و کلاس‌ها
+        alert.innerHTML = `<i class="fas ${icon} ml-2"></i> ${message}`;
         alert.className = `p-3 rounded-2xl text-sm flex items-center gap-2 mb-4 ${
             type === 'success'
                 ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
                 : 'bg-rose-500/10 border border-rose-500/20 text-rose-400'
         }`;
         alert.style.display = 'flex';
-        setTimeout(() => { alert.style.display = 'none'; }, 4000);
+
+        // بعد از 5 ثانیه مخفی شود
+        clearTimeout(alert._timeout);
+        alert._timeout = setTimeout(() => {
+            alert.style.display = 'none';
+        }, 5000);
     }
 
+    // ========== نمایش Toast ==========
     function showToast(message, type) {
         const colors = {
             success: 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400',
@@ -718,7 +720,7 @@
 
         const toast = document.createElement('div');
         toast.className = `fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-2xl backdrop-blur-xl border ${colors[type] || colors.info} text-sm font-medium transition-all duration-500 transform translate-y-20 opacity-0`;
-        toast.textContent = message;
+        toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} ml-2"></i> ${message}`;
         document.body.appendChild(toast);
 
         setTimeout(() => {
@@ -731,8 +733,96 @@
         }, 3500);
     }
 
+    // ========== ثبت نظر ==========
+    function initReviewForm() {
+        const reviewForm = document.getElementById('reviewForm');
+        if (!reviewForm) {
+            console.warn('Review form not found');
+            return;
+        }
+
+        // حذف event listener قبلی با clone
+        const newForm = reviewForm.cloneNode(true);
+        reviewForm.parentNode.replaceChild(newForm, reviewForm);
+
+        newForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const rating = document.getElementById('rating').value;
+            const comment = document.getElementById('comment').value;
+
+            if (!rating) {
+                showReviewAlert('⚠️ لطفاً امتیاز را انتخاب کنید', 'error');
+                return;
+            }
+
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال ثبت...';
+
+            try {
+                const token = getCookie('token');
+                if (!token) {
+                    showReviewAlert('⚠️ لطفاً برای ثبت نظر وارد شوید', 'error');
+                    window.location.href = '/login';
+                    return;
+                }
+
+                console.log('Sending review for place:', placeId);
+                console.log('Rating:', rating);
+                console.log('Comment:', comment);
+
+                const response = await fetch('/api/reviews/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        placeId: parseInt(placeId),
+                        rating: parseInt(rating),
+                        comment: comment || ''
+                    })
+                });
+
+                console.log('Response status:', response.status);
+                const responseText = await response.text();
+                console.log('Response text:', responseText);
+
+                if (response.ok) {
+                    showReviewAlert('✅ نظر شما با موفقیت ثبت شد! پس از تایید ادمین در سایت نمایش داده می‌شود.', 'success');
+                    this.reset();
+                    setTimeout(() => loadReviews(), 1500);
+                } else if (response.status === 401) {
+                    deleteCookie('token');
+                    window.location.href = '/login';
+                } else if (response.status === 400) {
+                    // بررسی خطای تکراری بودن نظر
+                    if (responseText.includes('قبلاً') || responseText.includes('already')) {
+                        showReviewAlert('⚠️ شما قبلاً برای این مکان نظر داده‌اید!', 'error');
+                    } else {
+                        showReviewAlert('⚠️ ' + (responseText || 'خطا در ثبت نظر'), 'error');
+                    }
+                } else {
+                    showReviewAlert('⚠️ ' + (responseText || 'خطا در ثبت نظر'), 'error');
+                }
+            } catch (error) {
+                console.error('Error submitting review:', error);
+                showReviewAlert('⚠️ خطا در ارتباط با سرور', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        });
+    }
+
     // ========== بارگذاری اولیه ==========
-    document.addEventListener('DOMContentLoaded', loadPlace);
+    document.addEventListener('DOMContentLoaded', function () {
+        loadPlace();
+        setTimeout(initReviewForm, 500);
+    });
 </script>
 
 </body>

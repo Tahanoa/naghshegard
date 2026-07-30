@@ -100,6 +100,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 path.startsWith("/css/") ||
                 path.startsWith("/js/") ||
                 path.startsWith("/static/") ||
+                path.startsWith("/**.css") ||
                 path.equals("/favicon.ico") ||
                 path.startsWith("/api/auth/") ||
                 path.startsWith("/api/places/public/") ||

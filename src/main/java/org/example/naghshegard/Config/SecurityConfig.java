@@ -31,7 +31,7 @@ public class SecurityConfig {
                         // صفحات عمومی
                         .requestMatchers("/", "/login", "/register", "/places", "/travelogues").permitAll()
                         .requestMatchers("/place/**", "/travelogue/**").permitAll()
-                        .requestMatchers("/css/**", "/js/**", "/static/**", "/favicon.ico").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/static/**", "/favicon.ico", "/**.css").permitAll()
 
                         // APIهای عمومی
                         .requestMatchers("/api/auth/**", "/api/places/public/**", "/api/places/photos/**").permitAll()

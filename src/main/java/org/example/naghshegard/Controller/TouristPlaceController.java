@@ -75,7 +75,7 @@ public class TouristPlaceController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Place added successfully. Waiting for admin approval.");
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/public/{id}")
     public ResponseEntity<PlaceResponse> getPlaceById(@PathVariable Long id) {
         return ResponseEntity.ok(placeService.getPlaceById(id));
     }
