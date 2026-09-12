@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-naghshegard}
       POSTGRES_USER: ${POSTGRES_USER:-naghshegard}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-naghshegard_dev_password}
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -28,8 +28,8 @@ services:
     environment:
       DATABASE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-naghshegard}
       DATABASE_USERNAME: ${POSTGRES_USER:-naghshegard}
-      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-naghshegard_dev_password}
-      JWT_SECRET: ${JWT_SECRET:-change-this-development-secret-before-production-1234567890}
+      DATABASE_PASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}"
+      JWT_SECRET: "${JWT_SECRET:?Set JWT_SECRET in .env}"
       JWT_EXPIRATION: ${JWT_EXPIRATION:-864000000}
       MAIL_HOST: ${MAIL_HOST:-smtp.gmail.com}
       MAIL_PORT: ${MAIL_PORT:-587}
