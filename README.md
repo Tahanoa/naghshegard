@@ -197,51 +197,52 @@
 
 ### Prerequisites
 
-- JDK 17 or later
-- PostgreSQL 14+
-- Maven 3.9+
-- IDE (IntelliJ IDEA/Eclipse/VSCode)
+- Docker Engine 24+
+- Docker Compose v2
 
-### Installation
+### Run with Docker (recommended)
 
 **1. Clone the repository**
 ```bash
-git clone https://github.com/yourusername/iran-travel-blog.git
-cd iran-travel-blog
+git clone https://github.com/Tahanoa/naghshegard.git
+cd naghshegard
 ```
 
-**2. Configure Database**
-```sql
-CREATE DATABASE tblog;
-CREATE USER your_user WITH PASSWORD 'your_password';
-GRANT ALL PRIVILEGES ON DATABASE tblog TO your_user;
-```
-
-**3. Configure application.properties**
-```properties
-# Database
-spring.datasource.url=jdbc:postgresql://localhost:5432/tblog
-spring.datasource.username=your_user
-spring.datasource.password=your_password
-
-# Email (for verification)
-spring.mail.username=your_email@gmail.com
-spring.mail.password=your_app_password
-
-# JWT
-jwt.secret=your_super_secret_key_min_64_characters
-jwt.expiration=86400000
-```
-
-**4. Build and Run**
+**2. Configure environment variables**
 ```bash
-mvn clean install
-mvn spring-boot:run
+cp .env.example .env
 ```
 
-**5. Access Application**
+Change `POSTGRES_PASSWORD` and `JWT_SECRET` in `.env`. Add the mail settings if email verification and password reset should send real emails.
+
+**3. Build and start the complete stack**
+```bash
+docker compose up --build -d
 ```
+
+The application waits for PostgreSQL to become healthy and is then available at:
+
+```bash
 http://localhost:8080
+```
+
+Useful commands:
+
+```bash
+docker compose logs -f app
+docker compose ps
+docker compose down
+docker compose down -v  # also deletes the local database volume
+```
+
+PostgreSQL is only reachable from the internal Docker network. Its data persists in the named `postgres_data` volume.
+
+### Run without Docker
+
+Install JDK 17 and PostgreSQL 14+, export the variables documented in `.env.example`, and run:
+
+```bash
+./mvnw spring-boot:run
 ```
 
 ### Default Admin Account

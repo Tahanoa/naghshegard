@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         // صفحات عمومی
-                        .requestMatchers("/", "/login", "/register", "/places", "/travelogues").permitAll()
+                        .requestMatchers("/", "/login", "/register", "/places", "/travelogues", "/actuator/health").permitAll()
                         .requestMatchers("/place/**", "/travelogue/**").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/static/**", "/favicon.ico", "/**.css").permitAll()
 
